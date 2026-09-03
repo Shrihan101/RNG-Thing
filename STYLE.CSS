@@ -1,0 +1,1517 @@
+/* =========================================
+   RNGDLE - MAIN STYLES
+========================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-height: 100vh;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+
+    /* ORIGINAL RNGDLE BACKGROUND */
+    background:
+        radial-gradient(
+            circle at 50% 0%,
+            #202020 0%,
+            #0d0d0d 45%,
+            #050505 100%
+        );
+}
+
+body.mythic-cutscene {
+    overflow: hidden;
+}
+
+
+/* =========================================
+   MAIN GAME
+========================================= */
+
+.game-container {
+    width: min(900px, 92%);
+    margin: 0 auto;
+    padding: 60px 0 100px;
+}
+
+h1 {
+    text-align: center;
+    font-size: clamp(3rem, 8vw, 6rem);
+    letter-spacing: 8px;
+    margin-bottom: 5px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #aaa;
+    font-size: 1.1rem;
+    margin-bottom: 45px;
+}
+
+
+/* =========================================
+   SECTIONS
+========================================= */
+
+section {
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 18px;
+
+    background: rgba(255, 255, 255, 0.045);
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
+
+    box-shadow:
+        0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+section h2 {
+    margin-bottom: 18px;
+    font-size: 1.25rem;
+}
+
+
+/* =========================================
+   DAILY
+========================================= */
+
+.daily-section {
+    text-align: center;
+}
+
+#dailyStatus {
+    color: #8cff9a;
+    margin-bottom: 15px;
+}
+
+.countdown {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    color: #aaa;
+}
+
+.countdown strong {
+    color: white;
+}
+
+
+/* =========================================
+   NUMBER
+========================================= */
+
+.number-box {
+    margin: 35px auto 20px;
+
+    min-height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 25px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.015)
+        );
+
+    border: 1px solid rgba(255,255,255,0.1);
+
+    box-shadow:
+        inset 0 0 50px rgba(255,255,255,0.02),
+        0 15px 60px rgba(0,0,0,0.4);
+
+    overflow: hidden;
+}
+
+#number {
+    font-size: clamp(3rem, 10vw, 7rem);
+    font-weight: 900;
+    letter-spacing: 5px;
+
+    transition:
+        transform 0.2s ease;
+}
+
+
+/* =========================================
+   ROLL BUTTON
+========================================= */
+
+#rollButton {
+    display: block;
+    margin: 0 auto;
+
+    padding: 17px 45px;
+
+    border: none;
+    border-radius: 14px;
+
+    color: white;
+    background: #202020;
+
+    font-size: 1.1rem;
+    font-weight: 800;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.4);
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+#rollButton:hover {
+    transform: translateY(-3px);
+
+    background: #2c2c2c;
+
+    box-shadow:
+        0 12px 35px rgba(0,0,0,0.55);
+}
+
+#rollButton:active {
+    transform: translateY(1px);
+}
+
+#rollButton:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* =========================================
+   RESULTS
+========================================= */
+
+.result-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 13px 0;
+
+    border-bottom:
+        1px solid rgba(255,255,255,0.07);
+}
+
+.result-row:last-child {
+    border-bottom: none;
+}
+
+.result-row span:last-child {
+    font-weight: 800;
+}
+
+
+/* =========================================
+   RARITIES
+========================================= */
+
+.rarity-trash {
+    color: #777;
+}
+
+.rarity-common {
+    color: #d0d0d0;
+}
+
+.rarity-uncommon {
+    color: #69e36d;
+}
+
+.rarity-rare {
+    color: #4da6ff;
+}
+
+.rarity-epic {
+    color: #b56cff;
+}
+
+.rarity-legendary {
+    color: #ff3cff;
+
+    text-shadow:
+        0 0 10px #ff3cff,
+        0 0 25px rgba(255,60,255,0.5);
+}
+
+.rarity-mythic {
+    color: white;
+
+    text-shadow:
+        0 0 10px white,
+        0 0 25px #d7aaff,
+        0 0 50px #9b4dff;
+}
+
+
+/* =========================================
+   BADGES
+========================================= */
+
+.badge-container {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+
+    gap: 15px;
+}
+
+.badge {
+    position: relative;
+
+    padding: 20px;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    background:
+        rgba(255,255,255,0.04);
+
+    border:
+        1px solid rgba(255,255,255,0.1);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.badge:hover {
+    transform: translateY(-5px);
+}
+
+.badge-name {
+    font-weight: 900;
+    margin-bottom: 7px;
+}
+
+.badge-description {
+    color: #999;
+    font-size: 0.85rem;
+}
+
+
+/* =========================================
+   BADGE RARITY EFFECTS
+========================================= */
+
+.badge-trash {
+    border-color: #444;
+}
+
+.badge-common {
+    border-color: #777;
+}
+
+.badge-uncommon {
+    border-color: #43d86c;
+
+    box-shadow:
+        0 0 15px rgba(67,216,108,0.2);
+}
+
+.badge-rare {
+    border-color: #398cff;
+
+    box-shadow:
+        0 0 20px rgba(57,140,255,0.25);
+}
+
+.badge-epic {
+    border-color: #a64dff;
+
+    box-shadow:
+        0 0 25px rgba(166,77,255,0.35);
+}
+
+.badge-legendary {
+    border-color: #ff38e8;
+
+    box-shadow:
+        0 0 25px rgba(255,56,232,0.45),
+        inset 0 0 25px rgba(255,56,232,0.08);
+}
+
+.badge-mythic {
+    border-color: white;
+
+    box-shadow:
+        0 0 20px white,
+        0 0 50px #9b4dff,
+        0 0 90px rgba(255,0,255,0.5);
+
+    animation:
+        mythicBadgePulse 1.5s infinite alternate;
+}
+
+@keyframes mythicBadgePulse {
+
+    from {
+        transform: scale(1);
+    }
+
+    to {
+        transform: scale(1.035);
+    }
+}
+
+
+/* =========================================
+   STATS
+========================================= */
+
+.stat-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit, minmax(150px, 1fr));
+
+    gap: 15px;
+}
+
+.stat-card {
+    padding: 18px;
+
+    border-radius: 15px;
+
+    background:
+        rgba(255,255,255,0.04);
+
+    text-align: center;
+}
+
+.stat-card span {
+    display: block;
+
+    color: #999;
+
+    font-size: 0.85rem;
+
+    margin-bottom: 8px;
+}
+
+.stat-card strong {
+    font-size: 1.4rem;
+}
+
+
+/* =========================================
+   HISTORY
+========================================= */
+
+.history-entry {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 14px 0;
+
+    border-bottom:
+        1px solid rgba(255,255,255,0.07);
+}
+
+.history-entry:last-child {
+    border-bottom: none;
+}
+
+
+/* =========================================
+   LEADERBOARD
+========================================= */
+
+.leaderboard-tabs {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 20px;
+}
+
+.leaderboard-tab {
+    border:
+        1px solid rgba(255,255,255,0.1);
+
+    background:
+        rgba(255,255,255,0.04);
+
+    color: #aaa;
+
+    padding: 9px 13px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+}
+
+.leaderboard-tab.active {
+    color: white;
+
+    background:
+        rgba(255,255,255,0.12);
+}
+
+.leaderboard-entry {
+    display: flex;
+    justify-content: space-between;
+
+    padding: 13px 0;
+
+    border-bottom:
+        1px solid rgba(255,255,255,0.07);
+}
+
+
+/* =========================================
+   RESET
+========================================= */
+
+.data-reset {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+
+    text-align: center;
+}
+
+#eraseDataButton {
+    border:
+        1px solid #ff4545;
+
+    background: transparent;
+
+    color: #ff6565;
+
+    padding: 12px 20px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+#eraseDataButton:hover {
+    background:
+        rgba(255,60,60,0.1);
+}
+
+
+/* =========================================
+   CREATOR CREDIT
+========================================= */
+
+.creator-credit {
+    text-align: center;
+
+    margin-top: 30px;
+
+    padding-bottom: 20px;
+
+    color: #777;
+
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   =========================================================
+   
+             MYTHIC 10-SECOND CUTSCENE
+   
+   =========================================================
+   ========================================================= */
+
+.mythic-effect {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 999999;
+
+    display: none;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #321052 0%,
+            #11001f 30%,
+            #030006 65%,
+            #000000 100%
+        );
+
+    pointer-events: none;
+
+    isolation: isolate;
+}
+
+.mythic-effect.active {
+    display: block;
+
+    animation:
+        mythicCamera 10s
+        cubic-bezier(.2,.8,.2,1)
+        forwards;
+}
+
+
+/* =========================================
+   MYTHIC BACKGROUND
+========================================= */
+
+.mythic-background {
+    position: absolute;
+
+    inset: -25%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.1),
+            rgba(164,60,255,0.22) 12%,
+            rgba(70,0,130,0.15) 30%,
+            transparent 60%
+        );
+
+    opacity: 0;
+
+    transform: scale(0.5);
+
+    animation:
+        mythicBackgroundBuild 10s
+        ease-in-out
+        forwards;
+}
+
+@keyframes mythicBackgroundBuild {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+
+    10% {
+        opacity: 0.4;
+    }
+
+    25% {
+        opacity: 0.8;
+        transform: scale(0.8);
+    }
+
+    45% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    60% {
+        transform: scale(1.5);
+    }
+
+    70% {
+        opacity: 0.7;
+        transform: scale(1.15);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.3);
+    }
+}
+
+
+/* =========================================
+   FLASH
+========================================= */
+
+.mythic-flash {
+    position: absolute;
+
+    inset: 0;
+
+    background: white;
+
+    opacity: 0;
+
+    z-index: 30;
+
+    mix-blend-mode: screen;
+
+    animation:
+        mythicFlash 10s
+        ease-out
+        forwards;
+}
+
+@keyframes mythicFlash {
+
+    0%,
+    20% {
+        opacity: 0;
+    }
+
+    25% {
+        opacity: 0.12;
+    }
+
+    26% {
+        opacity: 0;
+    }
+
+    42% {
+        opacity: 0.15;
+    }
+
+    43% {
+        opacity: 0;
+    }
+
+    56% {
+        opacity: 0;
+    }
+
+    59% {
+        opacity: 1;
+    }
+
+    62% {
+        opacity: 0;
+    }
+
+    66% {
+        opacity: 0.75;
+    }
+
+    68% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* =========================================
+   ROTATING RAYS
+========================================= */
+
+.mythic-rays {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 180vmax;
+    height: 180vmax;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.1);
+
+    background:
+        repeating-conic-gradient(
+            from 0deg,
+            rgba(255,255,255,0.2) 0deg 1.5deg,
+            transparent 1.5deg 10deg
+        );
+
+    opacity: 0;
+
+    mix-blend-mode: screen;
+
+    animation:
+        mythicRays 10s
+        linear
+        forwards;
+}
+
+@keyframes mythicRays {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0.1)
+            rotate(0deg);
+    }
+
+    20% {
+        opacity: 0.15;
+    }
+
+    40% {
+        opacity: 0.3;
+    }
+
+    58% {
+        opacity: 0.85;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.8)
+            rotate(180deg);
+    }
+
+    70% {
+        opacity: 0.55;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.1)
+            rotate(270deg);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.4)
+            rotate(450deg);
+    }
+}
+
+
+/* =========================================
+   ENERGY CORE
+========================================= */
+
+.mythic-effect::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 12px;
+    height: 12px;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    border-radius: 50%;
+
+    background: white;
+
+    opacity: 0;
+
+    z-index: 15;
+
+    box-shadow:
+        0 0 15px white,
+        0 0 35px #ffffff,
+        0 0 75px #d18aff,
+        0 0 140px #9b35ff,
+        0 0 250px #6900ff;
+
+    animation:
+        mythicCore 10s
+        cubic-bezier(.1,.8,.2,1)
+        forwards;
+}
+
+@keyframes mythicCore {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0);
+    }
+
+    15% {
+        opacity: 0.5;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    30% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(4);
+    }
+
+    45% {
+        transform:
+            translate(-50%, -50%)
+            scale(12);
+    }
+
+    55% {
+        transform:
+            translate(-50%, -50%)
+            scale(35);
+    }
+
+    59% {
+        transform:
+            translate(-50%, -50%)
+            scale(100);
+        opacity: 1;
+    }
+
+    62% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* =========================================
+   RINGS
+========================================= */
+
+.mythic-ring {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 100px;
+    height: 100px;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    border-radius: 50%;
+
+    border:
+        2px solid white;
+
+    opacity: 0;
+
+    z-index: 10;
+
+    box-shadow:
+        0 0 15px white,
+        0 0 35px #b24cff,
+        inset 0 0 20px rgba(255,255,255,0.4);
+}
+
+.mythic-effect.active .ring-one {
+    animation:
+        mythicRingOne
+        6s
+        0.5s
+        ease-out
+        forwards;
+}
+
+.mythic-effect.active .ring-two {
+    animation:
+        mythicRingTwo
+        6s
+        1.7s
+        ease-out
+        forwards;
+}
+
+.mythic-effect.active .ring-three {
+    animation:
+        mythicRingThree
+        6s
+        2.9s
+        ease-out
+        forwards;
+}
+
+@keyframes mythicRingOne {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0)
+            rotate(0deg);
+    }
+
+    10% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(13)
+            rotate(360deg);
+    }
+}
+
+@keyframes mythicRingTwo {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0)
+            rotate(0deg);
+    }
+
+    10% {
+        opacity: 0.9;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(18)
+            rotate(-360deg);
+    }
+}
+
+@keyframes mythicRingThree {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0);
+    }
+
+    12% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(24);
+    }
+}
+
+
+/* =========================================
+   SHOCKWAVES
+========================================= */
+
+.mythic-shockwave {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 50px;
+    height: 50px;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    border-radius: 50%;
+
+    border:
+        5px solid white;
+
+    opacity: 0;
+
+    z-index: 25;
+
+    box-shadow:
+        0 0 25px white,
+        0 0 60px #b85cff;
+}
+
+.mythic-effect.active .mythic-shockwave {
+    animation:
+        mythicShockwave
+        10s
+        ease-out
+        forwards;
+}
+
+@keyframes mythicShockwave {
+
+    0%,
+    45% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0);
+    }
+
+    56% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    61% {
+        opacity: 0.9;
+        transform:
+            translate(-50%, -50%)
+            scale(18);
+    }
+
+    66% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(45);
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* =========================================
+   PARTICLES
+========================================= */
+
+.mythic-particles {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 18;
+}
+
+.mythic-particles::before,
+.mythic-particles::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    background: white;
+
+    box-shadow:
+        120px 40px white,
+        -150px -80px #d89cff,
+        250px -100px white,
+        -300px 100px #a84dff,
+        80px -220px white,
+        -80px 250px #e0b0ff,
+        320px 180px white,
+        -340px -180px #8b2cff,
+        400px 0 white,
+        -400px 0 white,
+        0 350px #d08cff,
+        0 -350px white,
+        200px 200px #c25cff,
+        -220px -200px white,
+        280px -260px #e18cff,
+        -280px 260px white;
+
+    opacity: 0;
+}
+
+.mythic-effect.active .mythic-particles::before {
+    animation:
+        particleExplosion 8s
+        1.5s
+        ease-out
+        forwards;
+}
+
+.mythic-effect.active .mythic-particles::after {
+    animation:
+        particleExplosion 7s
+        2.5s
+        ease-out
+        forwards;
+}
+
+@keyframes particleExplosion {
+
+    0% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.05);
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    55% {
+        opacity: 0.9;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.5);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(5);
+    }
+}
+
+
+/* =========================================
+   MYTHIC TITLE
+========================================= */
+
+.mythic-title {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 100%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    text-align: center;
+
+    opacity: 0;
+
+    z-index: 50;
+}
+
+.mythic-crown {
+    font-size:
+        clamp(3rem, 8vw, 7rem);
+
+    color: white;
+
+    margin-bottom: -15px;
+
+    text-shadow:
+        0 0 15px white,
+        0 0 40px #c86cff,
+        0 0 90px #8a00ff;
+
+    animation:
+        crownSpin 2s
+        ease-out
+        infinite alternate;
+}
+
+.mythic-title span {
+    display: block;
+
+    font-size:
+        clamp(5rem, 18vw, 15rem);
+
+    font-weight: 1000;
+
+    letter-spacing:
+        clamp(5px, 1.5vw, 18px);
+
+    color: white;
+
+    text-shadow:
+        0 0 10px white,
+        0 0 25px white,
+        0 0 50px #e0a0ff,
+        0 0 100px #9b35ff,
+        0 0 180px #6500ff,
+        0 0 280px #4b00a8;
+}
+
+.mythic-title small {
+    display: block;
+
+    margin-top: 15px;
+
+    font-size:
+        clamp(0.8rem, 2vw, 1.5rem);
+
+    letter-spacing:
+        clamp(5px, 1vw, 12px);
+
+    color: #ead7ff;
+
+    text-shadow:
+        0 0 15px #a54cff,
+        0 0 30px #7c00ff;
+}
+
+.mythic-effect.active .mythic-title {
+    animation:
+        mythicTitleReveal
+        10s
+        cubic-bezier(.12,.85,.18,1)
+        forwards;
+}
+
+@keyframes mythicTitleReveal {
+
+    0%,
+    57% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0)
+            rotate(-5deg);
+    }
+
+    59% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(2.2)
+            rotate(3deg);
+    }
+
+    62% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.78)
+            rotate(-1deg);
+    }
+
+    66% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.15)
+            rotate(0deg);
+    }
+
+    70% {
+        transform:
+            translate(-50%, -50%)
+            scale(0.98);
+    }
+
+    74% {
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    90% {
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    100% {
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.12);
+    }
+}
+
+@keyframes crownSpin {
+
+    from {
+        transform: rotate(-4deg) scale(1);
+    }
+
+    to {
+        transform: rotate(4deg) scale(1.12);
+    }
+}
+
+
+/* =========================================
+   MYTHIC NUMBER
+========================================= */
+
+.mythic-number {
+    animation:
+        mythicNumberShake 0.08s infinite,
+        mythicNumberGlow 0.5s infinite alternate;
+}
+
+@keyframes mythicNumberShake {
+
+    0% {
+        transform:
+            translate(0, 0);
+    }
+
+    25% {
+        transform:
+            translate(7px, -4px);
+    }
+
+    50% {
+        transform:
+            translate(-6px, 5px);
+    }
+
+    75% {
+        transform:
+            translate(4px, 3px);
+    }
+
+    100% {
+        transform:
+            translate(0, 0);
+    }
+}
+
+@keyframes mythicNumberGlow {
+
+    from {
+        text-shadow:
+            0 0 10px white,
+            0 0 30px #a44cff,
+            0 0 60px #7000ff;
+    }
+
+    to {
+        text-shadow:
+            0 0 25px white,
+            0 0 70px #d070ff,
+            0 0 130px #7c00ff;
+    }
+}
+
+
+/* =========================================
+   CAMERA / SCREEN MOVEMENT
+========================================= */
+
+@keyframes mythicCamera {
+
+    0% {
+        opacity: 0;
+        transform: scale(1);
+    }
+
+    5% {
+        opacity: 1;
+    }
+
+    20% {
+        transform:
+            scale(1.005);
+    }
+
+    35% {
+        transform:
+            scale(0.995);
+    }
+
+    48% {
+        transform:
+            scale(1.01);
+    }
+
+    58% {
+        transform:
+            scale(1.04);
+    }
+
+    60% {
+        transform:
+            scale(1.12);
+    }
+
+    62% {
+        transform:
+            scale(0.97);
+    }
+
+    65% {
+        transform:
+            scale(1.02);
+    }
+
+    70% {
+        transform:
+            scale(1);
+    }
+
+    90% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+
+    .game-container {
+        padding-top: 35px;
+    }
+
+    section {
+        padding: 18px;
+    }
+
+    .result-row {
+        font-size: 0.9rem;
+    }
+
+    .mythic-title span {
+        letter-spacing: 5px;
+    }
+
+    .mythic-title small {
+        letter-spacing: 5px;
+    }
+}
+
+
+/* =========================================
+   REDUCED MOTION
+========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .mythic-effect.active,
+    .mythic-effect.active *,
+    .mythic-effect.active::before,
+    .mythic-effect.active::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}

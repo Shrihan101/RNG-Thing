@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RNGdle</title>
+
+    <link
+        rel="stylesheet"
+        href="STYLE.CSS"
+    >
+
+</head>
+
+<body>
+
+    <!-- =========================================
+         MYTHIC FULL-SCREEN EFFECT
+    ========================================== -->
+
+    <div
+        id="mythicEffect"
+        class="mythic-effect"
+        aria-hidden="true"
+    >
+
+        <div class="mythic-background"></div>
+
+        <div class="mythic-flash"></div>
+
+        <div class="mythic-rays"></div>
+
+        <div class="mythic-ring ring-one"></div>
+        <div class="mythic-ring ring-two"></div>
+        <div class="mythic-ring ring-three"></div>
+
+        <div class="mythic-particles"></div>
+
+        <div class="mythic-shockwave"></div>
+
+        <div class="mythic-title">
+
+            <div class="mythic-crown">
+                ✦
+            </div>
+
+            <span>
+                MYTHIC
+            </span>
+
+            <small>
+                THE IMPOSSIBLE ROLL
+            </small>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         MAIN GAME
+    ========================================== -->
+
+    <main class="game-container">
+
+        <h1>
+            RNG Thing
+        </h1>
+
+        <p class="subtitle">
+            How Lucky Are You?
+        </p>
+
+
+        <!-- =====================================
+             ROLL COOLDOWN
+        ====================================== -->
+
+        <section class="daily-section">
+
+            <h2>
+                Roll Cooldown
+            </h2>
+
+            <p id="dailyStatus">
+                Your Roll Is Ready!
+            </p>
+
+            <div class="countdown">
+
+                <span>
+                    Next Roll In
+                </span>
+
+                <strong id="countdown">
+                    Ready!
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             NUMBER
+        ====================================== -->
+
+        <div class="number-box">
+
+            <span id="number">
+                ------
+            </span>
+
+        </div>
+
+
+        <button
+            id="rollButton"
+            type="button"
+        >
+            Roll 🎲
+        </button>
+
+
+        <!-- =====================================
+             RESULTS
+        ====================================== -->
+
+        <section class="results">
+
+            <h2>
+                Results
+            </h2>
+
+            <div class="result-row">
+
+                <span>
+                    Rarity
+                </span>
+
+                <span id="rarity">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    EP
+                </span>
+
+                <span id="ep">
+                    0
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             NUMBER ANALYSIS
+        ====================================== -->
+
+        <section class="analysis">
+
+            <h2>
+                Number Analysis
+            </h2>
+
+
+            <div class="result-row">
+
+                <span>
+                    Palindrome
+                </span>
+
+                <span id="palindrome">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    Prime Number
+                </span>
+
+                <span id="prime">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    Repeating Digits
+                </span>
+
+                <span id="repeating">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    Ascending Sequence
+                </span>
+
+                <span id="ascending">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    Descending Sequence
+                </span>
+
+                <span id="descending">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    All Same Digits
+                </span>
+
+                <span id="allSame">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    Even Number
+                </span>
+
+                <span id="even">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    Contains Zero
+                </span>
+
+                <span id="zero">
+                    ---
+                </span>
+
+            </div>
+
+
+            <div class="result-row">
+
+                <span>
+                    Digit Sum
+                </span>
+
+                <span id="digitSum">
+                    ---
+                </span>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             BADGES
+        ====================================== -->
+
+        <section class="badges">
+
+            <h2>
+                Badges
+            </h2>
+
+            <div
+                id="badgeContainer"
+                class="badge-container"
+            >
+
+                <p id="noBadges">
+                    No Badges Yet
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             STATISTICS
+        ====================================== -->
+
+        <section class="stats">
+
+            <h2>
+                Statistics
+            </h2>
+
+            <div class="stat-grid">
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Total Rolls
+                    </span>
+
+                    <strong id="totalRolls">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Total EP
+                    </span>
+
+                    <strong id="totalEP">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Best Rarity
+                    </span>
+
+                    <strong id="bestRarity">
+                        ---
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Total Badges
+                    </span>
+
+                    <strong id="totalBadges">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Average Roll
+                    </span>
+
+                    <strong id="averageRoll">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Highest Number
+                    </span>
+
+                    <strong id="highestNumber">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Daily Streak
+                    </span>
+
+                    <strong id="dailyStreak">
+                        0 🔥
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             ROLL HISTORY
+        ====================================== -->
+
+        <section class="history">
+
+            <h2>
+                Roll History
+            </h2>
+
+            <div id="historyContainer">
+
+                <p id="noHistory">
+                    No Rolls Yet
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             LEADERBOARD
+        ====================================== -->
+
+        <section class="leaderboard">
+
+            <h2>
+                Leaderboard
+            </h2>
+
+
+            <div class="leaderboard-tabs">
+
+
+                <button
+                    class="leaderboard-tab active"
+                    data-type="ep"
+                    type="button"
+                >
+                    Highest EP
+                </button>
+
+
+                <button
+                    class="leaderboard-tab"
+                    data-type="rolls"
+                    type="button"
+                >
+                    Most Rolls
+                </button>
+
+
+                <button
+                    class="leaderboard-tab"
+                    data-type="streak"
+                    type="button"
+                >
+                    Longest Streak
+                </button>
+
+
+                <button
+                    class="leaderboard-tab"
+                    data-type="number"
+                    type="button"
+                >
+                    Highest Number
+                </button>
+
+            </div>
+
+
+            <div id="leaderboardContainer">
+
+                <p id="noLeaderboard">
+                    No Leaderboard Data Yet
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             DATA RESET
+        ====================================== -->
+
+        <section class="data-reset">
+
+            <button
+                id="eraseDataButton"
+                type="button"
+            >
+                Erase All Data
+            </button>
+
+        </section>
+
+
+        <!-- =====================================
+             CREATOR CREDIT
+        ====================================== -->
+
+        <footer class="creator-credit">
+            RNG Thing — By Shrihan
+        </footer>
+
+    </main>
+
+
+    <script src="SCRIPT.JS"></script>
+
+</body>
+
+</html>
