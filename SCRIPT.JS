@@ -1452,9 +1452,6 @@ function getNaturalPatternRarity(number) {
     const formatted =
         formatNumber(number);
 
-    const badgeCount =
-        data.badges.length;
-
     if (longestRun >= 5) {
         return "Chroma";
     }
@@ -1464,17 +1461,10 @@ function getNaturalPatternRarity(number) {
     }
 
     if (
-        badgeCount >= 14 &&
-        number >= 900000
-    ) {
-        return "Chroma";
-    }
-
-    if (
         formatted === "123456" ||
         formatted === "654321"
     ) {
-        return "Mythic";
+        return "Chroma";
     }
 
     if (
@@ -1484,12 +1474,6 @@ function getNaturalPatternRarity(number) {
         return "Mythic";
     }
 
-    if (
-        badgeCount >= 10 &&
-        number >= 800000
-    ) {
-        return "Mythic";
-    }
 
     if (longestRun === 4) {
         return "Legendary";
@@ -1559,21 +1543,11 @@ function determineRarity(number) {
     const formatted =
         formatNumber(number);
 
-    const badgeCount =
-        data.badges.length;
-
     if (longestRun >= 5) {
         return "Chroma";
     }
 
     if (number >= 999000) {
-        return "Chroma";
-    }
-
-    if (
-        badgeCount >= 14 &&
-        number >= 900000
-    ) {
         return "Chroma";
     }
 
@@ -1587,13 +1561,6 @@ function determineRarity(number) {
     if (
         longestRun >= 4 &&
         number >= 900000
-    ) {
-        return "Mythic";
-    }
-
-    if (
-        badgeCount >= 10 &&
-        number >= 800000
     ) {
         return "Mythic";
     }
