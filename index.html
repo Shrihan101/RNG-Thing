@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
 
     <meta
@@ -16,7 +15,6 @@
         rel="stylesheet"
         href="STYLE.CSS"
     >
-
 </head>
 
 <body>
@@ -32,9 +30,7 @@
     >
 
         <div class="mythic-background"></div>
-
         <div class="mythic-flash"></div>
-
         <div class="mythic-rays"></div>
 
         <div class="mythic-ring ring-one"></div>
@@ -42,23 +38,16 @@
         <div class="mythic-ring ring-three"></div>
 
         <div class="mythic-particles"></div>
-
         <div class="mythic-shockwave"></div>
 
         <div class="mythic-title">
+            <div class="mythic-crown">✦</div>
 
-            <div class="mythic-crown">
-                ✦
-            </div>
-
-            <span>
-                MYTHIC
-            </span>
+            <span>MYTHIC</span>
 
             <small>
                 THE IMPOSSIBLE ROLL
             </small>
-
         </div>
 
     </div>
@@ -70,24 +59,18 @@
 
     <main class="game-container">
 
-        <h1>
-            RNG Thing
-        </h1>
+        <h1>RNG Thing</h1>
 
         <p class="subtitle">
             How Lucky Are You?
         </p>
 
 
-        <!-- =====================================
-             ROLL COOLDOWN
-        ====================================== -->
+        <!-- ROLL COOLDOWN -->
 
         <section class="daily-section">
 
-            <h2>
-                Roll Cooldown
-            </h2>
+            <h2>Roll Cooldown</h2>
 
             <p id="dailyStatus">
                 Your Roll Is Ready!
@@ -108,9 +91,7 @@
         </section>
 
 
-        <!-- =====================================
-             NUMBER
-        ====================================== -->
+        <!-- NUMBER -->
 
         <div class="number-box">
 
@@ -129,182 +110,101 @@
         </button>
 
 
-        <!-- =====================================
-             RESULTS
-        ====================================== -->
+        <!-- RESULTS -->
 
         <section class="results">
 
-            <h2>
-                Results
-            </h2>
+            <h2>Results</h2>
 
             <div class="result-row">
-
-                <span>
-                    Rarity
-                </span>
+                <span>Rarity</span>
 
                 <span id="rarity">
                     ---
                 </span>
-
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    EP
-                </span>
+                <span>EP</span>
 
                 <span id="ep">
                     0
                 </span>
-
             </div>
 
         </section>
 
 
-        <!-- =====================================
-             NUMBER ANALYSIS
-        ====================================== -->
+        <!-- NUMBER ANALYSIS -->
 
         <section class="analysis">
 
-            <h2>
-                Number Analysis
-            </h2>
-
+            <h2>Number Analysis</h2>
 
             <div class="result-row">
-
-                <span>
-                    Palindrome
-                </span>
-
-                <span id="palindrome">
-                    ---
-                </span>
-
+                <span>Palindrome</span>
+                <span id="palindrome">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    Prime Number
-                </span>
-
-                <span id="prime">
-                    ---
-                </span>
-
+                <span>Prime Number</span>
+                <span id="prime">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    Repeating Digits
-                </span>
-
-                <span id="repeating">
-                    ---
-                </span>
-
+                <span>Repeating Digits</span>
+                <span id="repeating">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    Ascending Sequence
-                </span>
-
-                <span id="ascending">
-                    ---
-                </span>
-
+                <span>Ascending Sequence</span>
+                <span id="ascending">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    Descending Sequence
-                </span>
-
-                <span id="descending">
-                    ---
-                </span>
-
+                <span>Descending Sequence</span>
+                <span id="descending">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    All Same Digits
-                </span>
-
-                <span id="allSame">
-                    ---
-                </span>
-
+                <span>All Same Digits</span>
+                <span id="allSame">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    Even Number
-                </span>
-
-                <span id="even">
-                    ---
-                </span>
-
+                <span>Even Number</span>
+                <span id="even">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    Contains Zero
-                </span>
-
-                <span id="zero">
-                    ---
-                </span>
-
+                <span>Contains Zero</span>
+                <span id="zero">---</span>
             </div>
 
-
             <div class="result-row">
-
-                <span>
-                    Digit Sum
-                </span>
-
-                <span id="digitSum">
-                    ---
-                </span>
-
+                <span>Digit Sum</span>
+                <span id="digitSum">---</span>
             </div>
 
         </section>
 
 
-        <!-- =====================================
-             BADGES
-        ====================================== -->
+        <!-- BADGES -->
 
         <section class="badges">
 
-            <h2>
+            <h2
+                id="badgesTitle"
+                class="badges-title"
+                tabindex="0"
+                role="button"
+                aria-expanded="false"
+            >
                 Badges
+
+                <span class="badges-arrow">
+                    ▾
+                </span>
             </h2>
 
             <div
@@ -318,109 +218,243 @@
 
             </div>
 
+
+            <!-- BADGE INDEX -->
+
+            <div
+                id="badgeIndex"
+                class="badge-index"
+                hidden
+            >
+
+                <div class="badge-index-header">
+
+                    <h3>Badge Index</h3>
+
+                    <p>
+                        Collect Every Badge
+                    </p>
+
+                </div>
+
+                <div
+                    id="badgeIndexContainer"
+                    class="badge-index-container"
+                ></div>
+
+            </div>
+
         </section>
 
 
-        <!-- =====================================
-             STATISTICS
-        ====================================== -->
+        <!-- EP SHOP -->
 
-        <section class="stats">
+        <section class="shop">
 
-            <h2>
-                Statistics
-            </h2>
+            <h2>EP Shop</h2>
+
+            <p class="subtitle">
+                Spend Your EP To Upgrade Stuff
+            </p>
+
+            <div class="result-row">
+
+                <span>
+                    Available EP
+                </span>
+
+                <strong id="shopEP">
+                    0
+                </strong>
+
+            </div>
+
 
             <div class="stat-grid">
 
 
+                <!-- ROLL SPEED -->
+
                 <div class="stat-card">
 
                     <span>
-                        Total Rolls
+                        ⚡ Roll Speed
                     </span>
 
-                    <strong id="totalRolls">
-                        0
+                    <strong id="rollSpeedLevel">
+                        10s
                     </strong>
+
+                    <small>
+                        Make Your Rolls Faster
+                    </small>
+
+                    <button
+                        id="buyRollSpeed"
+                        class="leaderboard-tab"
+                        type="button"
+                    >
+                        Buy
+                    </button>
+
+                    <small id="rollSpeedCost">
+                        Cost: 0 EP
+                    </small>
 
                 </div>
 
 
+                <!-- EP MULTIPLIER -->
+
                 <div class="stat-card">
 
                     <span>
-                        Total EP
+                        💰 EP Multiplier
                     </span>
 
-                    <strong id="totalEP">
-                        0
+                    <strong id="epMultiplierLevel">
+                        1×
                     </strong>
+
+                    <small>
+                        Earn More EP From Every Roll
+                    </small>
+
+                    <button
+                        id="buyEpMultiplier"
+                        class="leaderboard-tab"
+                        type="button"
+                    >
+                        Buy
+                    </button>
+
+                    <small id="epMultiplierCost">
+                        Cost: 0 EP
+                    </small>
 
                 </div>
 
 
+                <!-- LUCK -->
+
                 <div class="stat-card">
 
                     <span>
-                        Best Rarity
+                        🍀 Luck
                     </span>
 
-                    <strong id="bestRarity">
-                        ---
+                    <strong id="luckLevel">
+                        1×
                     </strong>
+
+                    <small>
+                        Improve Your Fallback Rarity Chances
+                    </small>
+
+                    <button
+                        id="buyLuck"
+                        class="leaderboard-tab"
+                        type="button"
+                    >
+                        Buy
+                    </button>
+
+                    <small id="luckCost">
+                        Cost: 0 EP
+                    </small>
 
                 </div>
 
 
+                <!-- NUMBER FORTUNE -->
+
                 <div class="stat-card">
 
                     <span>
-                        Total Badges
+                        🎯 Number Fortune
                     </span>
 
-                    <strong id="totalBadges">
-                        0
+                    <strong id="numberFortuneLevel">
+                        1×
                     </strong>
+
+                    <small>
+                        Increase Your Odds Of Higher Numbers
+                    </small>
+
+                    <button
+                        id="buyNumberFortune"
+                        class="leaderboard-tab"
+                        type="button"
+                    >
+                        Buy
+                    </button>
+
+                    <small id="numberFortuneCost">
+                        Cost: 0 EP
+                    </small>
 
                 </div>
 
 
+                <!-- DOUBLE ROLL -->
+
                 <div class="stat-card">
 
                     <span>
-                        Average Roll
+                        🎲 Double Roll Chance
                     </span>
 
-                    <strong id="averageRoll">
-                        0
+                    <strong id="doubleRollLevel">
+                        0%
                     </strong>
+
+                    <small>
+                        Chance To Immediately Roll Again
+                    </small>
+
+                    <button
+                        id="buyDoubleRoll"
+                        class="leaderboard-tab"
+                        type="button"
+                    >
+                        Buy
+                    </button>
+
+                    <small id="doubleRollCost">
+                        Cost: 0 EP
+                    </small>
 
                 </div>
 
 
-                <div class="stat-card">
-
-                    <span>
-                        Highest Number
-                    </span>
-
-                    <strong id="highestNumber">
-                        0
-                    </strong>
-
-                </div>
-
+                <!-- SECRET THING -->
 
                 <div class="stat-card">
 
                     <span>
-                        Daily Streak
+                        Secret Thing
                     </span>
 
-                    <strong id="dailyStreak">
-                        0 🔥
+                    <strong id="secretThingLevel">
+                        1
                     </strong>
+
+                    <small id="secretThingDescription">
+                        Does Absolutely Nothing... Yet.
+                    </small>
+
+                    <button
+                        id="buySecretThing"
+                        class="leaderboard-tab"
+                        type="button"
+                    >
+                        Buy
+                    </button>
+
+                    <small id="secretThingCost">
+                        Cost: 10 EP
+                    </small>
 
                 </div>
 
@@ -429,15 +463,59 @@
         </section>
 
 
-        <!-- =====================================
-             ROLL HISTORY
-        ====================================== -->
+        <!-- STATISTICS -->
+
+        <section class="stats">
+
+            <h2>Statistics</h2>
+
+            <div class="stat-grid">
+
+                <div class="stat-card">
+                    <span>Total Rolls</span>
+                    <strong id="totalRolls">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Total EP</span>
+                    <strong id="totalEP">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Best Rarity</span>
+                    <strong id="bestRarity">---</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Total Badges</span>
+                    <strong id="totalBadges">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Average Roll</span>
+                    <strong id="averageRoll">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Highest Number</span>
+                    <strong id="highestNumber">0</strong>
+                </div>
+
+                <div class="stat-card">
+                    <span>Daily Streak</span>
+                    <strong id="dailyStreak">0 🔥</strong>
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- ROLL HISTORY -->
 
         <section class="history">
 
-            <h2>
-                Roll History
-            </h2>
+            <h2>Roll History</h2>
 
             <div id="historyContainer">
 
@@ -450,72 +528,7 @@
         </section>
 
 
-        <!-- =====================================
-             LEADERBOARD
-        ====================================== -->
-
-        <section class="leaderboard">
-
-            <h2>
-                Leaderboard
-            </h2>
-
-
-            <div class="leaderboard-tabs">
-
-
-                <button
-                    class="leaderboard-tab active"
-                    data-type="ep"
-                    type="button"
-                >
-                    Highest EP
-                </button>
-
-
-                <button
-                    class="leaderboard-tab"
-                    data-type="rolls"
-                    type="button"
-                >
-                    Most Rolls
-                </button>
-
-
-                <button
-                    class="leaderboard-tab"
-                    data-type="streak"
-                    type="button"
-                >
-                    Longest Streak
-                </button>
-
-
-                <button
-                    class="leaderboard-tab"
-                    data-type="number"
-                    type="button"
-                >
-                    Highest Number
-                </button>
-
-            </div>
-
-
-            <div id="leaderboardContainer">
-
-                <p id="noLeaderboard">
-                    No Leaderboard Data Yet
-                </p>
-
-            </div>
-
-        </section>
-
-
-        <!-- =====================================
-             DATA RESET
-        ====================================== -->
+        <!-- DATA RESET -->
 
         <section class="data-reset">
 
@@ -529,9 +542,7 @@
         </section>
 
 
-        <!-- =====================================
-             CREATOR CREDIT
-        ====================================== -->
+        <!-- CREATOR -->
 
         <footer class="creator-credit">
             RNG Thing — Created By Shrihan
