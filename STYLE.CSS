@@ -3571,33 +3571,23 @@ body.secret-cutscene .mythic-crown {
 }
 
 body.secret-cutscene .mythic-title span {
-    font-size:
-        clamp(5rem, 20vw, 17rem);
-
+    font-size: clamp(5rem, 20vw, 17rem);
     font-weight: 1000;
+    letter-spacing: 0.04em;
 
-    letter-spacing:
-        clamp(5px, 2vw, 25px);
+    color: white;
 
-    color: #c9c2cc;
-
-    -webkit-text-stroke:
-        3px #6d6570;
+    -webkit-text-stroke: 4px white;
 
     background:
         linear-gradient(
             180deg,
-            #ddd8df 0%,
-            #aaa2ad 20%,
-            #77707c 38%,
-            #514b56 52%,
-            #302b34 72%,
-            #17141a 88%,
-            #08070a 100%
+            #ffffff 0%,
+            #f4f1f6 18%,
+            #d8d2dc 42%,
+            #8f8794 65%,
+            #302b34 100%
         );
-
-    background-size:
-        100% 400%;
 
     -webkit-background-clip: text;
     background-clip: text;
@@ -3605,14 +3595,15 @@ body.secret-cutscene .mythic-title span {
     -webkit-text-fill-color: transparent;
 
     filter:
-        drop-shadow(0 0 5px #827885)
-        drop-shadow(0 0 18px #514956)
-        drop-shadow(0 0 40px #302935)
-        drop-shadow(0 0 90px #161219);
+        drop-shadow(0 0 6px white)
+        drop-shadow(0 0 16px white)
+        drop-shadow(0 0 32px #d9d2df)
+        drop-shadow(0 0 60px #a99eae)
+        drop-shadow(0 0 100px #6b5a72)
+        drop-shadow(0 0 150px #321f3d);
 
     animation:
-        secretText
-        1s
+        secretTextGlow 1.2s
         ease-in-out
         infinite alternate;
 }
@@ -3745,29 +3736,30 @@ body.secret-cutscene .mythic-title small {
     }
 }
 
-@keyframes secretText {
+@keyframes secretTextGlow {
 
     from {
-        background-position:
-            50% 0%;
-
         filter:
-            brightness(0.7)
-            drop-shadow(0 0 8px #716775)
-            drop-shadow(0 0 25px #403845)
-            drop-shadow(0 0 50px #211c25);
+            drop-shadow(0 0 5px white)
+            drop-shadow(0 0 14px white)
+            drop-shadow(0 0 28px #d9d2df)
+            drop-shadow(0 0 50px #a99eae)
+            drop-shadow(0 0 90px #6b5a72)
+            drop-shadow(0 0 130px #321f3d);
+
+        transform: scale(1);
     }
 
     to {
-        background-position:
-            50% 100%;
-
         filter:
-            brightness(1.15)
-            drop-shadow(0 0 10px #968c99)
-            drop-shadow(0 0 35px #5c5362)
-            drop-shadow(0 0 70px #332d38)
-            drop-shadow(0 0 120px #17131b);
+            drop-shadow(0 0 8px white)
+            drop-shadow(0 0 22px white)
+            drop-shadow(0 0 42px #ffffff)
+            drop-shadow(0 0 75px #c7becd)
+            drop-shadow(0 0 120px #8c7895)
+            drop-shadow(0 0 180px #493650);
+
+        transform: scale(1.025);
     }
 }
 
@@ -4051,5 +4043,86 @@ body.secret-cutscene .mythic-number {
     .mythic-effect.active::after {
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
+    }
+}
+
+
+/* =========================================
+   POST RARITY NUMBER EFFECT
+   ========================================= */
+
+.post-mythic,
+.post-chroma,
+.post-secret {
+    animation:
+        postRarityJiggle 0.7s ease-in-out,
+        postRarityGlow 7s ease-out forwards;
+}
+
+.post-mythic {
+    text-shadow:
+        0 0 10px rgba(170, 80, 255, 0.9),
+        0 0 25px rgba(170, 80, 255, 0.8),
+        0 0 50px rgba(170, 80, 255, 0.6);
+}
+
+.post-chroma {
+    color: inherit;
+
+    text-shadow:
+        0 0 10px rgba(77, 184, 255, 0.9),
+        0 0 25px rgba(77, 184, 255, 0.8),
+        0 0 50px rgba(0, 140, 255, 0.7),
+        0 0 90px rgba(0, 100, 255, 0.5);
+}
+
+.post-secret {
+    text-shadow:
+        0 0 10px rgba(255, 255, 255, 1),
+        0 0 30px rgba(255, 255, 255, 0.95),
+        0 0 60px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes postRarityJiggle {
+    0% {
+        transform: scale(0.7) rotate(0deg);
+    }
+
+    20% {
+        transform: scale(1.15) rotate(-4deg);
+    }
+
+    40% {
+        transform: scale(1.05) rotate(4deg);
+    }
+
+    60% {
+        transform: scale(1.1) rotate(-2deg);
+    }
+
+    80% {
+        transform: scale(1.03) rotate(1deg);
+    }
+
+    100% {
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+@keyframes postRarityGlow {
+    0% {
+        opacity: 1;
+        filter: brightness(1.5);
+    }
+
+    65% {
+        opacity: 1;
+        filter: brightness(1.15);
+    }
+
+    100% {
+        opacity: 0.75;
+        filter: brightness(1);
+        text-shadow: none;
     }
 }
