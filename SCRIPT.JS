@@ -6,95 +6,83 @@
 // DOM ELEMENTS
 // =========================================
 
-const rollButton =
-    document.getElementById("rollButton");
+const rollButton = document.getElementById("rollButton");
+const eraseDataButton = document.getElementById("eraseDataButton");
 
-const eraseDataButton =
-    document.getElementById("eraseDataButton");
+const numberDisplay = document.getElementById("number");
+const rarityDisplay = document.getElementById("rarity");
+const epDisplay = document.getElementById("ep");
 
-const numberDisplay =
-    document.getElementById("number");
+const palindromeDisplay = document.getElementById("palindrome");
+const primeDisplay = document.getElementById("prime");
+const repeatingDisplay = document.getElementById("repeating");
+const ascendingDisplay = document.getElementById("ascending");
+const descendingDisplay = document.getElementById("descending");
+const allSameDisplay = document.getElementById("allSame");
+const evenDisplay = document.getElementById("even");
+const zeroDisplay = document.getElementById("zero");
+const digitSumDisplay = document.getElementById("digitSum");
 
-const rarityDisplay =
-    document.getElementById("rarity");
+const badgeContainer = document.getElementById("badgeContainer");
+const noBadges = document.getElementById("noBadges");
+const badgesTitle = document.getElementById("badgesTitle");
+const badgeIndex = document.getElementById("badgeIndex");
+const badgeIndexContainer = document.getElementById("badgeIndexContainer");
 
-const epDisplay =
-    document.getElementById("ep");
+const totalRollsDisplay = document.getElementById("totalRolls");
+const totalEPDisplay = document.getElementById("totalEP");
+const bestRarityDisplay = document.getElementById("bestRarity");
+const totalBadgesDisplay = document.getElementById("totalBadges");
+const averageRollDisplay = document.getElementById("averageRoll");
+const highestNumberDisplay = document.getElementById("highestNumber");
+const dailyStreakDisplay = document.getElementById("dailyStreak");
 
-const palindromeDisplay =
-    document.getElementById("palindrome");
+const historyContainer = document.getElementById("historyContainer");
+const noHistory = document.getElementById("noHistory");
 
-const primeDisplay =
-    document.getElementById("prime");
+const countdownDisplay = document.getElementById("countdown");
+const dailyStatus = document.getElementById("dailyStatus");
 
-const repeatingDisplay =
-    document.getElementById("repeating");
+const mythicEffect = document.getElementById("mythicEffect");
 
-const ascendingDisplay =
-    document.getElementById("ascending");
+// =========================================
+// SHOP DOM ELEMENTS
+// =========================================
 
-const descendingDisplay =
-    document.getElementById("descending");
+const shopEPDisplay = document.getElementById("shopEP");
 
-const allSameDisplay =
-    document.getElementById("allSame");
+const rollSpeedLevelDisplay = document.getElementById("rollSpeedLevel");
+const rollSpeedCostDisplay = document.getElementById("rollSpeedCost");
+const buyRollSpeedButton = document.getElementById("buyRollSpeed");
 
-const evenDisplay =
-    document.getElementById("even");
+const epMultiplierLevelDisplay = document.getElementById("epMultiplierLevel");
+const epMultiplierCostDisplay = document.getElementById("epMultiplierCost");
+const buyEpMultiplierButton = document.getElementById("buyEpMultiplier");
 
-const zeroDisplay =
-    document.getElementById("zero");
+const luckLevelDisplay = document.getElementById("luckLevel");
+const luckCostDisplay = document.getElementById("luckCost");
+const buyLuckButton = document.getElementById("buyLuck");
 
-const digitSumDisplay =
-    document.getElementById("digitSum");
+const numberFortuneLevelDisplay = document.getElementById("numberFortuneLevel");
+const numberFortuneCostDisplay = document.getElementById("numberFortuneCost");
+const buyNumberFortuneButton = document.getElementById("buyNumberFortune");
 
-const badgeContainer =
-    document.getElementById("badgeContainer");
+const doubleRollLevelDisplay = document.getElementById("doubleRollLevel");
+const doubleRollCostDisplay = document.getElementById("doubleRollCost");
+const buyDoubleRollButton = document.getElementById("buyDoubleRoll");
 
-const noBadges =
-    document.getElementById("noBadges");
+const secretThingLevelDisplay = document.getElementById("secretThingLevel");
+const secretThingDescriptionDisplay = document.getElementById("secretThingDescription");
+const secretThingCostDisplay = document.getElementById("secretThingCost");
+const buySecretThingButton = document.getElementById("buySecretThing");
 
-const totalRollsDisplay =
-    document.getElementById("totalRolls");
+// =========================================
+// HIDE SECRET LEVEL DISPLAY
+// =========================================
 
-const totalEPDisplay =
-    document.getElementById("totalEP");
-
-const bestRarityDisplay =
-    document.getElementById("bestRarity");
-
-const totalBadgesDisplay =
-    document.getElementById("totalBadges");
-
-const averageRollDisplay =
-    document.getElementById("averageRoll");
-
-const highestNumberDisplay =
-    document.getElementById("highestNumber");
-
-const dailyStreakDisplay =
-    document.getElementById("dailyStreak");
-
-const historyContainer =
-    document.getElementById("historyContainer");
-
-const noHistory =
-    document.getElementById("noHistory");
-
-const leaderboardContainer =
-    document.getElementById("leaderboardContainer");
-
-const noLeaderboard =
-    document.getElementById("noLeaderboard");
-
-const countdownDisplay =
-    document.getElementById("countdown");
-
-const dailyStatus =
-    document.getElementById("dailyStatus");
-
-const mythicEffect =
-    document.getElementById("mythicEffect");
+if (secretThingLevelDisplay) {
+    secretThingLevelDisplay.style.display = "none";
+}
 
 // =========================================
 // SETTINGS
@@ -106,7 +94,108 @@ const MAX_NUMBER = 1000000;
 const ROLL_DURATION = 1500;
 const ANIMATION_INTERVAL = 45;
 
-const ROLL_COOLDOWN = 10000;
+// Set To null For Normal Rarity
+// Set To "Mythic", "Chroma", Or "Secret" To Force That Rarity
+const FORCE_RARITY = null;
+
+// =========================================
+// BACKGROUND CUSTOMIZATION
+// =========================================
+
+const RANDOM_BACKGROUND_COST = 10000;
+const RESET_BACKGROUND_COST = 5000;
+
+let originalBackground = "";
+let backgroundCustomizationContainer = null;
+let backgroundCustomizationButton = null;
+
+// =========================================
+// SHOP UPGRADES
+// =========================================
+
+const SHOP_UPGRADES = {
+    rollSpeed: {
+        levels: [
+            10000, 9000, 8000, 7000, 6000,
+            5000, 4000, 3000, 2000, 1000
+        ],
+        costs: [
+            50000, 75000, 100000, 150000, 300000,
+            500000, 550000, 670000, 700000
+        ]
+    },
+
+    epMultiplier: {
+        levels: Array.from({ length: 100 }, (_, index) => index + 1),
+
+        costs: [
+            10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+            200, 300, 400, 500, 600, 700, 800, 900, 1000, 1000,
+            2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 10000,
+            14000, 18000, 22000, 26000, 30000, 34000, 38000, 42000, 46000, 50000,
+            55000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 95000, 100000,
+            105000, 110000, 115000, 120000, 125000, 130000, 135000, 140000, 145000, 150000,
+            152000, 154000, 156000, 158000, 160000, 162000, 164000, 166000, 168000, 170000,
+            183000, 196000, 209000, 222000, 235000, 248000, 261000, 274000, 287000, 300000,
+            320000, 340000, 360000, 380000, 400000, 420000, 440000, 460000, 480000, 500000,
+            1000000, 1000000, 1000000, 1000000, 1000000,
+            1000000, 1000000, 1000000, 1000000
+        ]
+    },
+
+    luck: {
+        levels: Array.from(
+            { length: 91 },
+            (_, index) => Number((1 + index * 0.1).toFixed(1))
+        ),
+
+        costs: [
+            10, 20, 30, 40, 50, 60, 70, 80, 90, 100,
+            200, 300, 400, 500, 600, 700, 800, 900, 1000, 1000,
+            2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000, 10000,
+            14000, 18000, 22000, 26000, 30000, 34000, 38000, 42000, 46000, 50000,
+            55000, 60000, 65000, 70000, 75000, 80000, 85000, 90000, 95000, 100000,
+            105000, 110000, 115000, 120000, 125000, 130000, 135000, 140000, 145000, 150000,
+            152000, 154000, 156000, 158000, 160000, 162000, 164000, 166000, 168000, 170000,
+            183000, 196000, 209000, 222000, 235000, 248000, 261000, 274000, 287000, 300000,
+            320000, 340000, 360000, 380000, 400000, 420000, 440000, 460000, 480000, 500000
+        ]
+    },
+
+    numberFortune: {
+        levels: [1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5],
+
+        costs: [
+            100000, 100000, 100000, 100000,
+            100000, 100000, 100000, 100000
+        ]
+    },
+
+    doubleRoll: {
+        levels: [
+            0, 1, 2, 3, 4, 5, 6, 7,
+            8, 9, 10, 11, 12, 13, 14, 15
+        ],
+
+        costs: [
+            15000, 30000, 50000, 100000, 150000,
+            150000, 150000, 300000, 350000, 500000,
+            500000, 500000, 500000, 500000, 500000
+        ]
+    },
+
+    secretThing: {
+        levels: [
+            1, 10, 100, 1000, 10000,
+            100000, 1000000, 10000000, 100000000
+        ],
+
+        costs: [
+            10, 100, 1000, 10000, 100000,
+            1000000, 10000000, 100000000
+        ]
+    }
+};
 
 // =========================================
 // RARITY
@@ -119,25 +208,21 @@ const RARITY_ORDER = [
     "Rare",
     "Epic",
     "Legendary",
-    "Mythic"
+    "Mythic",
+    "Chroma",
+    "Secret"
 ];
 
 const EP_VALUES = {
-
     Trash: 10,
-
     Common: 30,
-
     Uncommon: 50,
-
     Rare: 150,
-
     Epic: 500,
-
     Legendary: 3000,
-
-    Mythic: 15000
-
+    Mythic: 15000,
+    Chroma: 100000,
+    Secret: 700000
 };
 
 // =========================================
@@ -145,72 +230,115 @@ const EP_VALUES = {
 // =========================================
 
 let data = {
-
     totalRolls: 0,
-
     totalEP: 0,
-
     bestRarity: null,
-
     totalBadges: 0,
-
     totalRollValue: 0,
-
     highestNumber: 0,
-
     dailyStreak: 0,
-
     lastRoll: null,
+    lastRollDate: null,
 
     history: [],
-
     badges: [],
 
-    leaderboard: {
+    upgrades: {
+        rollSpeed: 0,
+        epMultiplier: 0,
+        luck: 0,
+        numberFortune: 0,
+        doubleRoll: 0,
+        secretThing: 0
+    },
 
-        ep: [],
-        rolls: [],
-        streak: [],
-        number: []
+    backgroundColor: null,
 
+    shrihanCodeUsed: false,
+    shrihanChromaReady: false
+};
+
+// =========================================
+// ROLL LOCK
+// =========================================
+
+let isRolling = false;
+
+// =========================================
+// SECRET CODE
+// =========================================
+
+let shrihanCodeBuffer = "";
+
+function activateShrihanCode() {
+    if (data.shrihanCodeUsed) {
+        return;
     }
 
-};
+    data.shrihanCodeUsed = true;
+    data.shrihanChromaReady = true;
+
+    saveData();
+
+    dailyStatus.textContent = "Shrihan Code Activated! Next Roll = Chroma!";
+}
+
+document.addEventListener("keydown", event => {
+    if (event.key.length !== 1) {
+        return;
+    }
+
+    const target = event.target;
+
+    if (
+        target &&
+        (
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable
+        )
+    ) {
+        return;
+    }
+
+    shrihanCodeBuffer += event.key;
+
+    if (shrihanCodeBuffer.length > 7) {
+        shrihanCodeBuffer = shrihanCodeBuffer.slice(-7);
+    }
+
+    if (shrihanCodeBuffer === "Shrihan") {
+        activateShrihanCode();
+        shrihanCodeBuffer = "";
+    }
+});
 
 // =========================================
 // LOAD DATA
 // =========================================
 
 function loadData() {
-
     try {
+        const saved = localStorage.getItem("rngdleData");
 
-        const saved =
-            localStorage.getItem(
-                "rngdleData"
-            );
-
-        if (saved) {
-
-            const parsed =
-                JSON.parse(saved);
-
-            data = {
-                ...data,
-                ...parsed
-            };
-
+        if (!saved) {
+            return;
         }
 
+        const parsed = JSON.parse(saved);
+
+        data = {
+            ...data,
+            ...parsed,
+
+            upgrades: {
+                ...data.upgrades,
+                ...(parsed.upgrades || {})
+            }
+        };
     } catch (error) {
-
-        console.error(
-            "Could not load RNGdle data:",
-            error
-        );
-
+        console.error("Could Not Load RNGdle Data:", error);
     }
-
 }
 
 // =========================================
@@ -218,12 +346,382 @@ function loadData() {
 // =========================================
 
 function saveData() {
+    localStorage.setItem("rngdleData", JSON.stringify(data));
+}
 
-    localStorage.setItem(
-        "rngdleData",
-        JSON.stringify(data)
+// =========================================
+// SHOP VALUES
+// =========================================
+
+function getUpgradeLevel(upgradeName) {
+    const upgrade = SHOP_UPGRADES[upgradeName];
+
+    return Math.max(
+        0,
+        Math.min(
+            data.upgrades[upgradeName] || 0,
+            upgrade.levels.length - 1
+        )
+    );
+}
+
+function getUpgradeValue(upgradeName) {
+    const upgrade = SHOP_UPGRADES[upgradeName];
+    const level = getUpgradeLevel(upgradeName);
+
+    return upgrade.levels[level];
+}
+
+function getUpgradeCost(upgradeName) {
+    const upgrade = SHOP_UPGRADES[upgradeName];
+    const level = getUpgradeLevel(upgradeName);
+
+    if (level >= upgrade.levels.length - 1) {
+        return null;
+    }
+
+    return upgrade.costs[level];
+}
+
+// =========================================
+// SHOP DISPLAY
+// =========================================
+
+function formatUpgradeValue(upgradeName, value) {
+    if (upgradeName === "rollSpeed") {
+        return `${value / 1000}s`;
+    }
+
+    if (upgradeName === "epMultiplier") {
+        return `${value}×`;
+    }
+
+    if (upgradeName === "luck") {
+        return `${Number(value.toFixed(1))}×`;
+    }
+
+    if (upgradeName === "numberFortune") {
+        return `${value}×`;
+    }
+
+    if (upgradeName === "doubleRoll") {
+        return `${value}%`;
+    }
+
+    if (upgradeName === "secretThing") {
+        if (value >= 1000000) {
+            return `${(value / 1000000).toLocaleString()}M`;
+        }
+
+        if (value >= 1000) {
+            return `${(value / 1000).toLocaleString()}K`;
+        }
+
+        return value.toLocaleString();
+    }
+
+    return value;
+}
+
+// =========================================
+// SHOP DISPLAY HELPER
+// =========================================
+
+function updateShopUpgrade(upgradeName, levelDisplay, costDisplay, buyButton) {
+    if (!levelDisplay || !costDisplay || !buyButton) {
+        return;
+    }
+
+    const value = getUpgradeValue(upgradeName);
+    const cost = getUpgradeCost(upgradeName);
+
+    levelDisplay.textContent = formatUpgradeValue(upgradeName, value);
+
+    if (cost === null) {
+        costDisplay.textContent = "MAXED";
+        buyButton.textContent = "MAXED";
+        buyButton.disabled = true;
+        return;
+    }
+
+    costDisplay.textContent = `Cost: ${cost.toLocaleString()} EP`;
+    buyButton.textContent = data.totalEP >= cost ? "Buy" : "Not Enough EP";
+    buyButton.disabled = data.totalEP < cost;
+}
+
+// =========================================
+// UPDATE SHOP
+// =========================================
+
+function updateShop() {
+    shopEPDisplay.textContent = data.totalEP.toLocaleString();
+
+    updateShopUpgrade(
+        "rollSpeed",
+        rollSpeedLevelDisplay,
+        rollSpeedCostDisplay,
+        buyRollSpeedButton
     );
 
+    updateShopUpgrade(
+        "epMultiplier",
+        epMultiplierLevelDisplay,
+        epMultiplierCostDisplay,
+        buyEpMultiplierButton
+    );
+
+    updateShopUpgrade(
+        "luck",
+        luckLevelDisplay,
+        luckCostDisplay,
+        buyLuckButton
+    );
+
+    updateShopUpgrade(
+        "numberFortune",
+        numberFortuneLevelDisplay,
+        numberFortuneCostDisplay,
+        buyNumberFortuneButton
+    );
+
+    updateShopUpgrade(
+        "doubleRoll",
+        doubleRollLevelDisplay,
+        doubleRollCostDisplay,
+        buyDoubleRollButton
+    );
+
+    updateShopUpgrade(
+        "secretThing",
+        secretThingLevelDisplay,
+        secretThingCostDisplay,
+        buySecretThingButton
+    );
+
+    if (secretThingDescriptionDisplay) {
+        const secretLevel = getUpgradeLevel("secretThing");
+        const secretMaxLevel = SHOP_UPGRADES.secretThing.levels.length - 1;
+
+        if (secretLevel >= secretMaxLevel) {
+            secretThingDescriptionDisplay.textContent = "0.1% Chance To Get Secret";
+        } else {
+            secretThingDescriptionDisplay.textContent = "Does Absolutely Nothing... Yet.";
+        }
+    }
+}
+
+// =========================================
+// BUY UPGRADE
+// =========================================
+
+function buyUpgrade(upgradeName) {
+    const cost = getUpgradeCost(upgradeName);
+
+    if (cost === null) {
+        return;
+    }
+
+    if (data.totalEP < cost) {
+        return;
+    }
+
+    data.totalEP -= cost;
+    data.upgrades[upgradeName]++;
+
+    saveData();
+
+    updateStats();
+    updateShop();
+}
+
+// =========================================
+// SHOP BUTTONS
+// =========================================
+
+if (buyRollSpeedButton) {
+    buyRollSpeedButton.addEventListener("click", () => {
+        buyUpgrade("rollSpeed");
+    });
+}
+
+if (buyEpMultiplierButton) {
+    buyEpMultiplierButton.addEventListener("click", () => {
+        buyUpgrade("epMultiplier");
+    });
+}
+
+if (buyLuckButton) {
+    buyLuckButton.addEventListener("click", () => {
+        buyUpgrade("luck");
+    });
+}
+
+if (buyNumberFortuneButton) {
+    buyNumberFortuneButton.addEventListener("click", () => {
+        buyUpgrade("numberFortune");
+    });
+}
+
+if (buyDoubleRollButton) {
+    buyDoubleRollButton.addEventListener("click", () => {
+        buyUpgrade("doubleRoll");
+    });
+}
+
+if (buySecretThingButton) {
+    buySecretThingButton.addEventListener("click", () => {
+        buyUpgrade("secretThing");
+    });
+}
+
+// =========================================
+// BACKGROUND CUSTOMIZATION
+// =========================================
+
+function generateRandomBackground() {
+    const hue = Math.floor(Math.random() * 360);
+    const saturation = Math.floor(Math.random() * 35) + 55;
+    const lightness = Math.floor(Math.random() * 20) + 10;
+
+    return `hsl(${hue}, ${saturation}%, ${lightness}%)`;
+}
+
+// =========================================
+// APPLY BACKGROUND
+// =========================================
+
+function applyBackground() {
+    if (data.backgroundColor) {
+        document.body.style.background = data.backgroundColor;
+        return;
+    }
+
+    document.body.style.background = originalBackground;
+}
+
+// =========================================
+// UPDATE BACKGROUND BUTTON
+// =========================================
+
+function updateBackgroundButton() {
+    if (!backgroundCustomizationButton) {
+        return;
+    }
+
+    if (data.backgroundColor) {
+        backgroundCustomizationButton.textContent = `↩️ Reset Background — ${RESET_BACKGROUND_COST.toLocaleString()} EP`;
+        backgroundCustomizationButton.disabled = data.totalEP < RESET_BACKGROUND_COST;
+    } else {
+        backgroundCustomizationButton.textContent = `🎨 Randomize Background — ${RANDOM_BACKGROUND_COST.toLocaleString()} EP`;
+        backgroundCustomizationButton.disabled = data.totalEP < RANDOM_BACKGROUND_COST;
+    }
+}
+
+// =========================================
+// BACKGROUND BUTTON ACTION
+// =========================================
+
+function handleBackgroundButton() {
+    if (data.backgroundColor) {
+        if (data.totalEP < RESET_BACKGROUND_COST) {
+            return;
+        }
+
+        data.totalEP -= RESET_BACKGROUND_COST;
+        data.backgroundColor = null;
+
+        applyBackground();
+
+        saveData();
+
+        updateStats();
+        updateShop();
+        updateBackgroundButton();
+
+        return;
+    }
+
+    if (data.totalEP < RANDOM_BACKGROUND_COST) {
+        return;
+    }
+
+    data.totalEP -= RANDOM_BACKGROUND_COST;
+    data.backgroundColor = generateRandomBackground();
+
+    applyBackground();
+
+    saveData();
+
+    updateStats();
+    updateShop();
+    updateBackgroundButton();
+}
+
+// =========================================
+// CREATE BACKGROUND BUTTON
+// =========================================
+
+function createBackgroundButton() {
+    if (backgroundCustomizationContainer) {
+        return;
+    }
+
+    backgroundCustomizationContainer = document.createElement("div");
+    backgroundCustomizationContainer.id = "backgroundCustomization";
+
+    backgroundCustomizationContainer.style.width = "100%";
+    backgroundCustomizationContainer.style.display = "flex";
+    backgroundCustomizationContainer.style.justifyContent = "center";
+    backgroundCustomizationContainer.style.alignItems = "center";
+    backgroundCustomizationContainer.style.marginTop = "40px";
+    backgroundCustomizationContainer.style.marginBottom = "30px";
+    backgroundCustomizationContainer.style.background = "transparent";
+
+    backgroundCustomizationButton = document.createElement("button");
+    backgroundCustomizationButton.id = "backgroundCustomizationButton";
+    backgroundCustomizationButton.type = "button";
+
+    backgroundCustomizationButton.style.background = "rgba(255, 255, 255, 0.08)";
+    backgroundCustomizationButton.style.backdropFilter = "blur(8px)";
+    backgroundCustomizationButton.style.webkitBackdropFilter = "blur(8px)";
+    backgroundCustomizationButton.style.border = "1px solid rgba(255, 255, 255, 0.18)";
+    backgroundCustomizationButton.style.color = "inherit";
+    backgroundCustomizationButton.style.padding = "10px 18px";
+    backgroundCustomizationButton.style.borderRadius = "10px";
+    backgroundCustomizationButton.style.cursor = "pointer";
+    backgroundCustomizationButton.style.opacity = "0.8";
+    backgroundCustomizationButton.style.transition = "all 0.2s ease";
+
+    backgroundCustomizationButton.addEventListener("mouseenter", () => {
+        if (!backgroundCustomizationButton.disabled) {
+            backgroundCustomizationButton.style.opacity = "1";
+            backgroundCustomizationButton.style.background = "rgba(255, 255, 255, 0.14)";
+        }
+    });
+
+    backgroundCustomizationButton.addEventListener("mouseleave", () => {
+        backgroundCustomizationButton.style.opacity = "0.8";
+        backgroundCustomizationButton.style.background = "rgba(255, 255, 255, 0.08)";
+    });
+
+    backgroundCustomizationButton.addEventListener("click", handleBackgroundButton);
+
+    backgroundCustomizationContainer.appendChild(backgroundCustomizationButton);
+    document.body.appendChild(backgroundCustomizationContainer);
+
+    updateBackgroundButton();
+}
+
+// =========================================
+// INITIALIZE BACKGROUND CUSTOMIZATION
+// =========================================
+
+function initializeBackgroundCustomization() {
+    originalBackground = document.body.style.background;
+
+    applyBackground();
+    createBackgroundButton();
+    updateBackgroundButton();
 }
 
 // =========================================
@@ -231,12 +729,160 @@ function saveData() {
 // =========================================
 
 function randomNumber() {
+    const fortune = getUpgradeValue("numberFortune");
+
+    if (fortune <= 1) {
+        return Math.floor(
+            Math.random() * (MAX_NUMBER - MIN_NUMBER + 1)
+        ) + MIN_NUMBER;
+    }
+
+    const random = Math.pow(Math.random(), 1 / fortune);
 
     return Math.floor(
-        Math.random() *
-        (MAX_NUMBER - MIN_NUMBER + 1)
+        random * (MAX_NUMBER - MIN_NUMBER + 1)
     ) + MIN_NUMBER;
+}
 
+// =========================================
+// RARITY-BASED NUMBER GENERATOR
+// =========================================
+
+function generateRarityNumber(rarity) {
+    const mythicNumbers = [
+    482848, 731137, 590095, 264462, 817718,
+    392293, 640046, 758857, 481184, 926629,
+    374473, 615516, 842248, 537735, 294492,
+    516615, 683386, 729927, 451154, 836638,
+    274472, 593395, 718817, 462264, 935539,
+    381183, 627726, 849948, 253352, 716617,
+    438834, 591195, 827728, 364463, 952259,
+    471174, 638836, 285582, 743347, 819918,
+    526625, 694496, 357753, 914419, 682286,
+    463364, 728827, 351153, 847748
+    ];
+
+    const chromaNumbers = [
+        500500, 700700, 800800, 900900, 505050,
+        707070, 808080, 909090, 550055, 660066,
+        770077, 880088, 990099, 121212, 232323,
+        343434, 454545, 565656, 676767, 787878,
+        898989, 101010, 202020, 303030, 404040,
+        606060, 707070, 808080, 909090, 112233,
+        223344, 334455, 445566, 556677, 667788,
+        778899, 122221, 233332, 344443, 455554,
+        500500, 881122, 188889, 727272, 454545,
+        818181, 909090, 330033, 550055, 770077,
+        212121, 343434, 565656, 676767, 787878,
+        898989, 112233, 223344, 334455, 445566,
+        556677, 667788, 778899, 990099, 100001,
+        200002, 300003, 400004, 600006, 700007,
+        800008, 900009, 121212, 232323, 454545,
+        565656, 676767, 787878, 898989, 909009,
+        808080, 707070, 606060, 505050, 404040,
+        303030, 202020, 101010, 111222, 222333,
+        333444, 444555, 555666, 666777, 777888,
+        888999, 999888, 888777, 777666, 666555,
+        555444, 444333, 333222, 222111, 123321,
+        234432, 345543, 456654, 567765, 678876,
+        789987, 900009, 800008, 700007, 600006,
+        500005, 400004, 300003, 200002, 110011,
+        220022, 330033, 440044, 550055, 660066,
+        770077, 880088, 990099, 122221, 233332,
+        344443, 455554, 566665, 677776, 788887,
+        899998, 211112, 322223, 433334, 544445,
+        655556, 766667, 877778, 988889, 135531,
+        246642, 357753, 468864, 579975, 680086,
+        791197, 802208, 913319, 124421, 235532,
+        346643, 457754, 568865, 679976, 780087,
+        891198, 902209, 112211, 223322, 334433,
+        445544, 556655, 667766, 778877, 889988,
+        998899, 119911, 229922, 339933, 449944,
+        559955, 669966, 779977, 889988, 991199,
+        181818, 292929, 393939, 494949, 595959,
+        696969, 797979, 898989, 919191, 828282,
+        737373, 646464, 575757, 484848, 393939,
+        282828, 171717, 161616, 252525, 363636,
+        474747, 585858, 696969, 797979, 898989,
+        909090
+    ];
+
+    const secretNumbers = [
+        "111111", "222222", "333333", "444444",
+        "555555", "666666", "777777", "888888",
+        "999999", "000000",
+
+        "123456", "654321", "123123", "321321",
+        "121212", "212121",
+
+        "100000", "200000", "300000", "400000",
+        "500000", "600000", "700000", "800000",
+        "900000",
+
+        "000001", "000010", "000100", "001000",
+        "010000", "100000",
+
+        "999998", "999989", "999899", "998999",
+        "989999", "899999",
+
+        "100001", "200002", "300003", "400004",
+        "500005", "600006", "700007", "800008",
+        "900009",
+
+        "111112", "222223", "333334", "444445",
+        "555556", "666667", "777778", "888889",
+        "999990",
+
+        "101101", "202202", "303303", "404404",
+        "505505", "606606", "707707", "808808",
+        "909909",
+
+        "010010", "020020", "030030", "040040",
+        "050050", "060060", "070070", "080080",
+        "090090",
+
+        "110110", "220220", "330330", "440440",
+        "550550", "660660", "770770", "880880",
+        "990990",
+
+        "909090", "808080", "707070", "606060",
+        "505050", "404040", "303030", "202020",
+        "101010"
+    ];
+
+    if (rarity === "Mythic") {
+        return mythicNumbers[
+            Math.floor(Math.random() * mythicNumbers.length)
+        ];
+    }
+
+    if (rarity === "Chroma") {
+        return chromaNumbers[
+            Math.floor(Math.random() * chromaNumbers.length)
+        ];
+    }
+
+    if (rarity === "Secret") {
+        return secretNumbers[
+            Math.floor(Math.random() * secretNumbers.length)
+        ];
+    }
+
+    return null;
+}
+
+// =========================================
+// FINAL NUMBER
+// =========================================
+
+function getFinalRollNumber(rarity, originalNumber) {
+    const rarityNumber = generateRarityNumber(rarity);
+
+    if (rarityNumber !== null) {
+        return rarityNumber;
+    }
+
+    return originalNumber;
 }
 
 // =========================================
@@ -244,11 +890,7 @@ function randomNumber() {
 // =========================================
 
 function formatNumber(number) {
-
-    return number
-        .toString()
-        .padStart(6, "0");
-
+    return number.toString().padStart(6, "0");
 }
 
 // =========================================
@@ -256,11 +898,7 @@ function formatNumber(number) {
 // =========================================
 
 function getDigits(number) {
-
-    return formatNumber(number)
-        .split("")
-        .map(Number);
-
+    return formatNumber(number).split("").map(Number);
 }
 
 // =========================================
@@ -268,14 +906,10 @@ function getDigits(number) {
 // =========================================
 
 function getDigitSum(number) {
-
-    return getDigits(number)
-        .reduce(
-            (sum, digit) =>
-                sum + digit,
-            0
-        );
-
+    return getDigits(number).reduce(
+        (sum, digit) => sum + digit,
+        0
+    );
 }
 
 // =========================================
@@ -283,15 +917,9 @@ function getDigitSum(number) {
 // =========================================
 
 function isPalindrome(number) {
+    const digits = formatNumber(number);
 
-    const digits =
-        formatNumber(number);
-
-    return (
-        digits ===
-        digits.split("").reverse().join("")
-    );
-
+    return digits === digits.split("").reverse().join("");
 }
 
 // =========================================
@@ -299,7 +927,6 @@ function isPalindrome(number) {
 // =========================================
 
 function isPrime(number) {
-
     if (number < 2) {
         return false;
     }
@@ -312,20 +939,13 @@ function isPrime(number) {
         return false;
     }
 
-    for (
-        let i = 3;
-        i * i <= number;
-        i += 2
-    ) {
-
+    for (let i = 3; i * i <= number; i += 2) {
         if (number % i === 0) {
             return false;
         }
-
     }
 
     return true;
-
 }
 
 // =========================================
@@ -333,13 +953,9 @@ function isPrime(number) {
 // =========================================
 
 function hasRepeatingDigits(number) {
+    const digits = getDigits(number);
 
-    const digits =
-        getDigits(number);
-
-    return new Set(digits).size <
-        digits.length;
-
+    return new Set(digits).size < digits.length;
 }
 
 // =========================================
@@ -347,29 +963,15 @@ function hasRepeatingDigits(number) {
 // =========================================
 
 function isAscending(number) {
+    const digits = getDigits(number);
 
-    const digits =
-        getDigits(number);
-
-    for (
-        let i = 1;
-        i < digits.length;
-        i++
-    ) {
-
-        if (
-            digits[i] <
-            digits[i - 1]
-        ) {
-
+    for (let i = 1; i < digits.length; i++) {
+        if (digits[i] < digits[i - 1]) {
             return false;
-
         }
-
     }
 
     return true;
-
 }
 
 // =========================================
@@ -377,29 +979,15 @@ function isAscending(number) {
 // =========================================
 
 function isDescending(number) {
+    const digits = getDigits(number);
 
-    const digits =
-        getDigits(number);
-
-    for (
-        let i = 1;
-        i < digits.length;
-        i++
-    ) {
-
-        if (
-            digits[i] >
-            digits[i - 1]
-        ) {
-
+    for (let i = 1; i < digits.length; i++) {
+        if (digits[i] > digits[i - 1]) {
             return false;
-
         }
-
     }
 
     return true;
-
 }
 
 // =========================================
@@ -407,15 +995,9 @@ function isDescending(number) {
 // =========================================
 
 function isAllSame(number) {
+    const digits = getDigits(number);
 
-    const digits =
-        getDigits(number);
-
-    return digits.every(
-        digit =>
-            digit === digits[0]
-    );
-
+    return digits.every(digit => digit === digits[0]);
 }
 
 // =========================================
@@ -423,12 +1005,7 @@ function isAllSame(number) {
 // =========================================
 
 function isPowerOfTwo(number) {
-
-    return (
-        number > 0 &&
-        (number & (number - 1)) === 0
-    );
-
+    return number > 0 && (number & (number - 1)) === 0;
 }
 
 // =========================================
@@ -436,25 +1013,16 @@ function isPowerOfTwo(number) {
 // =========================================
 
 function isPerfectSquare(number) {
-
-    const root =
-        Math.sqrt(number);
+    const root = Math.sqrt(number);
 
     return Number.isInteger(root);
-
 }
 
 function isFibonacci(number) {
-
     return (
-        isPerfectSquare(
-            5 * number * number + 4
-        ) ||
-        isPerfectSquare(
-            5 * number * number - 4
-        )
+        isPerfectSquare(5 * number * number + 4) ||
+        isPerfectSquare(5 * number * number - 4)
     );
-
 }
 
 // =========================================
@@ -462,17 +1030,11 @@ function isFibonacci(number) {
 // =========================================
 
 function isMersennePrime(number) {
-
     if (!isPrime(number)) {
         return false;
     }
 
-    return (
-        number > 1 &&
-        ((number + 1) &
-            number) === 0
-    );
-
+    return number > 1 && ((number + 1) & number) === 0;
 }
 
 // =========================================
@@ -480,146 +1042,23 @@ function isMersennePrime(number) {
 // =========================================
 
 function isTriplePattern(number) {
-
-    const digits =
-        formatNumber(number);
+    const digits = formatNumber(number);
 
     return (
         digits[0] === digits[1] &&
         digits[2] === digits[3] &&
         digits[4] === digits[5]
     );
-
 }
 
 function isAABBCC(number) {
-
-    const digits =
-        formatNumber(number);
+    const digits = formatNumber(number);
 
     return (
         digits[0] === digits[1] &&
         digits[2] === digits[3] &&
         digits[4] === digits[5]
     );
-
-}
-
-// =========================================
-// CONSECUTIVE REPEATED DIGITS
-// =========================================
-
-function getLongestRepeatedDigitRun(number) {
-
-    const digits =
-        getDigits(number);
-
-    let longestRun = 1;
-    let currentRun = 1;
-
-    for (
-        let i = 1;
-        i < digits.length;
-        i++
-    ) {
-
-        if (
-            digits[i] ===
-            digits[i - 1]
-        ) {
-
-            currentRun++;
-
-            longestRun =
-                Math.max(
-                    longestRun,
-                    currentRun
-                );
-
-        } else {
-
-            currentRun = 1;
-
-        }
-
-    }
-
-    return longestRun;
-
-}
-
-// =========================================
-// ANYWHERE DIGIT COUNTS
-// =========================================
-
-function getHighestDigitCount(number) {
-
-    const digits =
-        getDigits(number);
-
-    const counts = {};
-
-    digits.forEach(
-        digit => {
-
-            counts[digit] =
-                (counts[digit] || 0) + 1;
-
-        }
-    );
-
-    return Math.max(
-        ...Object.values(counts)
-    );
-
-}
-
-// =========================================
-// MINIMUM RARITY FROM DIGITS
-// =========================================
-
-function getPatternMinimumRarity(number) {
-
-    const longestRun =
-        getLongestRepeatedDigitRun(number);
-
-    const highestDigitCount =
-        getHighestDigitCount(number);
-
-    // 4+ consecutive identical digits
-    // = MYTHIC
-    if (longestRun >= 4) {
-
-        return "Mythic";
-
-    }
-
-    // 4 identical digits anywhere
-    // = LEGENDARY
-    if (highestDigitCount >= 4) {
-
-        return "Legendary";
-
-    }
-
-    // 3 consecutive identical digits
-    // = LEGENDARY
-    if (longestRun >= 3) {
-
-        return "Legendary";
-
-    }
-
-    // 2 consecutive identical digits
-    // = EPIC
-    if (longestRun >= 2) {
-
-        return "Epic";
-
-    }
-
-    return null;
-
 }
 
 // =========================================
@@ -627,157 +1066,221 @@ function getPatternMinimumRarity(number) {
 // =========================================
 
 function isSelfDescriptive(number) {
+    const digits = getDigits(number);
 
-    const digits =
-        getDigits(number);
-
-    for (
-        let i = 0;
-        i < digits.length;
-        i++
-    ) {
-
+    for (let i = 0; i < digits.length; i++) {
         let count = 0;
 
-        for (
-            let j = 0;
-            j < digits.length;
-            j++
-        ) {
-
-            if (
-                digits[j] === i
-            ) {
-
+        for (let j = 0; j < digits.length; j++) {
+            if (digits[j] === i) {
                 count++;
-
             }
-
         }
 
-        if (
-            count !== digits[i]
-        ) {
-
+        if (digits[i] !== count) {
             return false;
-
         }
-
     }
 
     return true;
-
 }
 
 // =========================================
-// SPECIAL NUMBER DETECTION
+// CONSECUTIVE REPEATED DIGITS
 // =========================================
 
-function getSpecialNumberBonus(number) {
+function getLongestRepeatedDigitRun(number) {
+    const digits = getDigits(number);
 
-    let bonus = 0;
+    let longestRun = 1;
+    let currentRun = 1;
 
-    const ultraSpecialNumbers = [
+    for (let i = 1; i < digits.length; i++) {
+        if (digits[i] === digits[i - 1]) {
+            currentRun++;
 
-        1,
-        7,
-        42,
-        69,
-        100,
-        111,
-        123,
-        123456,
-        654321,
-        777,
-        777777,
-        999,
-        999999,
-        100000
+            longestRun = Math.max(
+                longestRun,
+                currentRun
+            );
+        } else {
+            currentRun = 1;
+        }
+    }
 
+    return longestRun;
+}
+
+// =========================================
+// ANYWHERE DIGIT COUNTS
+// =========================================
+
+function getDigitCounts(number) {
+    const digits = getDigits(number);
+    const counts = {};
+
+    digits.forEach(digit => {
+        counts[digit] = (counts[digit] || 0) + 1;
+    });
+
+    return counts;
+}
+
+function getHighestDigitCount(number) {
+    const counts = getDigitCounts(number);
+
+    return Math.max(...Object.values(counts));
+}
+
+// =========================================
+// TWO PAIRS
+// =========================================
+
+function hasTwoPairs(number) {
+    const counts = getDigitCounts(number);
+
+    const pairs = Object.values(counts).filter(
+        count => count >= 2
+    );
+
+    return pairs.length >= 2;
+}
+
+// =========================================
+// RANDOM FALLBACK RARITY
+// =========================================
+
+function getRandomFallbackRarity() {
+    const luck = getUpgradeValue("luck");
+
+    const baseWeights = [
+        {
+            rarity: "Trash",
+            weight: 40
+        },
+        {
+            rarity: "Common",
+            weight: 30
+        },
+        {
+            rarity: "Rare",
+            weight: 20
+        },
+        {
+            rarity: "Epic",
+            weight: 10
+        },
+        {
+            rarity: "Legendary",
+            weight: 5
+        },
+        {
+            rarity: "Mythic",
+            weight: 1
+        },
+        {
+            rarity: "Chroma",
+            weight: 0.1
+        }
     ];
 
-    if (
-        ultraSpecialNumbers.includes(number)
-    ) {
+    const weights = baseWeights.map((item, index) => {
+        if (index <= 1) {
+            return {
+                ...item,
+                weight: item.weight / Math.max(1, luck)
+            };
+        }
 
-        bonus += 100;
+        return {
+            ...item,
+            weight: item.weight * Math.pow(luck, index / 2)
+        };
+    });
 
+    const totalWeight = weights.reduce(
+        (sum, item) => sum + item.weight,
+        0
+    );
+
+    let roll = Math.random() * totalWeight;
+
+    for (const item of weights) {
+        roll -= item.weight;
+
+        if (roll <= 0) {
+            return item.rarity;
+        }
+    }
+
+    return "Trash";
+}
+
+// =========================================
+// DETERMINE NATURAL PATTERN RARITY
+// =========================================
+
+function getNaturalPatternRarity(number) {
+    const longestRun = getLongestRepeatedDigitRun(number);
+    const highestDigitCount = getHighestDigitCount(number);
+    const twoPairs = hasTwoPairs(number);
+    const formatted = formatNumber(number);
+    const badgeCount = data.badges.length;
+
+    if (longestRun >= 5) {
+        return "Chroma";
+    }
+
+    if (number >= 999000) {
+        return "Chroma";
+    }
+
+    if (badgeCount >= 14 && number >= 900000) {
+        return "Chroma";
     }
 
     if (
-        isPalindrome(number)
+        formatted === "123456" ||
+        formatted === "654321"
     ) {
-
-        bonus += 12;
-
+        return "Mythic";
     }
 
     if (
-        isAllSame(number)
+        longestRun >= 4 &&
+        number >= 900000
     ) {
-
-        bonus += 25;
-
+        return "Mythic";
     }
 
     if (
-        isTriplePattern(number)
+        badgeCount >= 10 &&
+        number >= 800000
     ) {
-
-        bonus += 18;
-
+        return "Mythic";
     }
 
-    if (
-        isAscending(number)
-    ) {
-
-        bonus += 12;
-
+    if (longestRun === 4) {
+        return "Legendary";
     }
 
-    if (
-        isDescending(number)
-    ) {
-
-        bonus += 12;
-
+    if (highestDigitCount >= 4) {
+        return "Epic";
     }
 
-    if (
-        hasRepeatingDigits(number)
-    ) {
-
-        bonus += 5;
-
+    if (twoPairs) {
+        return "Epic";
     }
 
-    if (
-        isPowerOfTwo(number)
-    ) {
-
-        bonus += 8;
-
+    if (highestDigitCount >= 3) {
+        return "Epic";
     }
 
-    if (
-        isFibonacci(number)
-    ) {
-
-        bonus += 7;
-
+    if (longestRun === 2) {
+        return "Rare";
     }
 
-    if (
-        isMersennePrime(number)
-    ) {
-
-        bonus += 20;
-
-    }
-
-    return bonus;
-
+    return "Common";
 }
 
 // =========================================
@@ -785,107 +1288,86 @@ function getSpecialNumberBonus(number) {
 // =========================================
 
 function determineRarity(number) {
+    const secretThingLevel = getUpgradeLevel("secretThing");
 
-    const numberPercent =
-        number / MAX_NUMBER;
-
-    const numberScore =
-        numberPercent * 85;
-
-    const specialBonus =
-        getSpecialNumberBonus(number);
-
-    const randomBonus =
-        Math.random() * 15;
-
-    const score =
-        numberScore +
-        specialBonus +
-        randomBonus;
-
-    let rarity;
-
-    if (score >= 99.9) {
-
-        rarity = "Mythic";
-
-    } else if (score >= 97) {
-
-        rarity = "Legendary";
-
-    } else if (score >= 90) {
-
-        rarity = "Epic";
-
-    } else if (score >= 78) {
-
-        rarity = "Rare";
-
-    } else if (score >= 60) {
-
-        rarity = "Uncommon";
-
-    } else if (score >= 35) {
-
-        rarity = "Common";
-
-    } else {
-
-        rarity = "Trash";
-
-    }
-
-    // =====================================
-    // PATTERN MINIMUM
-    // =====================================
-
-    const patternMinimum =
-        getPatternMinimumRarity(number);
+    const secretThingMaxed =
+        secretThingLevel >=
+        SHOP_UPGRADES.secretThing.levels.length - 1;
 
     if (
-        patternMinimum
+        secretThingMaxed &&
+        Math.random() < 0.001
     ) {
-
-        const currentIndex =
-            RARITY_ORDER.indexOf(
-                rarity
-            );
-
-        const minimumIndex =
-            RARITY_ORDER.indexOf(
-                patternMinimum
-            );
-
-        if (
-            minimumIndex >
-            currentIndex
-        ) {
-
-            rarity =
-                patternMinimum;
-
-        }
-
+        return "Secret";
     }
 
-    // =====================================
-    // PERFECT ASCENDING / DESCENDING
-    // =====================================
+    const longestRun = getLongestRepeatedDigitRun(number);
+    const highestDigitCount = getHighestDigitCount(number);
+    const twoPairs = hasTwoPairs(number);
+    const formatted = formatNumber(number);
+    const badgeCount = data.badges.length;
 
-    const formatted =
-        formatNumber(number);
+    if (longestRun >= 5) {
+        return "Chroma";
+    }
+
+    if (number >= 999000) {
+        return "Chroma";
+    }
+
+    if (
+        badgeCount >= 14 &&
+        number >= 900000
+    ) {
+        return "Chroma";
+    }
 
     if (
         formatted === "123456" ||
         formatted === "654321"
     ) {
-
-        rarity = "Mythic";
-
+        return "Mythic";
     }
 
-    return rarity;
+    if (
+        longestRun >= 4 &&
+        number >= 900000
+    ) {
+        return "Mythic";
+    }
 
+    if (
+        badgeCount >= 10 &&
+        number >= 800000
+    ) {
+        return "Mythic";
+    }
+
+    if (longestRun === 4) {
+        return "Mythic";
+    }
+
+    if (longestRun === 3) {
+    return Math.random() < 0.90 ? "Legendary" : "Epic";
+    }
+
+    if (highestDigitCount >= 4) {
+        return "Epic";
+    }
+
+    if (twoPairs) {
+        return "Epic";
+    }
+
+    if (highestDigitCount >= 3) {
+        return "Epic";
+    }
+
+    if (longestRun === 2) {
+    return Math.random() < 0.70 ? "Rare" : "Epic";
+    }
+
+    return getRandomFallbackRarity();
 }
 
 // =========================================
@@ -893,249 +1375,325 @@ function determineRarity(number) {
 // =========================================
 
 const BADGES = [
-
     {
         name: "First Roll",
         description: "Roll Your First Number",
         rarity: "Common",
-        check: () =>
-            data.totalRolls >= 1
+        check: (number, rarity, rollNumber) => rollNumber === 1
     },
 
     {
         name: "Double Digits",
         description: "Roll Two Of The Same Digit In A Row",
-        rarity: "Epic",
-        check: number =>
-            getLongestRepeatedDigitRun(number) >= 2
+        rarity: "Rare",
+        check: number => getLongestRepeatedDigitRun(number) >= 2
     },
 
     {
         name: "Triple Digits",
         description: "Roll Three Of The Same Digit In A Row",
-        rarity: "Legendary",
-        check: number =>
-            getLongestRepeatedDigitRun(number) >= 3
+        rarity: "Epic",
+        check: number => getLongestRepeatedDigitRun(number) >= 3
     },
 
     {
         name: "Four Of A Kind",
         description: "Roll Four Of The Same Digit Anywhere",
-        rarity: "Legendary",
-        check: number =>
-            getHighestDigitCount(number) >= 4
+        rarity: "Epic",
+        check: number => getHighestDigitCount(number) >= 4
     },
 
     {
         name: "Quad Digits",
         description: "Roll Four Of The Same Digit In A Row",
-        rarity: "Mythic",
-        check: number =>
-            getLongestRepeatedDigitRun(number) >= 4
+        rarity: "Legendary",
+        check: number => getLongestRepeatedDigitRun(number) >= 4
     },
 
     {
         name: "Six Of A Kind",
         description: "Roll Six Of The Same Digit",
         rarity: "Mythic",
-        check: number =>
-            getHighestDigitCount(number) >= 6
+        check: number => getHighestDigitCount(number) >= 6
     },
 
     {
         name: "Palindrome",
         description: "Roll A Palindrome",
         rarity: "Uncommon",
-        check: number =>
-            isPalindrome(number)
+        check: number => isPalindrome(number)
     },
 
     {
         name: "Prime Hunter",
         description: "Roll A Prime Number",
         rarity: "Rare",
-        check: number =>
-            isPrime(number)
+        check: number => isPrime(number)
     },
 
     {
         name: "Pattern Master",
         description: "Roll A Triple Pattern",
         rarity: "Epic",
-        check: number =>
-            isTriplePattern(number)
+        check: number => isTriplePattern(number)
     },
 
     {
         name: "Fibonacci",
         description: "Roll A Fibonacci Number",
         rarity: "Epic",
-        check: number =>
-            isFibonacci(number)
+        check: number => isFibonacci(number)
     },
 
     {
         name: "Power Surge",
         description: "Roll A Power Of Two",
         rarity: "Rare",
-        check: number =>
-            isPowerOfTwo(number)
+        check: number => isPowerOfTwo(number)
     },
 
     {
         name: "Mersenne",
         description: "Roll A Mersenne Prime",
         rarity: "Legendary",
-        check: number =>
-            isMersennePrime(number)
+        check: number => isMersennePrime(number)
     },
 
     {
         name: "Perfect Number",
         description: "Roll A Number With A Perfect Digit Pattern",
         rarity: "Legendary",
-        check: number =>
-            isAABBCC(number)
+        check: number => isAABBCC(number)
     },
 
     {
         name: "Self Descriptive",
         description: "Roll A Self Descriptive Number",
         rarity: "Legendary",
-        check: number =>
-            isSelfDescriptive(number)
+        check: number => isSelfDescriptive(number)
     },
 
     {
         name: "Ascending",
         description: "Roll A Perfectly Ascending Number",
         rarity: "Mythic",
-        check: number =>
-            formatNumber(number) === "123456"
+        check: number => formatNumber(number) === "123456"
     },
 
     {
         name: "Descending",
         description: "Roll A Perfectly Descending Number",
         rarity: "Mythic",
-        check: number =>
-            formatNumber(number) === "654321"
+        check: number => formatNumber(number) === "654321"
     },
 
     {
-        name: "THE IMPOSSIBLE ROLL",
-        description: "Roll A MYTHIC",
+        name: "The Impossible Roll",
+        description: "Roll A Mythic",
         rarity: "Mythic",
-        check: (number, rarity) =>
-            rarity === "Mythic"
-    }
+        check: (number, rarity) => rarity === "Mythic"
+    },
 
+    {
+        name: "Chroma",
+        description: "Roll A Chroma",
+        rarity: "Chroma",
+        check: (number, rarity) => rarity === "Chroma"
+    },
+
+    {
+        name: "Secret",
+        description: "Get A Secret",
+        rarity: "Secret",
+        check: (number, rarity) => rarity === "Secret"
+    },
+
+    {
+        name: "Six-Seven",
+        description: "Your Roll Contains 67 Together Somewhere",
+        rarity: "Rare",
+        check: number => formatNumber(number).includes("67")
+    },
+
+    {
+        name: "W Day",
+        description: "Your Roll Contains 914 Together Somewhere",
+        rarity: "Epic",
+        check: number => formatNumber(number).includes("914")
+    },
+
+    {
+        name: "Lucky 7",
+        description: "Your Roll Contains 777 Together Somewhere",
+        rarity: "Legendary",
+        check: number => formatNumber(number).includes("777")
+    }
 ];
 
 // =========================================
-// GET BADGES FOR A NUMBER
+// BADGE INDEX
 // =========================================
 
-function getRollBadges(
-    number,
-    rarity
-) {
+function displayBadgeIndex() {
+    badgeIndexContainer.innerHTML = "";
 
-    return BADGES.filter(
-        badge => {
+    const sortedBadges = BADGES
+        .map((badge, originalIndex) => ({
+            badge,
+            originalIndex
+        }))
+        .sort((a, b) => {
+            const rarityDifference =
+                RARITY_ORDER.indexOf(a.badge.rarity) -
+                RARITY_ORDER.indexOf(b.badge.rarity);
 
-            try {
-
-                return badge.check(
-                    number,
-                    rarity
-                );
-
-            } catch (error) {
-
-                console.error(
-                    "Roll badge error:",
-                    error
-                );
-
-                return false;
-
+            if (rarityDifference !== 0) {
+                return rarityDifference;
             }
 
-        }
+            return a.originalIndex - b.originalIndex;
+        });
+
+    sortedBadges.forEach(({ badge }) => {
+        const unlocked = data.badges.includes(badge.name);
+        const element = document.createElement("div");
+
+        element.className =
+            `badge-index-entry badge-index-${badge.rarity.toLowerCase()} ${
+                unlocked
+                    ? "badge-index-unlocked"
+                    : "badge-index-locked"
+            }`;
+
+        element.innerHTML = `
+            <div class="badge-index-number">
+                ${unlocked ? "✓" : "?"}
+            </div>
+
+            <div class="badge-index-info">
+                <div class="badge-index-name">
+                    ${unlocked ? badge.name : "Locked Badge"}
+                </div>
+
+                <div class="badge-index-description">
+                    ${badge.description}
+                </div>
+            </div>
+
+            <div class="
+                badge-index-rarity
+                rarity-${badge.rarity.toLowerCase()}
+            ">
+                ${badge.rarity}
+            </div>
+        `;
+
+        badgeIndexContainer.appendChild(element);
+    });
+}
+
+// =========================================
+// BADGE INDEX TOGGLE
+// =========================================
+
+function toggleBadgeIndex() {
+    const isOpen = !badgeIndex.hidden;
+
+    badgeIndex.hidden = isOpen;
+
+    badgesTitle.setAttribute(
+        "aria-expanded",
+        String(!isOpen)
     );
 
+    badgesTitle.classList.toggle(
+        "badge-index-open",
+        !isOpen
+    );
+
+    if (!isOpen) {
+        displayBadgeIndex();
+    }
+}
+
+badgesTitle.addEventListener(
+    "click",
+    toggleBadgeIndex
+);
+
+badgesTitle.addEventListener(
+    "keydown",
+    event => {
+        if (
+            event.key === "Enter" ||
+            event.key === " "
+        ) {
+            event.preventDefault();
+            toggleBadgeIndex();
+        }
+    }
+);
+
+// =========================================
+// GET BADGES FOR CURRENT ROLL
+// =========================================
+
+function getRollBadges(number, rarity, rollNumber = null) {
+    return BADGES.filter(badge => {
+        try {
+            return badge.check(
+                number,
+                rarity,
+                rollNumber
+            );
+        } catch (error) {
+            console.error(
+                "Roll Badge Error:",
+                error
+            );
+
+            return false;
+        }
+    });
 }
 
 // =========================================
 // FIND NEW PERMANENT BADGES
 // =========================================
 
-function findBadges(
-    number,
-    rarity
-) {
-
+function findBadges(number, rarity, rollNumber) {
     const unlocked = [];
 
-    for (
-        const badge of BADGES
-    ) {
-
-        const alreadyUnlocked =
-            data.badges.includes(
-                badge.name
-            );
-
-        if (
-            alreadyUnlocked
-        ) {
-
+    for (const badge of BADGES) {
+        if (data.badges.includes(badge.name)) {
             continue;
-
         }
 
         try {
-
             if (
                 badge.check(
                     number,
-                    rarity
+                    rarity,
+                    rollNumber
                 )
             ) {
-
-                unlocked.push(
-                    badge
-                );
-
+                unlocked.push(badge);
             }
-
         } catch (error) {
-
             console.error(
-                "Badge error:",
+                "Badge Error:",
                 error
             );
-
         }
-
     }
 
-    unlocked.forEach(
-        badge => {
+    unlocked.forEach(badge => {
+        data.badges.push(badge.name);
+    });
 
-            data.badges.push(
-                badge.name
-            );
-
-        }
-    );
-
-    data.totalBadges =
-        data.badges.length;
+    data.totalBadges = data.badges.length;
 
     return unlocked;
-
 }
 
 // =========================================
@@ -1143,108 +1701,76 @@ function findBadges(
 // =========================================
 
 function displayBadges() {
-
     badgeContainer.innerHTML = "";
 
-    if (
-        data.badges.length === 0
-    ) {
+    if (data.badges.length === 0) {
+        const message = document.createElement("p");
+        message.textContent = "No Badges Yet";
 
-        const message =
-            document.createElement("p");
-
-        message.textContent =
-            "No Badges Yet";
-
-        badgeContainer.appendChild(
-            message
-        );
+        badgeContainer.appendChild(message);
 
         return;
-
     }
 
-    data.badges.forEach(
-        badgeName => {
+    data.badges.forEach(badgeName => {
+        const badge = BADGES.find(
+            item => item.name === badgeName
+        );
 
-            const badge =
-                BADGES.find(
-                    item =>
-                        item.name ===
-                        badgeName
-                );
-
-            if (!badge) {
-                return;
-            }
-
-            const element =
-                document.createElement("div");
-
-            element.className =
-                `badge badge-${badge.rarity.toLowerCase()}`;
-
-            element.innerHTML = `
-
-                <div class="badge-name">
-                    ${badge.name}
-                </div>
-
-                <div class="badge-description">
-                    ${badge.description}
-                </div>
-
-            `;
-
-            badgeContainer.appendChild(
-                element
-            );
-
+        if (!badge) {
+            return;
         }
-    );
 
+        const element = document.createElement("div");
+
+        element.className =
+            `badge badge-${badge.rarity.toLowerCase()}`;
+
+        element.innerHTML = `
+            <div class="badge-name">
+                ${badge.name}
+            </div>
+
+            <div class="badge-description">
+                ${badge.description}
+            </div>
+        `;
+
+        badgeContainer.appendChild(element);
+    });
 }
 
 // =========================================
-// DISPLAY BADGES FOR CURRENT ROLL
+// CURRENT ROLL BADGES
 // =========================================
 
-function getRollBadgeHTML(
-    number,
-    rarity
-) {
+function getRollBadgeHTML(number, rarity, rollNumber = null) {
+    const badges = getRollBadges(
+        number,
+        rarity,
+        rollNumber
+    );
 
-    const badges =
-        getRollBadges(
-            number,
-            rarity
-        );
-
-    if (
-        badges.length === 0
-    ) {
-
-        return "";
-
+    if (badges.length === 0) {
+        return `
+            <div class="roll-badge empty-roll-badge">
+                No Badge
+            </div>
+        `;
     }
 
     return badges
         .map(
             badge => `
-
                 <div class="
                     roll-badge
                     badge-${badge.rarity.toLowerCase()}
                 ">
-
                     🏅 ${badge.name}
-
                 </div>
-
             `
         )
         .join("");
-
 }
 
 // =========================================
@@ -1252,50 +1778,32 @@ function getRollBadgeHTML(
 // =========================================
 
 function updateAnalysis(number) {
-
     palindromeDisplay.textContent =
-        isPalindrome(number)
-            ? "Yes"
-            : "No";
+        isPalindrome(number) ? "Yes" : "No";
 
     primeDisplay.textContent =
-        isPrime(number)
-            ? "Yes"
-            : "No";
+        isPrime(number) ? "Yes" : "No";
 
     repeatingDisplay.textContent =
-        hasRepeatingDigits(number)
-            ? "Yes"
-            : "No";
+        hasRepeatingDigits(number) ? "Yes" : "No";
 
     ascendingDisplay.textContent =
-        isAscending(number)
-            ? "Yes"
-            : "No";
+        isAscending(number) ? "Yes" : "No";
 
     descendingDisplay.textContent =
-        isDescending(number)
-            ? "Yes"
-            : "No";
+        isDescending(number) ? "Yes" : "No";
 
     allSameDisplay.textContent =
-        isAllSame(number)
-            ? "Yes"
-            : "No";
+        isAllSame(number) ? "Yes" : "No";
 
     evenDisplay.textContent =
-        number % 2 === 0
-            ? "Yes"
-            : "No";
+        number % 2 === 0 ? "Yes" : "No";
 
     zeroDisplay.textContent =
-        formatNumber(number).includes("0")
-            ? "Yes"
-            : "No";
+        formatNumber(number).includes("0") ? "Yes" : "No";
 
     digitSumDisplay.textContent =
         getDigitSum(number);
-
 }
 
 // =========================================
@@ -1303,16 +1811,12 @@ function updateAnalysis(number) {
 // =========================================
 
 function updateRarityDisplay(rarity) {
-
     rarityDisplay.className = "";
-
-    rarityDisplay.textContent =
-        rarity;
+    rarityDisplay.textContent = rarity;
 
     rarityDisplay.classList.add(
         `rarity-${rarity.toLowerCase()}`
     );
-
 }
 
 // =========================================
@@ -1322,19 +1826,15 @@ function updateRarityDisplay(rarity) {
 let audioContext = null;
 
 function getAudioContext() {
-
     if (!audioContext) {
-
         audioContext =
             new (
                 window.AudioContext ||
                 window.webkitAudioContext
             )();
-
     }
 
     return audioContext;
-
 }
 
 function rarityTone(
@@ -1343,20 +1843,13 @@ function rarityTone(
     type = "sine",
     volume = 0.08
 ) {
-
     try {
+        const ctx = getAudioContext();
 
-        const ctx =
-            getAudioContext();
+        const oscillator = ctx.createOscillator();
+        const gain = ctx.createGain();
 
-        const oscillator =
-            ctx.createOscillator();
-
-        const gain =
-            ctx.createGain();
-
-        oscillator.type =
-            type;
+        oscillator.type = type;
 
         oscillator.frequency.setValueAtTime(
             frequency,
@@ -1386,119 +1879,16 @@ function rarityTone(
         oscillator.stop(
             ctx.currentTime + duration
         );
-
     } catch (error) {
-
         console.warn(
-            "Audio unavailable:",
+            "Audio Unavailable:",
             error
         );
-
     }
-
 }
 
 // =========================================
-// LEGENDARY CUTSCENE
-// =========================================
-
-function triggerLegendaryEffect() {
-
-    if (!mythicEffect) {
-        return;
-    }
-
-    document.body.classList.add(
-        "legendary-cutscene"
-    );
-
-    mythicEffect.classList.remove(
-        "active"
-    );
-
-    void mythicEffect.offsetWidth;
-
-    mythicEffect.classList.add(
-        "active"
-    );
-
-    // =====================================
-    // LEGENDARY SOUND
-    // =====================================
-
-    try {
-
-        getAudioContext();
-
-        rarityTone(
-            110,
-            0.8,
-            "triangle",
-            0.04
-        );
-
-        setTimeout(() => {
-
-            rarityTone(
-                220,
-                0.8,
-                "sine",
-                0.05
-            );
-
-        }, 500);
-
-        setTimeout(() => {
-
-            rarityTone(
-                440,
-                1,
-                "sine",
-                0.06
-            );
-
-        }, 1100);
-
-        setTimeout(() => {
-
-            rarityTone(
-                660,
-                1,
-                "triangle",
-                0.05
-            );
-
-        }, 1700);
-
-    } catch (error) {
-
-        console.warn(
-            "Legendary audio failed:",
-            error
-        );
-
-    }
-
-    // =====================================
-    // CLEANUP AFTER 3 SECONDS
-    // =====================================
-
-    setTimeout(() => {
-
-        mythicEffect.classList.remove(
-            "active"
-        );
-
-        document.body.classList.remove(
-            "legendary-cutscene"
-        );
-
-    }, 3000);
-
-}
-
-// =========================================
-// MYTHIC SOUND ENGINE
+// MYTHIC SOUND
 // =========================================
 
 function mythicTone(
@@ -1507,59 +1897,12 @@ function mythicTone(
     type = "sine",
     volume = 0.08
 ) {
-
-    try {
-
-        const ctx =
-            getAudioContext();
-
-        const oscillator =
-            ctx.createOscillator();
-
-        const gain =
-            ctx.createGain();
-
-        oscillator.type =
-            type;
-
-        oscillator.frequency.setValueAtTime(
-            frequency,
-            ctx.currentTime
-        );
-
-        gain.gain.setValueAtTime(
-            0,
-            ctx.currentTime
-        );
-
-        gain.gain.linearRampToValueAtTime(
-            volume,
-            ctx.currentTime + 0.03
-        );
-
-        gain.gain.exponentialRampToValueAtTime(
-            0.001,
-            ctx.currentTime + duration
-        );
-
-        oscillator.connect(gain);
-        gain.connect(ctx.destination);
-
-        oscillator.start();
-
-        oscillator.stop(
-            ctx.currentTime + duration
-        );
-
-    } catch (error) {
-
-        console.warn(
-            "Audio unavailable:",
-            error
-        );
-
-    }
-
+    rarityTone(
+        frequency,
+        duration,
+        type,
+        volume
+    );
 }
 
 // =========================================
@@ -1567,128 +1910,104 @@ function mythicTone(
 // =========================================
 
 function triggerMythicEffect() {
-
     if (!mythicEffect) {
         return;
+    }
+
+    const title =
+        mythicEffect.querySelector(
+            ".mythic-title"
+        );
+
+    let oldTitle = null;
+
+    if (title) {
+        oldTitle = title.innerHTML;
+
+        title.innerHTML = `
+            <div class="mythic-crown">♛</div>
+            <span>MYTHIC</span>
+            <small>The Impossible Roll</small>
+        `;
     }
 
     document.body.classList.add(
         "mythic-cutscene"
     );
 
-    mythicEffect.classList.remove(
-        "active"
-    );
+    mythicEffect.classList.remove("active");
 
     void mythicEffect.offsetWidth;
 
-    mythicEffect.classList.add(
-        "active"
-    );
+    mythicEffect.classList.add("active");
 
     numberDisplay.classList.add(
         "mythic-number"
     );
 
-    // =====================================
-    // MYTHIC SOUND
-    // =====================================
-
-    try {
-
-        getAudioContext();
-
-        mythicTone(
-            55,
-            2.5,
-            "sawtooth",
-            0.025
-        );
-
-        setTimeout(() => {
-
-            mythicTone(
-                90,
-                2,
-                "sine",
-                0.035
-            );
-
-        }, 1200);
-
-        setTimeout(() => {
-
-            mythicTone(
-                180,
-                1.5,
-                "triangle",
-                0.05
-            );
-
-        }, 3000);
-
-        setTimeout(() => {
-
-            mythicTone(
-                440,
-                1,
-                "sine",
-                0.07
-            );
-
-        }, 5000);
-
-        setTimeout(() => {
-
-            mythicTone(
-                880,
-                1.5,
-                "sine",
-                0.1
-            );
-
-        }, 5900);
-
-        setTimeout(() => {
-
-            mythicTone(
-                1320,
-                2,
-                "triangle",
-                0.08
-            );
-
-        }, 6200);
-
-        setTimeout(() => {
-
-            mythicTone(
-                1760,
-                2,
-                "sine",
-                0.055
-            );
-
-        }, 6800);
-
-    } catch (error) {
-
-        console.warn(
-            "Mythic audio failed:",
-            error
-        );
-
-    }
-
-    // =====================================
-    // CLEANUP
-    // =====================================
+    mythicTone(
+        55,
+        1.25,
+        "sawtooth",
+        0.025
+    );
 
     setTimeout(() => {
-
-        mythicEffect.classList.remove(
-            "active"
+        mythicTone(
+            90,
+            1,
+            "sine",
+            0.035
         );
+    }, 600);
+
+    setTimeout(() => {
+        mythicTone(
+            180,
+            0.75,
+            "triangle",
+            0.05
+        );
+    }, 1500);
+
+    setTimeout(() => {
+        mythicTone(
+            440,
+            0.5,
+            "sine",
+            0.07
+        );
+    }, 2500);
+
+    setTimeout(() => {
+        mythicTone(
+            880,
+            0.75,
+            "sine",
+            0.1
+        );
+    }, 2950);
+
+    setTimeout(() => {
+        mythicTone(
+            1320,
+            1,
+            "triangle",
+            0.08
+        );
+    }, 3100);
+
+    setTimeout(() => {
+        mythicTone(
+            1760,
+            1,
+            "sine",
+            0.055
+        );
+    }, 3400);
+
+    setTimeout(() => {
+        mythicEffect.classList.remove("active");
 
         numberDisplay.classList.remove(
             "mythic-number"
@@ -1698,118 +2017,377 @@ function triggerMythicEffect() {
             "mythic-cutscene"
         );
 
-    }, 10000);
+        if (
+            title &&
+            oldTitle !== null
+        ) {
+            title.innerHTML = oldTitle;
+        }
+    }, 5000);
+}
 
+// =========================================
+// CHROMA CUTSCENE
+// =========================================
+
+function triggerChromaEffect() {
+    if (!mythicEffect) {
+        return;
+    }
+
+    const title =
+        mythicEffect.querySelector(
+            ".mythic-title"
+        );
+
+    let oldTitle = null;
+
+    if (title) {
+        oldTitle = title.innerHTML;
+
+        title.innerHTML = `
+            <div class="mythic-crown">✦</div>
+            <span>CHROMA</span>
+            <small>The Impossible Roll</small>
+        `;
+    }
+
+    document.body.classList.add(
+        "chroma-cutscene"
+    );
+
+    mythicEffect.classList.remove("active");
+
+    void mythicEffect.offsetWidth;
+
+    mythicEffect.classList.add("active");
+
+    numberDisplay.classList.add(
+        "chroma-number"
+    );
+
+    rarityTone(
+        220,
+        1.2,
+        "sine",
+        0.05
+    );
+
+    setTimeout(() => {
+        rarityTone(
+            330,
+            1,
+            "triangle",
+            0.055
+        );
+    }, 700);
+
+    setTimeout(() => {
+        rarityTone(
+            440,
+            1,
+            "sine",
+            0.065
+        );
+    }, 1400);
+
+    setTimeout(() => {
+        rarityTone(
+            660,
+            1.2,
+            "triangle",
+            0.075
+        );
+    }, 2200);
+
+    setTimeout(() => {
+        rarityTone(
+            880,
+            1.4,
+            "sine",
+            0.08
+        );
+    }, 3200);
+
+    setTimeout(() => {
+        rarityTone(
+            1320,
+            1.8,
+            "triangle",
+            0.09
+        );
+    }, 4300);
+
+    setTimeout(() => {
+        rarityTone(
+            1760,
+            2,
+            "sine",
+            0.1
+        );
+    }, 5200);
+
+    setTimeout(() => {
+        mythicEffect.classList.remove("active");
+
+        numberDisplay.classList.remove(
+            "chroma-number"
+        );
+
+        document.body.classList.remove(
+            "chroma-cutscene"
+        );
+
+        if (
+            title &&
+            oldTitle !== null
+        ) {
+            title.innerHTML = oldTitle;
+        }
+    }, 7000);
+}
+
+// =========================================
+// SECRET CUTSCENE
+// =========================================
+
+function triggerSecretEffect() {
+    if (!mythicEffect) {
+        return;
+    }
+
+    const title =
+        mythicEffect.querySelector(
+            ".mythic-title"
+        );
+
+    let oldTitle = null;
+
+    if (title) {
+        oldTitle = title.innerHTML;
+
+        title.innerHTML = `
+            <div class="mythic-crown"></div>
+            <span>SECRET</span>
+            <small>THE IMPOSSIBLE THING</small>
+        `;
+    }
+
+    document.body.classList.add(
+        "secret-cutscene"
+    );
+
+    mythicEffect.classList.remove("active");
+
+    void mythicEffect.offsetWidth;
+
+    mythicEffect.classList.add("active");
+
+    numberDisplay.classList.add(
+        "secret-number"
+    );
+
+    rarityTone(
+        65,
+        2,
+        "sine",
+        0.035
+    );
+
+    setTimeout(() => {
+        rarityTone(
+            90,
+            1.5,
+            "triangle",
+            0.045
+        );
+    }, 1000);
+
+    setTimeout(() => {
+        rarityTone(
+            130,
+            1.5,
+            "sine",
+            0.055
+        );
+    }, 2200);
+
+    setTimeout(() => {
+        rarityTone(
+            220,
+            1.3,
+            "triangle",
+            0.065
+        );
+    }, 3400);
+
+    setTimeout(() => {
+        rarityTone(
+            440,
+            1.2,
+            "sine",
+            0.075
+        );
+    }, 4500);
+
+    setTimeout(() => {
+        rarityTone(
+            880,
+            1.1,
+            "triangle",
+            0.085
+        );
+    }, 5500);
+
+    setTimeout(() => {
+        rarityTone(
+            1320,
+            1.5,
+            "sine",
+            0.095
+        );
+    }, 6500);
+
+    setTimeout(() => {
+        rarityTone(
+            1760,
+            1.8,
+            "triangle",
+            0.11
+        );
+    }, 7600);
+
+    setTimeout(() => {
+        rarityTone(
+            2200,
+            2.2,
+            "sine",
+            0.12
+        );
+    }, 8500);
+
+    setTimeout(() => {
+        rarityTone(
+            2640,
+            2,
+            "triangle",
+            0.13
+        );
+    }, 9000);
+
+    setTimeout(() => {
+        rarityTone(
+            3520,
+            2,
+            "sine",
+            0.14
+        );
+    }, 9400);
+
+    setTimeout(() => {
+        mythicEffect.classList.remove("active");
+
+        numberDisplay.classList.remove(
+            "secret-number"
+        );
+
+        document.body.classList.remove(
+            "secret-cutscene"
+        );
+
+        if (
+            title &&
+            oldTitle !== null
+        ) {
+            title.innerHTML = oldTitle;
+        }
+    }, 10000);
 }
 
 // =========================================
 // NUMBER ANIMATION
 // =========================================
 
-function animateNumber(
-    finalNumber
-) {
+function animateNumber(finalNumber) {
+    return new Promise(resolve => {
+        const startTime = performance.now();
 
-    return new Promise(
-        resolve => {
+        const interval = setInterval(() => {
+            const elapsed =
+                performance.now() - startTime;
 
-            const startTime =
-                performance.now();
+            const progress = Math.min(
+                elapsed / ROLL_DURATION,
+                1
+            );
 
-            const interval =
-                setInterval(() => {
+            numberDisplay.textContent =
+                formatNumber(randomNumber());
 
-                    const elapsed =
-                        performance.now() -
-                        startTime;
+            if (progress >= 1) {
+                clearInterval(interval);
 
-                    const progress =
-                        Math.min(
-                            elapsed /
-                            ROLL_DURATION,
-                            1
-                        );
+                numberDisplay.textContent =
+                    formatNumber(finalNumber);
 
-                    const random =
-                        randomNumber();
-
-                    numberDisplay.textContent =
-                        formatNumber(
-                            random
-                        );
-
-                    if (
-                        progress >= 1
-                    ) {
-
-                        clearInterval(
-                            interval
-                        );
-
-                        numberDisplay.textContent =
-                            formatNumber(
-                                finalNumber
-                            );
-
-                        resolve();
-
-                    }
-
-                }, ANIMATION_INTERVAL);
-
-        }
-    );
-
+                resolve();
+            }
+        }, ANIMATION_INTERVAL);
+    });
 }
 
 // =========================================
 // COOLDOWN
 // =========================================
 
-function getRemainingCooldown() {
+function getCurrentRollCooldown() {
+    return getUpgradeValue("rollSpeed");
+}
 
+function getRemainingCooldown() {
     if (!data.lastRoll) {
         return 0;
     }
 
     const elapsed =
-        Date.now() -
-        data.lastRoll;
+        Date.now() - data.lastRoll;
 
     return Math.max(
         0,
-        ROLL_COOLDOWN -
-        elapsed
+        getCurrentRollCooldown() - elapsed
     );
-
 }
 
 function updateCooldown() {
-
-    const remaining =
-        getRemainingCooldown();
-
-    if (
-        remaining <= 0
-    ) {
-
-        countdownDisplay.textContent =
-            "Ready!";
-
-        dailyStatus.textContent =
-            "Your Roll Is Ready!";
-
-        rollButton.disabled =
-            false;
+    if (isRolling) {
+        countdownDisplay.textContent = "Rolling...";
+        dailyStatus.textContent = "Your Number Is Rolling!";
+        rollButton.disabled = true;
 
         return;
-
     }
 
-    const seconds =
-        Math.ceil(
-            remaining / 1000
-        );
+    const remaining = getRemainingCooldown();
+
+    if (remaining <= 0) {
+        countdownDisplay.textContent = "Ready!";
+
+        if (data.shrihanChromaReady) {
+            dailyStatus.textContent =
+                "Shrihan Code Active! Next Roll = Chroma!";
+        } else {
+            dailyStatus.textContent =
+                "Your Roll Is Ready!";
+        }
+
+        rollButton.disabled = false;
+
+        return;
+    }
+
+    const seconds = Math.ceil(
+        remaining / 1000
+    );
 
     countdownDisplay.textContent =
         `${seconds}s`;
@@ -1817,9 +2395,7 @@ function updateCooldown() {
     dailyStatus.textContent =
         "Roll Cooldown Active";
 
-    rollButton.disabled =
-        true;
-
+    rollButton.disabled = true;
 }
 
 // =========================================
@@ -1827,16 +2403,14 @@ function updateCooldown() {
 // =========================================
 
 function updateStats() {
-
     totalRollsDisplay.textContent =
         data.totalRolls;
 
     totalEPDisplay.textContent =
-        data.totalEP;
+        data.totalEP.toLocaleString();
 
     bestRarityDisplay.textContent =
-        data.bestRarity ||
-        "---";
+        data.bestRarity || "---";
 
     totalBadgesDisplay.textContent =
         `${data.totalBadges} / ${BADGES.length}`;
@@ -1858,6 +2432,8 @@ function updateStats() {
     dailyStreakDisplay.textContent =
         `${data.dailyStreak} 🔥`;
 
+    updateShop();
+    updateBackgroundButton();
 }
 
 // =========================================
@@ -1865,308 +2441,219 @@ function updateStats() {
 // =========================================
 
 function updateHistory() {
-
     historyContainer.innerHTML = "";
 
-    if (
-        data.history.length === 0
-    ) {
-
+    if (data.history.length === 0) {
         const message =
             document.createElement("p");
 
-        message.textContent =
-            "No Rolls Yet";
+        message.textContent = "No Rolls Yet";
 
-        historyContainer.appendChild(
-            message
-        );
+        historyContainer.appendChild(message);
 
         return;
-
     }
 
     data.history
         .slice()
         .reverse()
         .slice(0, 50)
-        .forEach(
-            roll => {
-
-                const entry =
-                    document.createElement("div");
-
-                entry.className =
-                    "history-entry";
-
-                const rollBadges =
-                    getRollBadgeHTML(
-                        roll.number,
-                        roll.rarity
-                    );
-
-                entry.innerHTML = `
-
-                    <div class="history-main">
-
-                        <span>
-                            ${formatNumber(
-                                roll.number
-                            )}
-                        </span>
-
-                        <span class="
-                            rarity-${roll.rarity.toLowerCase()}
-                        ">
-                            ${roll.rarity}
-                        </span>
-
-                        <span>
-                            +${roll.ep} EP
-                        </span>
-
-                    </div>
-
-                    <div class="history-badges">
-                        ${rollBadges}
-                    </div>
-
-                `;
-
-                historyContainer.appendChild(
-                    entry
-                );
-
-            }
-        );
-
-}
-
-// =========================================
-// LEADERBOARD
-// =========================================
-
-let currentLeaderboard =
-    "ep";
-
-function updateLeaderboard() {
-
-    leaderboardContainer.innerHTML =
-        "";
-
-    const entries =
-        data.leaderboard[
-            currentLeaderboard
-        ] || [];
-
-    if (
-        entries.length === 0
-    ) {
-
-        const message =
-            document.createElement("p");
-
-        message.textContent =
-            "No Leaderboard Data Yet";
-
-        leaderboardContainer.appendChild(
-            message
-        );
-
-        return;
-
-    }
-
-    entries.forEach(
-        (entry, index) => {
-
-            const element =
+        .forEach(roll => {
+            const entry =
                 document.createElement("div");
 
-            element.className =
-                "leaderboard-entry";
+            entry.className =
+                "history-entry";
 
-            element.innerHTML = `
+            entry.innerHTML = `
+                <div class="history-main">
+                    <span class="history-number">
+                        ${formatNumber(roll.number)}
+                    </span>
 
-                <span>
-                    #${index + 1}
-                </span>
+                    <span class="
+                        history-rarity
+                        rarity-${roll.rarity.toLowerCase()}
+                    ">
+                        ${roll.rarity}
+                    </span>
 
-                <strong>
-                    ${entry.name}
-                </strong>
+                    <span class="history-ep">
+                        +${roll.ep.toLocaleString()} EP
+                    </span>
+                </div>
 
-                <span>
-                    ${entry.value}
-                </span>
-
+                <div class="history-badges">
+                    ${getRollBadgeHTML(
+                        roll.number,
+                        roll.rarity,
+                        roll.rollNumber
+                    )}
+                </div>
             `;
 
-            leaderboardContainer.appendChild(
-                element
-            );
-
-        }
-    );
-
+            historyContainer.appendChild(entry);
+        });
 }
-
-// =========================================
-// LEADERBOARD TABS
-// =========================================
-
-document
-    .querySelectorAll(
-        ".leaderboard-tab"
-    )
-    .forEach(
-        tab => {
-
-            tab.addEventListener(
-                "click",
-                () => {
-
-                    document
-                        .querySelectorAll(
-                            ".leaderboard-tab"
-                        )
-                        .forEach(
-                            button =>
-                                button.classList
-                                    .remove(
-                                        "active"
-                                    )
-                        );
-
-                    tab.classList.add(
-                        "active"
-                    );
-
-                    currentLeaderboard =
-                        tab.dataset.type;
-
-                    updateLeaderboard();
-
-                }
-            );
-
-        }
-    );
 
 // =========================================
 // STREAK
 // =========================================
 
 function updateStreak() {
-
     const today =
         new Date()
             .toISOString()
             .split("T")[0];
 
-    if (
-        !data.lastRollDate
-    ) {
-
+    if (!data.lastRollDate) {
         data.dailyStreak = 0;
         return;
-
     }
 
     const last =
-        new Date(
-            data.lastRollDate
-        );
+        new Date(data.lastRollDate);
 
     const current =
         new Date(today);
 
     const difference =
         Math.floor(
-            (
-                current - last
-            ) /
+            (current - last) /
             86400000
         );
 
-    if (
-        difference > 1
-    ) {
-
+    if (difference > 1) {
         data.dailyStreak = 0;
-
     }
-
 }
 
 // =========================================
-// PERFORM ROLL
+// PROCESS SINGLE ROLL
 // =========================================
 
-async function performRoll() {
+async function processRoll() {
+    const originalNumber = randomNumber();
 
-    if (
-        getRemainingCooldown() > 0
-    ) {
+    let rarity;
 
-        return;
+    // =========================================
+    // FORCE RARITY TESTING
+    // =========================================
 
+    if (FORCE_RARITY) {
+        rarity = FORCE_RARITY;
+    } else if (data.shrihanChromaReady) {
+        rarity = "Chroma";
+    } else {
+        rarity = determineRarity(originalNumber);
     }
 
-    rollButton.disabled =
-        true;
+    // =========================================
+    // DETERMINE IF SPECIAL NUMBER IS NEEDED
+    // =========================================
 
-    const finalNumber =
-        randomNumber();
+    const naturalRarity =
+        getNaturalPatternRarity(originalNumber);
 
-    const rarity =
-        determineRarity(
-            finalNumber
+    const forcedRarity =
+        Boolean(FORCE_RARITY);
+
+    const shouldUseSpecialNumber =
+        forcedRarity ||
+        rarity === "Secret" ||
+        (
+            rarity === "Chroma" &&
+            naturalRarity !== "Chroma"
+        ) ||
+        (
+            rarity === "Mythic" &&
+            naturalRarity !== "Mythic" &&
+            naturalRarity !== "Chroma"
         );
 
-    const ep =
+    const finalNumber =
+        shouldUseSpecialNumber
+            ? getFinalRollNumber(
+                rarity,
+                originalNumber
+            )
+            : originalNumber;
+
+    const baseEP =
         EP_VALUES[rarity] || 0;
 
-    await animateNumber(
-        finalNumber
-    );
+    const epMultiplier =
+        getUpgradeValue("epMultiplier");
 
-    updateRarityDisplay(
-        rarity
-    );
+    const earnedEP =
+        Math.floor(
+            baseEP * epMultiplier
+        );
+
+    await animateNumber(finalNumber);
+
+    updateRarityDisplay(rarity);
 
     epDisplay.textContent =
-        ep;
+        earnedEP.toLocaleString();
 
-    updateAnalysis(
-        finalNumber
-    );
-
-    // =====================================
-    // STATS
-    // =====================================
+    updateAnalysis(finalNumber);
 
     data.totalRolls++;
 
-    data.totalEP += ep;
+    const currentRollNumber =
+        data.totalRolls;
+
+    data.totalEP += earnedEP;
+
+    // Convert special Secret strings like "000001"
+    // into numbers for statistics.
+    const numericFinalNumber =
+        Number(finalNumber);
 
     data.totalRollValue +=
-        finalNumber;
+        numericFinalNumber;
 
     data.highestNumber =
         Math.max(
             data.highestNumber,
-            finalNumber
+            numericFinalNumber
         );
 
-    // =====================================
-    // BEST RARITY
-    // =====================================
+    const today =
+        new Date()
+            .toISOString()
+            .split("T")[0];
+
+    if (data.lastRollDate !== today) {
+        if (data.lastRollDate) {
+            const previousDate =
+                new Date(data.lastRollDate);
+
+            const currentDate =
+                new Date(today);
+
+            const difference =
+                Math.floor(
+                    (currentDate - previousDate) /
+                    86400000
+                );
+
+            if (difference === 1) {
+                data.dailyStreak++;
+            } else {
+                data.dailyStreak = 1;
+            }
+        } else {
+            data.dailyStreak = 1;
+        }
+
+        data.lastRollDate = today;
+    }
 
     const currentIndex =
-        RARITY_ORDER.indexOf(
-            rarity
-        );
+        RARITY_ORDER.indexOf(rarity);
 
     const bestIndex =
         data.bestRarity
@@ -2175,101 +2662,110 @@ async function performRoll() {
             )
             : -1;
 
-    if (
-        currentIndex >
-        bestIndex
-    ) {
-
-        data.bestRarity =
-            rarity;
-
+    if (currentIndex > bestIndex) {
+        data.bestRarity = rarity;
     }
-
-    // =====================================
-    // BADGES
-    // =====================================
 
     findBadges(
         finalNumber,
-        rarity
+        rarity,
+        currentRollNumber
     );
 
-    // =====================================
-    // HISTORY
-    // =====================================
-
     data.history.push({
-
-        number:
-            finalNumber,
-
-        rarity:
-            rarity,
-
-        ep:
-            ep,
-
-        timestamp:
-            Date.now()
-
+        number: finalNumber,
+        rarity: rarity,
+        ep: earnedEP,
+        rollNumber: currentRollNumber,
+        timestamp: Date.now()
     });
 
-    if (
-        data.history.length > 100
-    ) {
-
+    if (data.history.length > 100) {
         data.history =
-            data.history.slice(
-                -100
-            );
-
+            data.history.slice(-100);
     }
 
-    // =====================================
-    // COOLDOWN
-    // =====================================
-
-    data.lastRoll =
-        Date.now();
-
-    // =====================================
-    // SAVE
-    // =====================================
-
-    saveData();
-
-    // =====================================
-    // UPDATE UI
-    // =====================================
+    if (
+        data.shrihanChromaReady &&
+        rarity === "Chroma"
+    ) {
+        data.shrihanChromaReady = false;
+    }
 
     displayBadges();
-
+    displayBadgeIndex();
     updateStats();
-
     updateHistory();
 
-    updateLeaderboard();
+    // =========================================
+    // SECRET HAS HIGHEST PRIORITY
+    // =========================================
 
-    // =====================================
-    // RARITY CUTSCENE
-    // =====================================
-
-    if (
-        rarity === "Mythic"
-    ) {
-
+    if (rarity === "Secret") {
+        triggerSecretEffect();
+    } else if (rarity === "Chroma") {
+        triggerChromaEffect();
+    } else if (rarity === "Mythic") {
         triggerMythicEffect();
-
-    } else if (
-        rarity === "Legendary"
-    ) {
-
-        triggerLegendaryEffect();
-
     }
+
+    return {
+        number: finalNumber,
+        rarity: rarity,
+        ep: earnedEP
+    };
+}
+
+// =========================================
+// PERFORM ROLL
+// =========================================
+
+async function performRoll() {
+    if (isRolling) {
+        return;
+    }
+
+    if (getRemainingCooldown() > 0) {
+        return;
+    }
+
+    isRolling = true;
+
+    rollButton.disabled = true;
 
     updateCooldown();
 
+    try {
+        await processRoll();
+
+        const doubleRollChance =
+            getUpgradeValue("doubleRoll");
+
+        if (
+            doubleRollChance > 0 &&
+            Math.random() < doubleRollChance / 100
+        ) {
+            await new Promise(resolve => {
+                setTimeout(
+                    resolve,
+                    250
+                );
+            });
+
+            await processRoll();
+        }
+
+        data.lastRoll = Date.now();
+
+        saveData();
+
+        updateStats();
+        updateShop();
+    } finally {
+        isRolling = false;
+
+        updateCooldown();
+    }
 }
 
 // =========================================
@@ -2279,22 +2775,18 @@ async function performRoll() {
 eraseDataButton.addEventListener(
     "click",
     () => {
-
         const confirmed =
             confirm(
-                "Are You Sure You Want To Erase All RNGdle Data?"
+                "Are You Sure You Want To Erase All RNG Data?"
             );
 
         if (!confirmed) {
             return;
         }
 
-        localStorage.removeItem(
-            "rngdleData"
-        );
+        localStorage.removeItem("rngdleData");
 
         location.reload();
-
     }
 );
 
@@ -2303,21 +2795,19 @@ eraseDataButton.addEventListener(
 // =========================================
 
 function initialize() {
-
     loadData();
 
     updateStreak();
 
     displayBadges();
+    displayBadgeIndex();
 
     updateStats();
-
     updateHistory();
-
-    updateLeaderboard();
-
+    updateShop();
     updateCooldown();
 
+    initializeBackgroundCustomization();
 }
 
 // =========================================
