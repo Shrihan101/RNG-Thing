@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    
     <meta charset="UTF-8">
 
     <meta
@@ -54,12 +56,274 @@
 
 
     <!-- =========================================
+         ACCOUNT BUTTON
+    ========================================== -->
+
+    <button
+        id="accountButton"
+        class="account-button"
+        type="button"
+        aria-label="Open Account"
+        aria-expanded="false"
+    >
+        👤 Account
+    </button>
+
+
+    <!-- =========================================
+         ACCOUNT OVERLAY
+    ========================================== -->
+
+    <div
+        id="accountOverlay"
+        class="account-overlay"
+        hidden
+    ></div>
+
+
+    <!-- =========================================
+         ACCOUNT PANEL
+    ========================================== -->
+
+    <section
+        id="accountPanel"
+        class="account-panel"
+        hidden
+    >
+
+        <div class="account-panel-header">
+
+            <div>
+
+                <h2>
+                    Account
+                </h2>
+
+                <p class="subtitle">
+                    Save Your RNG Thing Progress Online
+                </p>
+
+            </div>
+
+
+            <button
+                id="closeAccountButton"
+                class="account-close"
+                type="button"
+                aria-label="Close Account"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- =========================================
+             SIGN UP
+        ========================================== -->
+
+        <div
+            id="signUpContainer"
+            class="account-form-container"
+        >
+
+            <h3>
+                Create Your Account
+            </h3>
+
+            <form id="signUpForm">
+
+                <div class="account-field">
+
+                    <label for="signUpUsername">
+                        Username
+                    </label>
+
+                    <input
+                        id="signUpUsername"
+                        type="text"
+                        placeholder="Enter Username"
+                        maxlength="20"
+                        required
+                        autocomplete="username"
+                    >
+
+                </div>
+
+
+                <div class="account-field">
+
+                    <label for="signUpEmail">
+                        Email
+                    </label>
+
+                    <input
+                        id="signUpEmail"
+                        type="email"
+                        placeholder="Enter Email"
+                        required
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+                <div class="account-field">
+
+                    <label for="signUpPassword">
+                        Password
+                    </label>
+
+                    <input
+                        id="signUpPassword"
+                        type="password"
+                        placeholder="Enter Password"
+                        minlength="6"
+                        required
+                        autocomplete="new-password"
+                    >
+
+                </div>
+
+
+                <button
+                    id="signUpButton"
+                    class="leaderboard-tab"
+                    type="submit"
+                >
+                    Create Account
+                </button>
+
+            </form>
+
+
+            <p
+                id="signUpMessage"
+                class="account-message"
+                aria-live="polite"
+            ></p>
+
+        </div>
+
+
+        <!-- =========================================
+             SIGN IN
+        ========================================== -->
+
+        <div
+            id="signInContainer"
+            class="account-form-container"
+        >
+
+            <h3>
+                Sign In
+            </h3>
+
+            <form id="signInForm">
+
+                <div class="account-field">
+
+                    <label for="signInEmail">
+                        Email
+                    </label>
+
+                    <input
+                        id="signInEmail"
+                        type="email"
+                        placeholder="Enter Email"
+                        required
+                        autocomplete="email"
+                    >
+
+                </div>
+
+
+                <div class="account-field">
+
+                    <label for="signInPassword">
+                        Password
+                    </label>
+
+                    <input
+                        id="signInPassword"
+                        type="password"
+                        placeholder="Enter Password"
+                        required
+                        autocomplete="current-password"
+                    >
+
+                </div>
+
+
+                <button
+                    id="signInButton"
+                    class="leaderboard-tab"
+                    type="submit"
+                >
+                    Sign In
+                </button>
+
+            </form>
+
+
+            <p
+                id="signInMessage"
+                class="account-message"
+                aria-live="polite"
+            ></p>
+
+        </div>
+
+
+        <!-- =========================================
+             SIGNED IN / SIGN OUT
+        ========================================== -->
+
+        <div
+            id="signedInContainer"
+            class="account-form-container"
+            hidden
+        >
+
+            <h3>
+                You're Signed In
+            </h3>
+
+
+            <p id="signedInUsername">
+                Signed In As: Account
+            </p>
+
+
+            <button
+                id="signOutButton"
+                class="leaderboard-tab"
+                type="button"
+            >
+                Sign Out
+            </button>
+
+
+            <p
+                id="signOutMessage"
+                class="account-message"
+                aria-live="polite"
+            ></p>
+
+        </div>
+
+    </section>
+
+
+    <!-- =========================================
          MAIN GAME
     ========================================== -->
 
     <main class="game-container">
 
-        <h1>RNG Thing</h1>
+        <h1>
+            RNG Thing
+        </h1>
 
         <p class="subtitle">
             How Lucky Are You?
@@ -70,7 +334,9 @@
 
         <section class="daily-section">
 
-            <h2>Roll Cooldown</h2>
+            <h2>
+                Roll Cooldown
+            </h2>
 
             <p id="dailyStatus">
                 Your Roll Is Ready!
@@ -114,22 +380,33 @@
 
         <section class="results">
 
-            <h2>Results</h2>
+            <h2>
+                Results
+            </h2>
 
             <div class="result-row">
-                <span>Rarity</span>
+
+                <span>
+                    Rarity
+                </span>
 
                 <span id="rarity">
                     ---
                 </span>
+
             </div>
 
+
             <div class="result-row">
-                <span>EP</span>
+
+                <span>
+                    EP
+                </span>
 
                 <span id="ep">
                     0
                 </span>
+
             </div>
 
         </section>
@@ -139,7 +416,9 @@
 
         <section class="analysis">
 
-            <h2>Number Analysis</h2>
+            <h2>
+                Number Analysis
+            </h2>
 
             <div class="result-row">
                 <span>Palindrome</span>
@@ -205,7 +484,9 @@
                 <span class="badges-arrow">
                     ▾
                 </span>
+
             </h2>
+
 
             <div
                 id="badgeContainer"
@@ -229,13 +510,16 @@
 
                 <div class="badge-index-header">
 
-                    <h3>Badge Index</h3>
+                    <h3>
+                        Badge Index
+                    </h3>
 
                     <p>
                         Collect Every Badge
                     </p>
 
                 </div>
+
 
                 <div
                     id="badgeIndexContainer"
@@ -249,13 +533,58 @@
 
         <!-- EP SHOP -->
 
-        <section class="shop">
+        <button
+    id="shopButton"
+    class="shop-button"
+    type="button"
+    aria-label="Open Shop"
+    aria-expanded="false"
+>
+    Shop
+</button>
 
-            <h2>EP Shop</h2>
+<div
+    id="shopOverlay"
+    class="shop-overlay"
+    hidden
+></div>
+
+<section
+    id="shopPanel"
+    class="shop shop-panel"
+    hidden
+>
+    <div class="shop-panel-header">
+
+        <div>
+            <h2>
+                EP Shop
+            </h2>
 
             <p class="subtitle">
                 Spend Your EP To Upgrade Stuff
             </p>
+        </div>
+
+        <button
+            id="closeShopButton"
+            class="shop-close"
+            type="button"
+            aria-label="Close Shop"
+        >
+            ×
+        </button>
+
+    </div>
+
+            <h2>
+                EP Shop
+            </h2>
+
+            <p class="subtitle">
+                Spend Your EP To Upgrade Stuff
+            </p>
+
 
             <div class="result-row">
 
@@ -271,7 +600,6 @@
 
 
             <div class="stat-grid">
-
 
                 <!-- ROLL SPEED -->
 
@@ -467,43 +795,100 @@
 
         <section class="stats">
 
-            <h2>Statistics</h2>
+            <h2>
+                Statistics
+            </h2>
 
             <div class="stat-grid">
 
                 <div class="stat-card">
-                    <span>Total Rolls</span>
-                    <strong id="totalRolls">0</strong>
+
+                    <span>
+                        Total Rolls
+                    </span>
+
+                    <strong id="totalRolls">
+                        0
+                    </strong>
+
                 </div>
 
-                <div class="stat-card">
-                    <span>Total EP</span>
-                    <strong id="totalEP">0</strong>
-                </div>
 
                 <div class="stat-card">
-                    <span>Best Rarity</span>
-                    <strong id="bestRarity">---</strong>
+
+                    <span>
+                        Total EP
+                    </span>
+
+                    <strong id="totalEP">
+                        0
+                    </strong>
+
                 </div>
 
-                <div class="stat-card">
-                    <span>Total Badges</span>
-                    <strong id="totalBadges">0</strong>
-                </div>
 
                 <div class="stat-card">
-                    <span>Average Roll</span>
-                    <strong id="averageRoll">0</strong>
+
+                    <span>
+                        Best Rarity
+                    </span>
+
+                    <strong id="bestRarity">
+                        ---
+                    </strong>
+
                 </div>
 
-                <div class="stat-card">
-                    <span>Highest Number</span>
-                    <strong id="highestNumber">0</strong>
-                </div>
 
                 <div class="stat-card">
-                    <span>Daily Streak</span>
-                    <strong id="dailyStreak">0 🔥</strong>
+
+                    <span>
+                        Total Badges
+                    </span>
+
+                    <strong id="totalBadges">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Average Roll
+                    </span>
+
+                    <strong id="averageRoll">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Highest Number
+                    </span>
+
+                    <strong id="highestNumber">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <span>
+                        Daily Streak
+                    </span>
+
+                    <strong id="dailyStreak">
+                        0 🔥
+                    </strong>
+
                 </div>
 
             </div>
@@ -515,7 +900,9 @@
 
         <section class="history">
 
-            <h2>Roll History</h2>
+            <h2>
+                Roll History
+            </h2>
 
             <div id="historyContainer">
 
@@ -528,18 +915,83 @@
         </section>
 
 
-        <!-- DATA RESET -->
+        <!-- =========================================
+     LEADERBOARD
+     ========================================= -->
 
-        <section class="data-reset">
+<div class="leaderboard-section">
+
+    <button
+        id="leaderboardToggle"
+        class="leaderboard-toggle"
+        type="button"
+        aria-expanded="false"
+    >
+        Leaderboard
+        <span id="leaderboardArrow">▼</span>
+    </button>
+
+    <div
+        id="leaderboardContainer"
+        class="leaderboard-container"
+        hidden
+    >
+
+        <div class="leaderboard-selector">
 
             <button
-                id="eraseDataButton"
+                id="leaderboardEpButton"
+                class="leaderboard-tab active"
                 type="button"
             >
-                Erase All Data
+                Total EP
             </button>
 
-        </section>
+            <button
+                id="leaderboardRollsButton"
+                class="leaderboard-tab"
+                type="button"
+            >
+                Total Rolls
+            </button>
+
+        </div>
+
+        <div
+            id="leaderboardList"
+            class="leaderboard-list"
+        >
+            <p class="leaderboard-empty">
+                Leaderboard Loading...
+            </p>
+        </div>
+
+    </div>
+
+</div>
+
+
+        <!-- DATA RESET -->
+
+       <section class="data-reset">
+
+    <button
+        id="eraseDataButton"
+        type="button"
+    >
+        Erase All Data
+    </button>
+
+    <button
+        id="deleteAccountButton"
+        type="button"
+    >
+        Erase Data + Delete Account
+    </button>
+
+    <p id="deleteAccountMessage"></p>
+
+</section>
 
 
         <!-- CREATOR -->
@@ -551,7 +1003,13 @@
     </main>
 
 
-    <script src="SCRIPT.JS"></script>
+    <!-- =========================================
+         SCRIPTS
+    ========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="script.js"></script>
 
 </body>
 
