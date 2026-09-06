@@ -1,3 +1,220 @@
+const SUPABASE_URL = "https://vkuxbhnptsvwwcmqblrr.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_aSmWV8Z1yitZvf5kricD3Q_aoslLEwE";
+
+var supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
+
+console.log("RNGdle connected to Supabase!");
+
+// =========================================
+// ACCOUNT / SIGN UP
+// =========================================
+
+const accountSection =
+    document.getElementById("accountSection");
+
+const signUpForm =
+    document.getElementById("signUpForm");
+
+const signUpUsername =
+    document.getElementById("signUpUsername");
+
+const signUpEmail =
+    document.getElementById("signUpEmail");
+
+const signUpPassword =
+    document.getElementById("signUpPassword");
+
+const signUpButton =
+    document.getElementById("signUpButton");
+
+const signUpMessage =
+    document.getElementById("signUpMessage");
+
+
+// =========================================
+// SIGN UP
+// =========================================
+
+signUpForm.addEventListener(
+    "submit",
+    async event => {
+        event.preventDefault();
+
+        const username =
+            signUpUsername.value.trim();
+
+        const email =
+            signUpEmail.value.trim();
+
+        const password =
+            signUpPassword.value;
+
+        if (!username || !email || !password) {
+            signUpMessage.textContent =
+                "Please Fill In Every Field.";
+
+            return;
+        }
+
+        signUpButton.disabled = true;
+
+        signUpMessage.textContent =
+            "Creating Your Account...";
+
+        try {
+            const {
+                data: authData,
+                error
+            } =
+                await supabase.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            username: username
+                        }
+                    }
+                });
+
+            if (error) {
+                throw error;
+            }
+
+            console.log(
+                "Account Created:",
+                authData
+            );
+
+            signUpMessage.textContent =
+                "Account Created Successfully!";
+
+            signUpForm.reset();
+
+        } catch (error) {
+            console.error(
+                "Sign Up Error:",
+                error
+            );
+
+            signUpMessage.textContent =
+                error.message ||
+                "Unable To Create Account.";
+        }
+
+        signUpButton.disabled = false;
+    }
+);
+
+// =========================================
+// ACCOUNT / SIGN IN
+// =========================================
+
+const signInSection =
+    document.getElementById("signInSection");
+
+const signInForm =
+    document.getElementById("signInForm");
+
+const signInEmail =
+    document.getElementById("signInEmail");
+
+const signInPassword =
+    document.getElementById("signInPassword");
+
+const signInButton =
+    document.getElementById("signInButton");
+
+const signInMessage =
+    document.getElementById("signInMessage");
+
+
+// =========================================
+// SIGN IN
+// =========================================
+
+signInForm.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+        const email =
+            signInEmail.value.trim();
+
+        const password =
+            signInPassword.value;
+
+
+        if (!email || !password) {
+
+            signInMessage.textContent =
+                "Please Fill In Every Field.";
+
+            return;
+        }
+
+
+        signInButton.disabled =
+            true;
+
+        signInMessage.textContent =
+            "Signing You In...";
+
+
+        try {
+
+            const {
+                data: authData,
+                error
+            } =
+                await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            console.log(
+                "Signed In:",
+                authData
+            );
+
+
+            signInMessage.textContent =
+                "Signed In Successfully!";
+
+
+            signInForm.reset();
+
+
+        } catch (error) {
+
+            console.error(
+                "Sign In Error:",
+                error
+            );
+
+
+            signInMessage.textContent =
+                error.message ||
+                "Unable To Sign In.";
+
+        }
+
+
+        signInButton.disabled =
+            false;
+
+    }
+);
+
 // =========================================
 // RNGDLE - MAIN GAME SCRIPT
 // =========================================
@@ -377,11 +594,252 @@ function loadData() {
 }
 
 // =========================================
+// LOAD DATA FROM SUPABASE
+// =========================================
+
+async function loadDataFromSupabase() {
+    try {
+        var {
+            data: {
+                user
+            }
+        } =
+            await supabase.auth.getUser();
+
+        if (!user) {
+            return false;
+        }
+
+        var {
+            data: profile,
+            error
+        } =
+            await supabase
+                .from("profiles")
+                .select("*")
+                .eq(
+                    "id",
+                    user.id
+                )
+                .single();
+
+        if (error) {
+            console.error(
+                "Supabase Load Error:",
+                error
+            );
+
+            return false;
+        }
+
+        if (!profile) {
+            return false;
+        }
+
+        data = {
+            ...data,
+
+            totalRolls:
+                profile.rolls ?? 0,
+
+            totalEP:
+                profile.ep ?? 0,
+
+            bestRarity:
+                profile.rarest_rarity ?? null,
+
+            totalBadges:
+                Array.isArray(profile.badges)
+                    ? profile.badges.length
+                    : 0,
+
+            totalRollValue:
+                profile.total_roll_value ?? 0,
+
+            highestNumber:
+                profile.highest_number ?? 0,
+
+            dailyStreak:
+                profile.daily_streak ?? 0,
+
+            lastRoll:
+                profile.last_roll_date ?? null,
+
+            lastRollDate:
+                profile.last_roll ?? null,
+
+            history:
+                Array.isArray(profile.history)
+                    ? profile.history
+                    : [],
+
+            badges:
+                Array.isArray(profile.badges)
+                    ? profile.badges
+                    : [],
+
+            upgrades: {
+                ...data.upgrades,
+
+                ...(profile.upgrades || {})
+            },
+
+            backgroundColor:
+                profile.background_color ?? null,
+
+            shrihanCodeUsed:
+                profile.shrihan_code_used ?? false,
+
+            shrihanChromaReady:
+                profile.shrihan_chroma_ready ?? false
+        };
+
+        localStorage.setItem(
+            "rngdleData",
+            JSON.stringify(data)
+        );
+
+        displayBadges();
+        displayBadgeIndex();
+        updateStats();
+        updateHistory();
+        updateShop();
+        updateCooldown();
+        updateBackgroundButton();
+
+        console.log(
+            "RNGdle data loaded from Supabase!"
+        );
+
+        return true;
+
+    } catch (error) {
+        console.error(
+            "Supabase Load Error:",
+            error
+        );
+
+        return false;
+    }
+}
+
+// =========================================
 // SAVE DATA
 // =========================================
 
+async function syncDataToSupabase() {
+    try {
+        var {
+            data: {
+                user
+            }
+        } =
+            await supabase.auth.getUser();
+
+        if (!user) {
+            return;
+        }
+
+        console.log(
+    "LAST ROLL:",
+    data.lastRoll
+);
+
+console.log(
+    "LAST ROLL DATE:",
+    data.lastRollDate
+);
+
+
+        var {
+            error
+        } =
+            await supabase
+                .from("profiles")
+                .update({
+                    username:
+                        user.user_metadata?.username ||
+                        user.email ||
+                        "Account",
+
+                    ep:
+                        data.totalEP,
+
+                    rolls:
+                        data.totalRolls,
+
+                    best_roll:
+                        data.highestNumber,
+
+                    rarest_rarity:
+                        data.bestRarity,
+
+                    badges:
+                        data.badges,
+
+                    total_roll_value:
+                        data.totalRollValue,
+
+                    highest_number:
+                        data.highestNumber,
+
+                    daily_streak:
+                        data.dailyStreak,
+
+                    last_roll:
+                        data.lastRollDate,
+
+                    last_roll_date:
+                        data.lastRoll,
+
+                    history:
+                        data.history,
+
+                    upgrades:
+                        data.upgrades,
+
+                    background_color:
+                        data.backgroundColor,
+
+                    shrihan_code_used:
+                        data.shrihanCodeUsed,
+
+                    shrihan_chroma_ready:
+                        data.shrihanChromaReady
+                })
+                .eq(
+                    "id",
+                    user.id
+                );
+
+        if (error) {
+            console.error(
+                "Supabase Sync Error:",
+                error
+            );
+
+            return;
+        }
+
+        console.log(
+            "RNGdle data synced to Supabase!"
+        );
+
+    } catch (error) {
+        console.error(
+            "Supabase Sync Error:",
+            error
+        );
+    }
+}
+
 function saveData() {
-    localStorage.setItem("rngdleData", JSON.stringify(data));
+    localStorage.setItem(
+        "rngdleData",
+        JSON.stringify(data)
+    );
+
+    syncDataToSupabase();
 }
 
 // =========================================
@@ -3132,10 +3590,10 @@ async function processRoll() {
             Date.now()
     });
 
-    if (data.history.length > 100) {
+    if (data.history.length > 10) {
         data.history =
             data.history.slice(
-                -100
+                -10
             );
     }
 
@@ -3245,6 +3703,7 @@ async function performRoll() {
 eraseDataButton.addEventListener(
     "click",
     () => {
+
         const confirmed =
             confirm(
                 "Are You Sure You Want To Erase All RNG Data?"
@@ -3259,6 +3718,167 @@ eraseDataButton.addEventListener(
         );
 
         location.reload();
+    }
+);
+
+// =========================================
+// DELETE ACCOUNT
+// =========================================
+
+var deleteAccountButton =
+    document.getElementById(
+        "deleteAccountButton"
+    );
+
+var deleteAccountMessage =
+    document.getElementById(
+        "deleteAccountMessage"
+    );
+
+deleteAccountButton.addEventListener(
+    "click",
+    async () => {
+
+        const firstConfirmation =
+            confirm(
+                "WARNING: This Will Erase Your RNG Thing Data And Delete Your Account. This Cannot Be Undone. Continue?"
+            );
+
+        if (!firstConfirmation) {
+            return;
+        }
+
+        const secondConfirmation =
+            confirm(
+                "Are You ABSOLUTELY Sure You Want To Delete Your Account?"
+            );
+
+        if (!secondConfirmation) {
+            return;
+        }
+
+        deleteAccountButton.disabled =
+            true;
+
+        deleteAccountMessage.textContent =
+            "Deleting Your Account...";
+
+        try {
+
+            var {
+                data: {
+                    user
+                }
+            } =
+                await supabase.auth.getUser();
+
+            if (!user) {
+                throw new Error(
+                    "You Must Be Signed In To Delete Your Account."
+                );
+            }
+
+            var {
+    data: {
+        session
+    }
+} =
+    await supabase.auth.getSession();
+
+if (!session) {
+    throw new Error(
+        "You Must Be Signed In To Delete Your Account."
+    );
+}
+
+var {
+    data: deleteResult,
+    error: deleteError
+} =
+    await supabase.functions.invoke(
+        "delete-account"
+    );
+
+if (deleteError) {
+
+    console.error(
+        "Delete Account Function Error:",
+        deleteError
+    );
+
+    if (deleteError.context) {
+
+        console.error(
+            "Status:",
+            deleteError.context.status
+        );
+
+        try {
+
+            var functionError =
+                await deleteError.context.json();
+
+            console.error(
+                "Function Response:",
+                functionError
+            );
+
+        } catch (responseError) {
+
+            console.error(
+                "Could Not Read Function Response:",
+                responseError
+            );
+
+        }
+
+    }
+
+    throw deleteError;
+}
+
+if (
+    !deleteResult ||
+    !deleteResult.success
+) {
+    throw new Error(
+        deleteResult?.error ||
+        "Unable To Delete Account."
+    );
+}
+
+localStorage.removeItem(
+    "rngdleData"
+);
+
+await supabase.auth.signOut();
+
+deleteAccountMessage.textContent =
+    "Account Deleted Successfully!";
+
+setTimeout(
+    () => {
+        location.reload();
+    },
+    1000
+);
+
+        } catch (error) {
+
+            console.error(
+                "Delete Account Error:",
+                error
+            );
+
+            deleteAccountMessage.textContent =
+                error.message ||
+                "Unable To Delete Account.";
+
+        }
+
+        deleteAccountButton.disabled =
+            false;
+
     }
 );
 
@@ -3305,3 +3925,614 @@ setInterval(
 // =========================================
 
 initialize();
+
+// =========================================
+// ACCOUNT MENU
+// =========================================
+
+const accountButton =
+    document.getElementById("accountButton");
+
+const accountPanel =
+    document.getElementById("accountPanel");
+
+const accountOverlay =
+    document.getElementById("accountOverlay");
+
+const closeAccountButton =
+    document.getElementById("closeAccountButton");
+
+// =========================================
+// OPEN ACCOUNT MENU
+// =========================================
+
+function openAccountMenu() {
+
+    accountPanel.hidden = false;
+    accountOverlay.hidden = false;
+
+    accountButton.setAttribute(
+        "aria-expanded",
+        "true"
+    );
+
+}
+
+// =========================================
+// CLOSE ACCOUNT MENU
+// =========================================
+
+function closeAccountMenu() {
+
+    accountPanel.hidden = true;
+    accountOverlay.hidden = true;
+
+    accountButton.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+}
+
+// =========================================
+// ACCOUNT BUTTON
+// =========================================
+
+accountButton.addEventListener(
+    "click",
+    () => {
+
+        if (accountPanel.hidden) {
+
+            openAccountMenu();
+
+        } else {
+
+            closeAccountMenu();
+
+        }
+
+    }
+);
+
+// =========================================
+// CLOSE BUTTON
+// =========================================
+
+closeAccountButton.addEventListener(
+    "click",
+    closeAccountMenu
+);
+
+// =========================================
+// CLICK OUTSIDE PANEL
+// =========================================
+
+accountOverlay.addEventListener(
+    "click",
+    closeAccountMenu
+);
+
+// =========================================
+// ESCAPE KEY
+// =========================================
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            !accountPanel.hidden
+        ) {
+
+            closeAccountMenu();
+
+        }
+
+    }
+);
+
+// =========================================
+// ACCOUNT / SIGN OUT
+// =========================================
+
+var signedInContainer =
+    document.getElementById("signedInContainer");
+
+var signedInUsername =
+    document.getElementById("signedInUsername");
+
+var signOutButton =
+    document.getElementById("signOutButton");
+
+var signOutMessage =
+    document.getElementById("signOutMessage");
+
+// =========================================
+// UPDATE ACCOUNT UI
+// =========================================
+
+async function updateAccountUI() {
+
+    var {
+        data: {
+            user
+        }
+    } =
+        await supabase.auth.getUser();
+
+
+    if (user) {
+
+        await loadDataFromSupabase();
+
+        // Show signed-in section
+        signedInContainer.hidden = false;
+
+
+        // Hide sign-up and sign-in
+        document.getElementById(
+            "signUpContainer"
+        ).hidden = true;
+
+        document.getElementById(
+            "signInContainer"
+        ).hidden = true;
+
+
+        // Clear old messages
+        signOutMessage.textContent = "";
+
+        document.getElementById(
+            "signInMessage"
+        ).textContent = "";
+
+
+        // Get username
+        var username =
+            user.user_metadata?.username ||
+            user.email ||
+            "Account";
+
+
+        signedInUsername.textContent =
+            "Signed In As: " + username;
+
+
+    } else {
+
+        // Hide signed-in section
+        signedInContainer.hidden = true;
+
+
+        // Show sign-up and sign-in
+        document.getElementById(
+            "signUpContainer"
+        ).hidden = false;
+
+        document.getElementById(
+            "signInContainer"
+        ).hidden = false;
+
+
+        // Clear old messages
+        signOutMessage.textContent = "";
+
+    }
+
+}
+
+// =========================================
+// SIGN OUT
+// =========================================
+
+signOutButton.addEventListener(
+    "click",
+    async () => {
+
+        signOutButton.disabled = true;
+
+        signOutMessage.textContent =
+            "Signing You Out...";
+
+
+        try {
+
+            var {
+                error
+            } =
+                await supabase.auth.signOut();
+
+
+            if (error) {
+                throw error;
+            }
+
+
+            signOutMessage.textContent =
+                "Signed Out Successfully!";
+
+
+            await updateAccountUI();
+
+
+        } catch (error) {
+
+            console.error(
+                "Sign Out Error:",
+                error
+            );
+
+
+            signOutMessage.textContent =
+                error.message ||
+                "Unable To Sign Out.";
+
+        }
+
+
+        signOutButton.disabled = false;
+
+    }
+);
+
+// =========================================
+// DETECT LOGIN STATE
+// =========================================
+
+supabase.auth.onAuthStateChange(
+    async () => {
+
+        await updateAccountUI();
+
+    }
+);
+
+// =========================================
+// CHECK LOGIN ON PAGE LOAD
+// =========================================
+
+updateAccountUI();
+
+// =========================================
+// SHOP MENU
+// =========================================
+
+var shopButton =
+    document.getElementById("shopButton");
+
+var shopPanel =
+    document.getElementById("shopPanel");
+
+var shopOverlay =
+    document.getElementById("shopOverlay");
+
+var closeShopButton =
+    document.getElementById("closeShopButton");
+
+// =========================================
+// OPEN SHOP MENU
+// =========================================
+
+function openShopMenu() {
+
+    shopPanel.hidden = false;
+    shopOverlay.hidden = false;
+
+    shopButton.setAttribute(
+        "aria-expanded",
+        "true"
+    );
+
+}
+
+// =========================================
+// CLOSE SHOP MENU
+// =========================================
+
+function closeShopMenu() {
+
+    shopPanel.hidden = true;
+    shopOverlay.hidden = true;
+
+    shopButton.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+}
+
+// =========================================
+// SHOP BUTTON
+// =========================================
+
+shopButton.addEventListener(
+    "click",
+    () => {
+
+        if (shopPanel.hidden) {
+
+            openShopMenu();
+
+        } else {
+
+            closeShopMenu();
+
+        }
+
+    }
+);
+
+// =========================================
+// CLOSE SHOP BUTTON
+// =========================================
+
+closeShopButton.addEventListener(
+    "click",
+    closeShopMenu
+);
+
+// =========================================
+// CLICK OUTSIDE SHOP
+// =========================================
+
+shopOverlay.addEventListener(
+    "click",
+    closeShopMenu
+);
+
+// =========================================
+// ESCAPE KEY
+// =========================================
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            !shopPanel.hidden
+        ) {
+
+            closeShopMenu();
+
+        }
+
+    }
+);
+
+// =========================================
+// LEADERBOARD MENU
+// =========================================
+
+var leaderboardToggle =
+    document.getElementById(
+        "leaderboardToggle"
+    );
+
+var leaderboardContainer =
+    document.getElementById(
+        "leaderboardContainer"
+    );
+
+var leaderboardArrow =
+    document.getElementById(
+        "leaderboardArrow"
+    );
+
+var leaderboardEpButton =
+    document.getElementById(
+        "leaderboardEpButton"
+    );
+
+var leaderboardRollsButton =
+    document.getElementById(
+        "leaderboardRollsButton"
+    );
+
+function openLeaderboard() {
+
+    leaderboardContainer.hidden = false;
+
+    leaderboardToggle.setAttribute(
+        "aria-expanded",
+        "true"
+    );
+
+    leaderboardArrow.style.transform =
+        "rotate(180deg)";
+}
+
+function closeLeaderboard() {
+
+    leaderboardContainer.hidden = true;
+
+    leaderboardToggle.setAttribute(
+        "aria-expanded",
+        "false"
+    );
+
+    leaderboardArrow.style.transform =
+        "rotate(0deg)";
+}
+
+leaderboardToggle.addEventListener(
+    "click",
+    () => {
+
+        if (
+            leaderboardContainer.hidden
+        ) {
+            openLeaderboard();
+        } else {
+            closeLeaderboard();
+        }
+
+    }
+);
+
+leaderboardEpButton.addEventListener(
+    "click",
+    () => {
+
+        leaderboardEpButton.classList.add(
+            "active"
+        );
+
+        leaderboardRollsButton.classList.remove(
+            "active"
+        );
+
+        loadLeaderboard("ep");
+
+    }
+);
+
+leaderboardRollsButton.addEventListener(
+    "click",
+    () => {
+
+        leaderboardRollsButton.classList.add(
+            "active"
+        );
+
+        leaderboardEpButton.classList.remove(
+            "active"
+        );
+
+        loadLeaderboard("rolls");
+
+    }
+);
+
+// =========================================
+// LOAD LEADERBOARD
+// =========================================
+
+async function loadLeaderboard(
+    sortBy = "ep"
+) {
+
+    var leaderboardList =
+        document.getElementById(
+            "leaderboardList"
+        );
+
+    leaderboardList.innerHTML =
+        `
+        <p class="leaderboard-empty">
+            Leaderboard Loading...
+        </p>
+        `;
+
+    try {
+
+        var {
+            data: players,
+            error
+        } =
+            await supabase
+                .from("leaderboard")
+                .select(
+                    "username, ep, rolls"
+                )
+                .order(
+                    sortBy,
+                    {
+                        ascending: false
+                    }
+                )
+                .limit(100);
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            !players ||
+            players.length === 0
+        ) {
+
+            leaderboardList.innerHTML =
+                `
+                <p class="leaderboard-empty">
+                    No Players Yet.
+                </p>
+                `;
+
+            return;
+        }
+
+        leaderboardList.innerHTML = "";
+
+        players.forEach(
+            (
+                player,
+                index
+            ) => {
+
+                var username =
+                    player.username ||
+                    "Unknown Player";
+
+                var score =
+                    sortBy === "ep"
+                        ? player.ep ?? 0
+                        : player.rolls ?? 0;
+
+                var row =
+                    document.createElement(
+                        "div"
+                    );
+
+                row.className =
+                    "leaderboard-row";
+
+                row.innerHTML =
+                    `
+                    <span
+                        class="leaderboard-rank"
+                    >
+                        #${index + 1}
+                    </span>
+
+                    <span
+                        class="leaderboard-player"
+                    >
+                        ${username}
+                    </span>
+
+                    <span
+                        class="leaderboard-score"
+                    >
+                        ${score.toLocaleString()}
+                    </span>
+                    `;
+
+                leaderboardList.appendChild(
+                    row
+                );
+
+            }
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Leaderboard Error:",
+            error
+        );
+
+        leaderboardList.innerHTML =
+            `
+            <p class="leaderboard-empty">
+                Unable To Load Leaderboard.
+            </p>
+            `;
+
+    }
+
+}
+
+loadLeaderboard("ep");
