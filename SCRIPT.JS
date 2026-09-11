@@ -293,6 +293,42 @@ const secretThingDescriptionDisplay = document.getElementById("secretThingDescri
 const secretThingCostDisplay = document.getElementById("secretThingCost");
 const buySecretThingButton = document.getElementById("buySecretThing");
 
+const rebirthCountDisplay =
+    document.getElementById("rebirthCount");
+
+const rebirthTokensDisplay =
+    document.getElementById("rebirthTokens");
+
+const rebirthShopTokensDisplay =
+    document.getElementById("rebirthShopTokens");
+
+const rebirthCostMultiplierDisplay =
+    document.getElementById("rebirthCostMultiplier");
+
+const rebirthNotification =
+    document.getElementById("rebirthNotification");
+
+const rebirthNotificationText =
+    document.getElementById("rebirthNotificationText");
+
+const rebirthYesButton =
+    document.getElementById("rebirthYesButton");
+
+const rebirthNoButton =
+    document.getElementById("rebirthNoButton");
+
+const rebirthShopTab =
+    document.getElementById("rebirthShopTab");
+
+const epShopTab =
+    document.getElementById("epShopTab");
+
+const epShopContent =
+    document.getElementById("epShopContent");
+
+const rebirthShopContent =
+    document.getElementById("rebirthShopContent");
+
 // =========================================
 // HIDE SECRET LEVEL DISPLAY
 // =========================================
@@ -415,6 +451,72 @@ const SHOP_UPGRADES = {
 };
 
 // =========================================
+// REBIRTH SYSTEM
+// =========================================
+
+const MAX_REBIRTHS = 5;
+
+const REBIRTH_COST_MULTIPLIERS = [
+    1,
+    1.5,
+    3,
+    5,
+    7,
+    10
+];
+
+const REBIRTH_TOKEN_REWARDS = [
+    0,
+    1,
+    3,
+    5,
+    7,
+    10
+];
+
+function getRebirthCostMultiplier() {
+    const rebirthLevel =
+        Math.max(
+            0,
+            Math.min(
+                data.rebirths || 0,
+                MAX_REBIRTHS
+            )
+        );
+
+    return REBIRTH_COST_MULTIPLIERS[rebirthLevel];
+}
+
+function getRebirthTokenReward() {
+    const nextRebirth =
+        Math.min(
+            MAX_REBIRTHS,
+            (data.rebirths || 0) + 1
+        );
+
+    return REBIRTH_TOKEN_REWARDS[nextRebirth];
+}
+
+function getAvailableUpgradeNames() {
+    return Object.keys(SHOP_UPGRADES);
+}
+
+function areAllUpgradesMaxed() {
+    return getAvailableUpgradeNames().every(
+        upgradeName =>
+            getUpgradeLevel(upgradeName) >=
+            SHOP_UPGRADES[upgradeName].levels.length - 1
+    );
+}
+
+function canRebirth() {
+    return (
+        (data.rebirths || 0) < MAX_REBIRTHS &&
+        areAllUpgradesMaxed()
+    );
+}
+
+// =========================================
 // RARITY
 // =========================================
 
@@ -504,6 +606,9 @@ let data = {
         secretThing: 0
     },
 
+    rebirths: 0,
+    rebirthTokens: 0,
+
     backgroundColor: null,
 
     shrihanCodeUsed: false,
@@ -532,11 +637,17 @@ function activateShrihanCode() {
 
     saveData();
 
-    dailyStatus.textContent = "Shrihan Code Activated! Next Roll = Chroma!";
+    dailyStatus.textContent =
+        "Shrihan Code Activated! Next Roll = Chroma!";
 }
 
 document.addEventListener("keydown", event => {
-    if (event.key.length !== 1) {
+
+    if (
+        !event ||
+        typeof event.key !== "string" ||
+        event.key.length !== 1
+    ) {
         return;
     }
 
@@ -556,7 +667,8 @@ document.addEventListener("keydown", event => {
     shrihanCodeBuffer += event.key;
 
     if (shrihanCodeBuffer.length > 7) {
-        shrihanCodeBuffer = shrihanCodeBuffer.slice(-7);
+        shrihanCodeBuffer =
+            shrihanCodeBuffer.slice(-7);
     }
 
     if (shrihanCodeBuffer === "Shrihan") {
@@ -588,6 +700,37 @@ function loadData() {
                 ...(parsed.upgrades || {})
             }
         };
+
+        if (
+            typeof parsed.rebirths !== "number" &&
+            typeof parsed.upgrades?.__rebirths === "number"
+        ) {
+            data.rebirths =
+                parsed.upgrades.__rebirths;
+        }
+
+        if (
+            typeof parsed.rebirthTokens !== "number" &&
+            typeof parsed.upgrades?.__rebirthTokens === "number"
+        ) {
+            data.rebirthTokens =
+                parsed.upgrades.__rebirthTokens;
+        }
+
+        data.rebirths =
+            Math.max(
+                0,
+                Math.min(
+                    MAX_REBIRTHS,
+                    Number(data.rebirths) || 0
+                )
+            );
+
+        data.rebirthTokens =
+            Math.max(
+                0,
+                Number(data.rebirthTokens) || 0
+            );
     } catch (error) {
         console.error("Could Not Load RNGdle Data:", error);
     }
@@ -684,6 +827,16 @@ async function loadDataFromSupabase() {
                 ...(profile.upgrades || {})
             },
 
+            rebirths:
+                profile.upgrades?.__rebirths ??
+                data.rebirths ??
+                0,
+
+            rebirthTokens:
+                profile.upgrades?.__rebirthTokens ??
+                data.rebirthTokens ??
+                0,
+
             backgroundColor:
                 profile.background_color ?? null,
 
@@ -693,6 +846,40 @@ async function loadDataFromSupabase() {
             shrihanChromaReady:
                 profile.shrihan_chroma_ready ?? false
         };
+
+                if (
+            !Number.isFinite(Number(data.totalRollValue)) ||
+            Number(data.totalRollValue) < 0 ||
+            Number(data.totalRollValue) >
+                MAX_NUMBER * Number(data.totalRolls || 0)
+        ) {
+            data.totalRollValue =
+                Array.isArray(data.history)
+                    ? data.history.reduce(
+                        (sum, roll) =>
+                            sum + Number(roll.number || 0),
+                        0
+                    )
+                    : 0;
+        }
+
+        delete data.upgrades.__rebirths;
+        delete data.upgrades.__rebirthTokens;
+
+        data.rebirths =
+            Math.max(
+                0,
+                Math.min(
+                    MAX_REBIRTHS,
+                    Number(data.rebirths) || 0
+                )
+            );
+
+        data.rebirthTokens =
+            Math.max(
+                0,
+                Number(data.rebirthTokens) || 0
+            );
 
         localStorage.setItem(
             "rngdleData",
@@ -796,7 +983,13 @@ console.log(
                         data.history,
 
                     upgrades:
-                        data.upgrades,
+                        {
+                            ...data.upgrades,
+                            __rebirths:
+                                data.rebirths || 0,
+                            __rebirthTokens:
+                                data.rebirthTokens || 0
+                        },
 
                     background_color:
                         data.backgroundColor,
@@ -873,7 +1066,12 @@ function getUpgradeCost(upgradeName) {
         return null;
     }
 
-    return upgrade.costs[level];
+    const baseCost = upgrade.costs[level];
+    const multiplier = getRebirthCostMultiplier();
+
+    return Math.ceil(
+        baseCost * multiplier
+    );
 }
 
 // =========================================
@@ -953,6 +1151,82 @@ function updateShopUpgrade(upgradeName, levelDisplay, costDisplay, buyButton) {
 }
 
 // =========================================
+// UPDATE REBIRTH UI
+// =========================================
+
+function updateRebirthUI() {
+    const rebirths =
+        data.rebirths || 0;
+
+    const tokens =
+        data.rebirthTokens || 0;
+
+    if (rebirthCountDisplay) {
+        rebirthCountDisplay.textContent =
+            `${rebirths} / ${MAX_REBIRTHS}`;
+    }
+
+    if (rebirthTokensDisplay) {
+        rebirthTokensDisplay.textContent =
+            tokens.toLocaleString();
+    }
+
+    if (rebirthShopTokensDisplay) {
+        rebirthShopTokensDisplay.textContent =
+            tokens.toLocaleString();
+    }
+
+    if (rebirthCostMultiplierDisplay) {
+        rebirthCostMultiplierDisplay.textContent =
+            `×${getRebirthCostMultiplier().toLocaleString()}`;
+    }
+
+    if (rebirthShopTab) {
+        rebirthShopTab.hidden =
+            rebirths <= 0;
+    }
+
+    if (rebirthShopContent && rebirths <= 0) {
+        rebirthShopContent.hidden = true;
+    }
+
+    if (epShopContent && rebirths <= 0) {
+        epShopContent.hidden = false;
+    }
+
+    if (rebirthNotification) {
+        const showNotification =
+            canRebirth();
+
+        rebirthNotification.hidden =
+            !showNotification;
+    }
+
+    if (rebirthNotificationText) {
+        if (rebirths >= MAX_REBIRTHS) {
+            rebirthNotificationText.textContent =
+                "Maximum Rebirth Reached!";
+        } else {
+            const reward =
+                getRebirthTokenReward();
+
+            rebirthNotificationText.textContent =
+                `You Have Maxed Every Upgrade! Rebirth Now And Gain +${reward} Rebirth Token${reward === 1 ? "" : "s"}.`;
+        }
+    }
+
+    if (rebirthYesButton) {
+        rebirthYesButton.disabled =
+            !canRebirth();
+    }
+
+    if (rebirthNoButton) {
+        rebirthNoButton.disabled =
+            false;
+    }
+}
+
+// =========================================
 // UPDATE SHOP
 // =========================================
 
@@ -1017,11 +1291,14 @@ function updateShop() {
                 "Does Absolutely Nothing... Yet.";
         }
     }
+
+    updateRebirthUI();
 }
 
 // =========================================
 // BUY UPGRADE
 // =========================================
+
 
 function buyUpgrade(upgradeName) {
     const cost = getUpgradeCost(upgradeName);
@@ -1041,6 +1318,86 @@ function buyUpgrade(upgradeName) {
 
     updateStats();
     updateShop();
+}
+
+// =========================================
+// REBIRTH
+// =========================================
+
+function resetUpgradesForRebirth() {
+    Object.keys(SHOP_UPGRADES).forEach(
+        upgradeName => {
+            data.upgrades[upgradeName] = 0;
+        }
+    );
+}
+
+async function performRebirth() {
+    if (!canRebirth()) {
+        return;
+    }
+
+    if (isRolling) {
+        return;
+    }
+
+    const nextRebirth =
+        (data.rebirths || 0) + 1;
+
+    const tokenReward =
+        REBIRTH_TOKEN_REWARDS[nextRebirth];
+
+    data.rebirths =
+        nextRebirth;
+
+    data.rebirthTokens =
+        (data.rebirthTokens || 0) +
+        tokenReward;
+
+    // IMPORTANT:
+    // EP IS NOT RESET.
+    // Rolls, badges, history, rarity records,
+    // and every other permanent stat stay intact.
+    resetUpgradesForRebirth();
+
+    saveData();
+
+    updateStats();
+    updateShop();
+
+    await triggerRebirthCutscene(
+        nextRebirth,
+        tokenReward
+    );
+
+    updateRebirthUI();
+    updateShop();
+}
+
+if (rebirthYesButton) {
+    rebirthYesButton.addEventListener(
+        "click",
+        async () => {
+            rebirthYesButton.disabled = true;
+
+            try {
+                await performRebirth();
+            } finally {
+                updateRebirthUI();
+            }
+        }
+    );
+}
+
+if (rebirthNoButton) {
+    rebirthNoButton.addEventListener(
+        "click",
+        () => {
+            if (rebirthNotification) {
+                rebirthNotification.hidden = true;
+            }
+        }
+    );
 }
 
 // =========================================
@@ -1931,7 +2288,6 @@ function getNaturalPatternRarity(number) {
     ) {
         return "Mythic";
     }
-
 
     if (longestRun === 4) {
         return "Legendary";
@@ -3146,6 +3502,186 @@ function triggerSecretEffect() {
 }
 
 // =========================================
+// REBIRTH CUTSCENE
+// =========================================
+
+function triggerRebirthCutscene(
+    rebirthNumber,
+    tokenReward
+) {
+    const effect =
+        document.getElementById(
+            "rebirthEffect"
+        );
+
+    if (!effect) {
+        return Promise.resolve();
+    }
+
+    const title =
+        document.getElementById(
+            "rebirthCutsceneTitle"
+        );
+
+    const subtitle =
+        document.getElementById(
+            "rebirthCutsceneSubtitle"
+        );
+
+    const coin =
+        document.getElementById(
+            "rebirthCoin"
+        );
+
+    const reward =
+        document.getElementById(
+            "rebirthCutsceneReward"
+        );
+
+    if (title) {
+        title.textContent =
+            `REBIRTH ${rebirthNumber}`;
+    }
+
+    if (subtitle) {
+        subtitle.textContent =
+            "YOUR UPGRADES HAVE BEEN REBORN";
+    }
+
+    if (reward) {
+        reward.textContent =
+            `+${tokenReward} REBIRTH TOKEN${tokenReward === 1 ? "" : "S"}`;
+    }
+
+    document.body.classList.add(
+        "rebirth-cutscene"
+    );
+
+    effect.classList.remove(
+        "active"
+    );
+
+    if (coin) {
+        coin.classList.remove(
+            "rebirth-coin-fly"
+        );
+    }
+
+    void effect.offsetWidth;
+
+    effect.classList.add(
+        "active"
+    );
+
+    rarityTone(
+        110,
+        1.2,
+        "sine",
+        0.035
+    );
+
+    setTimeout(() => {
+        rarityTone(
+            165,
+            1.2,
+            "triangle",
+            0.045
+        );
+    }, 700);
+
+    setTimeout(() => {
+        rarityTone(
+            247,
+            1.2,
+            "sine",
+            0.055
+        );
+    }, 1500);
+
+    setTimeout(() => {
+        rarityTone(
+            330,
+            1.4,
+            "triangle",
+            0.065
+        );
+    }, 2300);
+
+    setTimeout(() => {
+        rarityTone(
+            494,
+            1.5,
+            "sine",
+            0.075
+        );
+    }, 3200);
+
+    setTimeout(() => {
+        rarityTone(
+            659,
+            1.6,
+            "triangle",
+            0.085
+        );
+    }, 4300);
+
+    setTimeout(() => {
+        rarityTone(
+            988,
+            1.8,
+            "sine",
+            0.095
+        );
+    }, 5400);
+
+    setTimeout(() => {
+        rarityTone(
+            1318,
+            1.8,
+            "triangle",
+            0.11
+        );
+    }, 6500);
+
+    setTimeout(() => {
+        rarityTone(
+            1760,
+            2,
+            "sine",
+            0.12
+        );
+
+        if (coin) {
+            coin.classList.add(
+                "rebirth-coin-fly"
+            );
+        }
+    }, 7800);
+
+    return new Promise(
+        resolve => {
+            setTimeout(() => {
+                effect.classList.remove(
+                    "active"
+                );
+
+                document.body.classList.remove(
+                    "rebirth-cutscene"
+                );
+
+                if (coin) {
+                    coin.classList.remove(
+                        "rebirth-coin-fly"
+                    );
+                }
+
+                resolve();
+            }, 10000);
+        }
+    );
+}
+
+// =========================================
 // NUMBER ANIMATION
 // =========================================
 
@@ -3285,13 +3821,20 @@ function updateStats() {
     totalBadgesDisplay.textContent =
         `${data.totalBadges} / ${BADGES.length}`;
 
-    const average =
-        data.totalRolls > 0
-            ? Math.round(
-                data.totalRollValue /
-                data.totalRolls
-            )
-            : 0;
+    const safeTotalRollValue =
+    Number.isFinite(
+        Number(data.totalRollValue)
+    )
+        ? Number(data.totalRollValue)
+        : 0;
+
+const average =
+    data.totalRolls > 0
+        ? Math.round(
+            safeTotalRollValue /
+            data.totalRolls
+        )
+        : 0;
 
     averageRollDisplay.textContent =
         average.toLocaleString();
@@ -3480,42 +4023,74 @@ async function processRoll() {
         Math.floor(
             baseEP *
             epMultiplier
-        );
-
-    await animateNumber(
-        finalNumber
-    );
-
-    updateRarityDisplay(
-        rarity
-    );
-
-    epDisplay.textContent =
-        earnedEP.toLocaleString();
-
-    updateAnalysis(
-        finalNumber
-    );
-
-    data.totalRolls++;
-
-    const currentRollNumber =
-        data.totalRolls;
+        );    data.totalRolls++;
 
     data.totalEP +=
         earnedEP;
 
-    const numericFinalNumber =
-        Number(finalNumber);
-
     data.totalRollValue +=
-        numericFinalNumber;
+    Number(finalNumber);
 
     data.highestNumber =
         Math.max(
             data.highestNumber,
-            numericFinalNumber
+            Number(finalNumber)
         );
+
+    if (
+        !data.bestRarity ||
+        RARITY_ORDER.indexOf(rarity) >
+        RARITY_ORDER.indexOf(
+            data.bestRarity
+        )
+    ) {
+        data.bestRarity =
+            rarity;
+    }
+
+    const rollBadges =
+        getRollBadges(
+            Number(finalNumber),
+            rarity,
+            data.totalRolls
+        );
+
+    const newBadges =
+        findBadges(
+            Number(finalNumber),
+            rarity,
+            data.totalRolls
+        );
+
+    data.history.push({
+        number:
+            Number(finalNumber),
+
+        rarity:
+            rarity,
+
+        ep:
+            earnedEP,
+
+        rollNumber:
+            data.totalRolls,
+
+        badges:
+            rollBadges.map(
+                badge =>
+                    badge.name
+            )
+    });
+
+    if (data.history.length > 100) {
+        data.history =
+            data.history.slice(
+                -100
+            );
+    }
+
+    data.lastRoll =
+        Date.now();
 
     const today =
         new Date()
@@ -3526,8 +4101,10 @@ async function processRoll() {
         data.lastRollDate !==
         today
     ) {
-        if (data.lastRollDate) {
-            const previousDate =
+        if (!data.lastRollDate) {
+            data.dailyStreak = 1;
+        } else {
+            const lastDate =
                 new Date(
                     data.lastRollDate
                 );
@@ -3537,189 +4114,311 @@ async function processRoll() {
 
             const difference =
                 Math.floor(
-                    (currentDate -
-                        previousDate) /
+                    (
+                        currentDate -
+                        lastDate
+                    ) /
                     86400000
                 );
 
             if (difference === 1) {
                 data.dailyStreak++;
-            } else {
-                data.dailyStreak =
-                    1;
+            } else if (difference > 1) {
+                data.dailyStreak = 1;
             }
-        } else {
-            data.dailyStreak =
-                1;
         }
 
         data.lastRollDate =
             today;
     }
 
-    const currentIndex =
-        RARITY_ORDER.indexOf(
-            rarity
-        );
-
-    const bestIndex =
-        data.bestRarity
-            ? RARITY_ORDER.indexOf(
-                data.bestRarity
-            )
-            : -1;
-
-    if (currentIndex > bestIndex) {
-        data.bestRarity =
-            rarity;
-    }
-
-    findBadges(
-        finalNumber,
-        rarity,
-        currentRollNumber
-    );
-
-    data.history.push({
-        number: finalNumber,
-        rarity: rarity,
-        ep: earnedEP,
-        rollNumber:
-            currentRollNumber,
-        timestamp:
-            Date.now()
-    });
-
-    if (data.history.length > 10) {
-        data.history =
-            data.history.slice(
-                -10
-            );
-    }
-
-    if (
-        data.shrihanChromaReady &&
-        rarity === "Chroma"
-    ) {
+    if (data.shrihanChromaReady) {
         data.shrihanChromaReady =
             false;
     }
+
+    saveData();
+
+    await animateNumber(
+        finalNumber
+    );
+
+    numberDisplay.textContent =
+        formatNumber(finalNumber);
+
+    updateRarityDisplay(
+        rarity
+    );
+
+    epDisplay.textContent =
+        `+${earnedEP.toLocaleString()} EP`;
+
+    updateAnalysis(
+        Number(finalNumber)
+    );
 
     displayBadges();
     displayBadgeIndex();
     updateStats();
     updateHistory();
+    updateCooldown();
 
-    // =========================================
-    // SECRET HAS HIGHEST PRIORITY
-    // =========================================
+    if (newBadges.length > 0) {
+        dailyStatus.textContent =
+            `New Badge${newBadges.length === 1 ? "" : "s"} Unlocked!`;
+    }
 
     if (rarity === "Secret") {
         triggerSecretEffect();
-    } else if (
-        rarity === "Chroma"
-    ) {
+    } else if (rarity === "Chroma") {
         triggerChromaEffect();
-    } else if (
-        rarity === "Mythic"
-    ) {
+    } else if (rarity === "Mythic") {
         triggerMythicEffect();
     }
-
-    return {
-        number: finalNumber,
-        rarity: rarity,
-        ep: earnedEP
-    };
 }
 
 // =========================================
-// PERFORM ROLL
+// ROLL BUTTON
 // =========================================
 
-async function performRoll() {
-    if (isRolling) {
-        return;
-    }
+rollButton.addEventListener(
+    "click",
+    async () => {
 
-    if (
-        getRemainingCooldown() >
-        0
-    ) {
-        return;
-    }
-
-    isRolling = true;
-
-    rollButton.disabled =
-        true;
-
-    updateCooldown();
-
-    try {
-        await processRoll();
-
-        const doubleRollChance =
-            getUpgradeValue(
-                "doubleRoll"
-            );
-
-        if (
-            doubleRollChance > 0 &&
-            Math.random() <
-                doubleRollChance / 100
-        ) {
-            await new Promise(
-                resolve => {
-                    setTimeout(
-                        resolve,
-                        250
-                    );
-                }
-            );
-
-            await processRoll();
+        if (isRolling) {
+            return;
         }
 
-        data.lastRoll =
-            Date.now();
+        if (
+            getRemainingCooldown() >
+            0
+        ) {
+            return;
+        }
 
-        saveData();
-
-        updateStats();
-        updateShop();
-    } finally {
-        isRolling =
-            false;
+        isRolling = true;
 
         updateCooldown();
+
+        try {
+
+            await processRoll();
+
+        } catch (error) {
+
+            console.error(
+                "Roll Error:",
+                error
+            );
+
+        } finally {
+
+            isRolling = false;
+
+            updateCooldown();
+
+        }
+
     }
-}
+);
+
 
 // =========================================
 // ERASE DATA
 // =========================================
 
-eraseDataButton.addEventListener(
-    "click",
-    () => {
+if (eraseDataButton) {
 
-        const confirmed =
-            confirm(
-                "Are You Sure You Want To Erase All RNG Data?"
+    eraseDataButton.addEventListener(
+        "click",
+        async () => {
+
+            const confirmed =
+                confirm(
+                    "Are You Sure You Want To Erase All RNG Thing Data?"
+                );
+
+            if (!confirmed) {
+                return;
+            }
+
+            data = {
+                totalRolls: 0,
+
+                totalEP: 0,
+
+                bestRarity: null,
+
+                totalBadges: 0,
+
+                totalRollValue: 0,
+
+                highestNumber: 0,
+
+                dailyStreak: 0,
+
+                lastRoll: null,
+
+                lastRollDate: null,
+
+                history: [],
+
+                badges: [],
+
+                upgrades: {
+                    rollSpeed: 0,
+                    epMultiplier: 0,
+                    luck: 0,
+                    numberFortune: 0,
+                    doubleRoll: 0,
+                    secretThing: 0
+                },
+
+                rebirths: 0,
+
+                rebirthTokens: 0,
+
+                backgroundColor: null,
+
+                shrihanCodeUsed: false,
+
+                shrihanChromaReady: false
+            };
+
+
+            localStorage.removeItem(
+                "rngdleData"
             );
 
-        if (!confirmed) {
-            return;
+
+            try {
+
+                const {
+                    data: {
+                        user
+                    }
+                } =
+                    await supabase.auth.getUser();
+
+
+                if (user) {
+
+                    const {
+                        error
+                    } =
+                        await supabase
+                            .from("profiles")
+                            .update({
+                                ep: 0,
+
+                                rolls: 0,
+
+                                best_roll: 0,
+
+                                rarest_rarity: null,
+
+                                badges: [],
+
+                                total_roll_value: 0,
+
+                                highest_number: 0,
+
+                                daily_streak: 0,
+
+                                last_roll: null,
+
+                                last_roll_date: null,
+
+                                history: [],
+
+                                upgrades: {
+                                    rollSpeed: 0,
+
+                                    epMultiplier: 0,
+
+                                    luck: 0,
+
+                                    numberFortune: 0,
+
+                                    doubleRoll: 0,
+
+                                    secretThing: 0,
+
+                                    __rebirths: 0,
+
+                                    __rebirthTokens: 0
+                                },
+
+                                background_color: null,
+
+                                shrihan_code_used: false,
+
+                                shrihan_chroma_ready: false
+
+                            })
+                            .eq(
+                                "id",
+                                user.id
+                            );
+
+
+                    if (error) {
+
+                        console.error(
+                            "Supabase Erase Error:",
+                            error
+                        );
+
+                    }
+
+                }
+
+            } catch (error) {
+
+                console.error(
+                    "Supabase Erase Error:",
+                    error
+                );
+
+            }
+
+
+            numberDisplay.textContent =
+                "------";
+
+            rarityDisplay.textContent =
+                "---";
+
+            rarityDisplay.className =
+                "";
+
+            epDisplay.textContent =
+                "+0 EP";
+
+
+            updateAnalysis(0);
+
+            displayBadges();
+
+            displayBadgeIndex();
+
+            updateStats();
+
+            updateHistory();
+
+            updateCooldown();
+
+            updateShop();
+
+            applyBackground();
+
+            updateBackgroundButton();
+
         }
+    );
 
-        localStorage.removeItem(
-            "rngdleData"
-        );
+}
 
-        location.reload();
-    }
-);
 
 // =========================================
 // DELETE ACCOUNT
@@ -3735,556 +4434,586 @@ var deleteAccountMessage =
         "deleteAccountMessage"
     );
 
-deleteAccountButton.addEventListener(
-    "click",
-    async () => {
 
-        const firstConfirmation =
-            confirm(
-                "WARNING: This Will Erase Your RNG Thing Data And Delete Your Account. This Cannot Be Undone. Continue?"
-            );
+if (deleteAccountButton) {
 
-        if (!firstConfirmation) {
-            return;
-        }
+    deleteAccountButton.addEventListener(
+        "click",
+        async () => {
 
-        const secondConfirmation =
-            confirm(
-                "Are You ABSOLUTELY Sure You Want To Delete Your Account?"
-            );
-
-        if (!secondConfirmation) {
-            return;
-        }
-
-        deleteAccountButton.disabled =
-            true;
-
-        deleteAccountMessage.textContent =
-            "Deleting Your Account...";
-
-        try {
-
-            var {
-                data: {
-                    user
-                }
-            } =
-                await supabase.auth.getUser();
-
-            if (!user) {
-                throw new Error(
-                    "You Must Be Signed In To Delete Your Account."
+            const firstConfirmation =
+                confirm(
+                    "WARNING: This Will Erase Your RNG Thing Data And Delete Your Account. This Cannot Be Undone. Continue?"
                 );
+
+
+            if (!firstConfirmation) {
+                return;
             }
 
-            var {
-    data: {
-        session
-    }
-} =
-    await supabase.auth.getSession();
-
-if (!session) {
-    throw new Error(
-        "You Must Be Signed In To Delete Your Account."
-    );
-}
 
-var {
-    data: deleteResult,
-    error: deleteError
-} =
-    await supabase.functions.invoke(
-        "delete-account"
-    );
+            const secondConfirmation =
+                confirm(
+                    "Are You ABSOLUTELY Sure You Want To Delete Your Account?"
+                );
 
-if (deleteError) {
 
-    console.error(
-        "Delete Account Function Error:",
-        deleteError
-    );
+            if (!secondConfirmation) {
+                return;
+            }
 
-    if (deleteError.context) {
 
-        console.error(
-            "Status:",
-            deleteError.context.status
-        );
+            deleteAccountButton.disabled =
+                true;
 
-        try {
 
-            var functionError =
-                await deleteError.context.json();
+            if (deleteAccountMessage) {
 
-            console.error(
-                "Function Response:",
-                functionError
-            );
+                deleteAccountMessage.textContent =
+                    "Erasing Your Data And Deleting Your Account...";
 
-        } catch (responseError) {
+            }
 
-            console.error(
-                "Could Not Read Function Response:",
-                responseError
-            );
 
-        }
+            try {
 
-    }
+                const {
+                    data: {
+                        user
+                    }
+                } =
+                    await supabase.auth.getUser();
 
-    throw deleteError;
-}
 
-if (
-    !deleteResult ||
-    !deleteResult.success
-) {
-    throw new Error(
-        deleteResult?.error ||
-        "Unable To Delete Account."
-    );
-}
+                if (!user) {
 
-localStorage.removeItem(
-    "rngdleData"
-);
+                    throw new Error(
+                        "You Must Be Signed In To Delete Your Account."
+                    );
 
-await supabase.auth.signOut();
+                }
 
-deleteAccountMessage.textContent =
-    "Account Deleted Successfully!";
 
-setTimeout(
-    () => {
-        location.reload();
-    },
-    1000
-);
+                const {
+                    data: {
+                        session
+                    }
+                } =
+                    await supabase.auth.getSession();
 
-        } catch (error) {
 
-            console.error(
-                "Delete Account Error:",
-                error
-            );
+                if (!session) {
 
-            deleteAccountMessage.textContent =
-                error.message ||
-                "Unable To Delete Account.";
+                    throw new Error(
+                        "You Must Be Signed In To Delete Your Account."
+                    );
 
-        }
+                }
 
-        deleteAccountButton.disabled =
-            false;
 
-    }
-);
+                // =========================================
+                // ERASE ALL GAME DATA FIRST
+                // =========================================
 
-// =========================================
-// INITIALIZE
-// =========================================
+                data = {
+                    totalRolls: 0,
 
-function initialize() {
-    loadData();
+                    totalEP: 0,
 
-    updateStreak();
+                    bestRarity: null,
 
-    displayBadges();
-    displayBadgeIndex();
+                    totalBadges: 0,
 
-    updateStats();
-    updateHistory();
-    updateShop();
-    updateCooldown();
+                    totalRollValue: 0,
 
-    initializeBackgroundCustomization();
-}
+                    highestNumber: 0,
 
-// =========================================
-// ROLL BUTTON
-// =========================================
+                    dailyStreak: 0,
 
-rollButton.addEventListener(
-    "click",
-    performRoll
-);
+                    lastRoll: null,
 
-// =========================================
-// COOLDOWN TIMER
-// =========================================
+                    lastRollDate: null,
 
-setInterval(
-    updateCooldown,
-    250
-);
+                    history: [],
 
-// =========================================
-// START
-// =========================================
+                    badges: [],
 
-initialize();
+                    upgrades: {
+                        rollSpeed: 0,
+                        epMultiplier: 0,
+                        luck: 0,
+                        numberFortune: 0,
+                        doubleRoll: 0,
+                        secretThing: 0
+                    },
 
-// =========================================
-// ACCOUNT MENU
-// =========================================
+                    rebirths: 0,
 
-const accountButton =
-    document.getElementById("accountButton");
+                    rebirthTokens: 0,
 
-const accountPanel =
-    document.getElementById("accountPanel");
+                    backgroundColor: null,
 
-const accountOverlay =
-    document.getElementById("accountOverlay");
+                    shrihanCodeUsed: false,
 
-const closeAccountButton =
-    document.getElementById("closeAccountButton");
+                    shrihanChromaReady: false
+                };
 
-// =========================================
-// OPEN ACCOUNT MENU
-// =========================================
 
-function openAccountMenu() {
+                // Clear local saved data
+                localStorage.removeItem(
+                    "rngdleData"
+                );
 
-    accountPanel.hidden = false;
-    accountOverlay.hidden = false;
 
-    accountButton.setAttribute(
-        "aria-expanded",
-        "true"
-    );
+                // Clear the user's Supabase profile data
+                const {
+                    error: eraseError
+                } =
+                    await supabase
+                        .from("profiles")
+                        .update({
+                            ep: 0,
 
-}
+                            rolls: 0,
 
-// =========================================
-// CLOSE ACCOUNT MENU
-// =========================================
+                            best_roll: 0,
 
-function closeAccountMenu() {
+                            rarest_rarity: null,
 
-    accountPanel.hidden = true;
-    accountOverlay.hidden = true;
+                            badges: [],
 
-    accountButton.setAttribute(
-        "aria-expanded",
-        "false"
-    );
+                            total_roll_value: 0,
 
-}
+                            highest_number: 0,
 
-// =========================================
-// ACCOUNT BUTTON
-// =========================================
+                            daily_streak: 0,
 
-accountButton.addEventListener(
-    "click",
-    () => {
+                            last_roll: null,
 
-        if (accountPanel.hidden) {
+                            last_roll_date: null,
 
-            openAccountMenu();
+                            history: [],
 
-        } else {
+                            upgrades: {
+                                rollSpeed: 0,
 
-            closeAccountMenu();
+                                epMultiplier: 0,
 
-        }
+                                luck: 0,
 
-    }
-);
+                                numberFortune: 0,
 
-// =========================================
-// CLOSE BUTTON
-// =========================================
+                                doubleRoll: 0,
 
-closeAccountButton.addEventListener(
-    "click",
-    closeAccountMenu
-);
+                                secretThing: 0,
 
-// =========================================
-// CLICK OUTSIDE PANEL
-// =========================================
+                                __rebirths: 0,
 
-accountOverlay.addEventListener(
-    "click",
-    closeAccountMenu
-);
+                                __rebirthTokens: 0
+                            },
 
-// =========================================
-// ESCAPE KEY
-// =========================================
+                            background_color: null,
 
-document.addEventListener(
-    "keydown",
-    event => {
+                            shrihan_code_used: false,
 
-        if (
-            event.key === "Escape" &&
-            !accountPanel.hidden
-        ) {
+                            shrihan_chroma_ready: false
 
-            closeAccountMenu();
+                        })
+                        .eq(
+                            "id",
+                            user.id
+                        );
 
-        }
 
-    }
-);
+                if (eraseError) {
 
-// =========================================
-// ACCOUNT / SIGN OUT
-// =========================================
+                    console.error(
+                        "Supabase Erase Error:",
+                        eraseError
+                    );
 
-var signedInContainer =
-    document.getElementById("signedInContainer");
+                    throw eraseError;
 
-var signedInUsername =
-    document.getElementById("signedInUsername");
+                }
 
-var signOutButton =
-    document.getElementById("signOutButton");
 
-var signOutMessage =
-    document.getElementById("signOutMessage");
+                // =========================================
+                // DELETE THE ACCOUNT
+                // =========================================
 
-// =========================================
-// UPDATE ACCOUNT UI
-// =========================================
+                const {
+                    data: deleteResult,
+                    error: deleteError
+                } =
+                    await supabase.functions.invoke(
+                        "delete-account"
+                    );
 
-async function updateAccountUI() {
 
-    var {
-        data: {
-            user
-        }
-    } =
-        await supabase.auth.getUser();
+                if (deleteError) {
 
+                    console.error(
+                        "Delete Account Function Error:",
+                        deleteError
+                    );
 
-    if (user) {
 
-        await loadDataFromSupabase();
+                    if (deleteError.context) {
 
-        // Show signed-in section
-        signedInContainer.hidden = false;
+                        console.error(
+                            "Status:",
+                            deleteError.context.status
+                        );
 
 
-        // Hide sign-up and sign-in
-        document.getElementById(
-            "signUpContainer"
-        ).hidden = true;
+                        try {
 
-        document.getElementById(
-            "signInContainer"
-        ).hidden = true;
+                            const functionError =
+                                await deleteError
+                                    .context
+                                    .json();
 
 
-        // Clear old messages
-        signOutMessage.textContent = "";
+                            console.error(
+                                "Function Response:",
+                                functionError
+                            );
 
-        document.getElementById(
-            "signInMessage"
-        ).textContent = "";
+                        } catch (responseError) {
 
+                            console.error(
+                                "Could Not Read Function Response:",
+                                responseError
+                            );
 
-        // Get username
-        var username =
-            user.user_metadata?.username ||
-            user.email ||
-            "Account";
+                        }
 
+                    }
 
-        signedInUsername.textContent =
-            "Signed In As: " + username;
 
+                    throw deleteError;
 
-    } else {
+                }
 
-        // Hide signed-in section
-        signedInContainer.hidden = true;
 
+                if (
+                    !deleteResult ||
+                    !deleteResult.success
+                ) {
 
-        // Show sign-up and sign-in
-        document.getElementById(
-            "signUpContainer"
-        ).hidden = false;
+                    throw new Error(
+                        deleteResult?.error ||
+                        "Unable To Delete Account."
+                    );
 
-        document.getElementById(
-            "signInContainer"
-        ).hidden = false;
+                }
 
 
-        // Clear old messages
-        signOutMessage.textContent = "";
+                // Make absolutely sure local data is gone
+                localStorage.removeItem(
+                    "rngdleData"
+                );
 
-    }
 
-}
-
-// =========================================
-// SIGN OUT
-// =========================================
-
-signOutButton.addEventListener(
-    "click",
-    async () => {
-
-        signOutButton.disabled = true;
-
-        signOutMessage.textContent =
-            "Signing You Out...";
-
-
-        try {
-
-            var {
-                error
-            } =
+                // Sign out
                 await supabase.auth.signOut();
 
 
-            if (error) {
-                throw error;
+                if (deleteAccountMessage) {
+
+                    deleteAccountMessage.textContent =
+                        "Account And All Data Deleted Successfully!";
+
+                }
+
+
+                setTimeout(
+                    () => {
+                        location.reload();
+                    },
+                    1000
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Delete Account Error:",
+                    error
+                );
+
+
+                if (deleteAccountMessage) {
+
+                    deleteAccountMessage.textContent =
+                        error.message ||
+                        "Unable To Delete Account.";
+                }
+
             }
 
 
-            signOutMessage.textContent =
-                "Signed Out Successfully!";
-
-
-            await updateAccountUI();
-
-
-        } catch (error) {
-
-            console.error(
-                "Sign Out Error:",
-                error
-            );
-
-
-            signOutMessage.textContent =
-                error.message ||
-                "Unable To Sign Out.";
+            deleteAccountButton.disabled =
+                false;
 
         }
+    );
+
+}
 
 
-        signOutButton.disabled = false;
+// =========================================
+// SHOP TABS
+// =========================================
+
+function showEpShop() {
+
+    if (epShopContent) {
+
+        epShopContent.hidden =
+            false;
 
     }
-);
 
-// =========================================
-// DETECT LOGIN STATE
-// =========================================
 
-supabase.auth.onAuthStateChange(
-    async () => {
+    if (rebirthShopContent) {
 
-        await updateAccountUI();
+        rebirthShopContent.hidden =
+            true;
 
     }
-);
 
-// =========================================
-// CHECK LOGIN ON PAGE LOAD
-// =========================================
 
-updateAccountUI();
+    if (epShopTab) {
+
+        epShopTab.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if (rebirthShopTab) {
+
+        rebirthShopTab.classList.remove(
+            "active"
+        );
+
+    }
+
+}
+
+
+function showRebirthShop() {
+
+    if (
+        (data.rebirths || 0) <= 0
+    ) {
+
+        showEpShop();
+
+        return;
+
+    }
+
+
+    if (epShopContent) {
+
+        epShopContent.hidden =
+            true;
+
+    }
+
+
+    if (rebirthShopContent) {
+
+        rebirthShopContent.hidden =
+            false;
+
+    }
+
+
+    if (epShopTab) {
+
+        epShopTab.classList.remove(
+            "active"
+        );
+
+    }
+
+
+    if (rebirthShopTab) {
+
+        rebirthShopTab.classList.add(
+            "active"
+        );
+
+    }
+
+
+    if (rebirthShopTokensDisplay) {
+
+        rebirthShopTokensDisplay.textContent =
+            (
+                data.rebirthTokens || 0
+            ).toLocaleString();
+
+    }
+
+}
+
+
+if (epShopTab) {
+
+    epShopTab.addEventListener(
+        "click",
+        showEpShop
+    );
+
+}
+
+
+if (rebirthShopTab) {
+
+    rebirthShopTab.addEventListener(
+        "click",
+        showRebirthShop
+    );
+
+}
+
 
 // =========================================
 // SHOP MENU
 // =========================================
 
-var shopButton =
-    document.getElementById("shopButton");
+const shopButton =
+    document.getElementById(
+        "shopButton"
+    );
 
-var shopPanel =
-    document.getElementById("shopPanel");
+const shopPanel =
+    document.getElementById(
+        "shopPanel"
+    );
 
-var shopOverlay =
-    document.getElementById("shopOverlay");
+const closeShopButton =
+    document.getElementById(
+        "closeShopButton"
+    );
 
-var closeShopButton =
-    document.getElementById("closeShopButton");
+const shopOverlay =
+    document.getElementById(
+        "shopOverlay"
+    );
 
-// =========================================
-// OPEN SHOP MENU
-// =========================================
 
 function openShopMenu() {
 
-    shopPanel.hidden = false;
-    shopOverlay.hidden = false;
+    if (!shopPanel) {
+        return;
+    }
 
-    shopButton.setAttribute(
-        "aria-expanded",
-        "true"
-    );
+
+    shopPanel.hidden =
+        false;
+
+
+    if (shopOverlay) {
+
+        shopOverlay.hidden =
+            false;
+
+    }
+
+
+    if (shopButton) {
+
+        shopButton.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
+
+
+    updateShop();
 
 }
 
-// =========================================
-// CLOSE SHOP MENU
-// =========================================
 
 function closeShopMenu() {
 
-    shopPanel.hidden = true;
-    shopOverlay.hidden = true;
+    if (!shopPanel) {
+        return;
+    }
 
-    shopButton.setAttribute(
-        "aria-expanded",
-        "false"
+
+    shopPanel.hidden =
+        true;
+
+
+    if (shopOverlay) {
+
+        shopOverlay.hidden =
+            true;
+
+    }
+
+
+    if (shopButton) {
+
+        shopButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
+}
+
+
+if (shopButton) {
+
+    shopButton.addEventListener(
+        "click",
+        () => {
+
+            if (shopPanel.hidden) {
+
+                openShopMenu();
+
+            } else {
+
+                closeShopMenu();
+
+            }
+
+        }
     );
 
 }
 
-// =========================================
-// SHOP BUTTON
-// =========================================
 
-shopButton.addEventListener(
-    "click",
-    () => {
+if (closeShopButton) {
 
-        if (shopPanel.hidden) {
+    closeShopButton.addEventListener(
+        "click",
+        closeShopMenu
+    );
 
-            openShopMenu();
+}
 
-        } else {
 
-            closeShopMenu();
+if (shopOverlay) {
 
-        }
+    shopOverlay.addEventListener(
+        "click",
+        closeShopMenu
+    );
 
-    }
-);
+}
 
-// =========================================
-// CLOSE SHOP BUTTON
-// =========================================
-
-closeShopButton.addEventListener(
-    "click",
-    closeShopMenu
-);
-
-// =========================================
-// CLICK OUTSIDE SHOP
-// =========================================
-
-shopOverlay.addEventListener(
-    "click",
-    closeShopMenu
-);
-
-// =========================================
-// ESCAPE KEY
-// =========================================
 
 document.addEventListener(
     "keydown",
@@ -4292,6 +5021,7 @@ document.addEventListener(
 
         if (
             event.key === "Escape" &&
+            shopPanel &&
             !shopPanel.hidden
         ) {
 
@@ -4301,6 +5031,7 @@ document.addEventListener(
 
     }
 );
+
 
 // =========================================
 // LEADERBOARD MENU
@@ -4331,80 +5062,153 @@ var leaderboardRollsButton =
         "leaderboardRollsButton"
     );
 
+
 function openLeaderboard() {
 
-    leaderboardContainer.hidden = false;
+    if (!leaderboardContainer) {
+        return;
+    }
 
-    leaderboardToggle.setAttribute(
-        "aria-expanded",
-        "true"
-    );
 
-    leaderboardArrow.style.transform =
-        "rotate(180deg)";
+    leaderboardContainer.hidden =
+        false;
+
+
+    if (leaderboardToggle) {
+
+        leaderboardToggle.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
+
+
+    if (leaderboardArrow) {
+
+        leaderboardArrow.style.transform =
+            "rotate(180deg)";
+
+    }
+
 }
+
 
 function closeLeaderboard() {
 
-    leaderboardContainer.hidden = true;
+    if (!leaderboardContainer) {
+        return;
+    }
 
-    leaderboardToggle.setAttribute(
-        "aria-expanded",
-        "false"
-    );
 
-    leaderboardArrow.style.transform =
-        "rotate(0deg)";
+    leaderboardContainer.hidden =
+        true;
+
+
+    if (leaderboardToggle) {
+
+        leaderboardToggle.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
+
+    if (leaderboardArrow) {
+
+        leaderboardArrow.style.transform =
+            "rotate(0deg)";
+
+    }
+
 }
 
-leaderboardToggle.addEventListener(
-    "click",
-    () => {
 
-        if (
-            leaderboardContainer.hidden
-        ) {
-            openLeaderboard();
-        } else {
-            closeLeaderboard();
+if (leaderboardToggle) {
+
+    leaderboardToggle.addEventListener(
+        "click",
+        () => {
+
+            if (
+                leaderboardContainer &&
+                leaderboardContainer.hidden
+            ) {
+
+                openLeaderboard();
+
+            } else {
+
+                closeLeaderboard();
+
+            }
+
         }
+    );
 
-    }
-);
+}
 
-leaderboardEpButton.addEventListener(
-    "click",
-    () => {
 
-        leaderboardEpButton.classList.add(
-            "active"
-        );
+if (leaderboardEpButton) {
 
-        leaderboardRollsButton.classList.remove(
-            "active"
-        );
+    leaderboardEpButton.addEventListener(
+        "click",
+        () => {
 
-        loadLeaderboard("ep");
+            leaderboardEpButton.classList.add(
+                "active"
+            );
 
-    }
-);
 
-leaderboardRollsButton.addEventListener(
-    "click",
-    () => {
+            if (leaderboardRollsButton) {
 
-        leaderboardRollsButton.classList.add(
-            "active"
-        );
+                leaderboardRollsButton.classList.remove(
+                    "active"
+                );
 
-        leaderboardEpButton.classList.remove(
-            "active"
-        );
+            }
 
-        loadLeaderboard("rolls");
 
-    }
-);
+            loadLeaderboard(
+                "ep"
+            );
+
+        }
+    );
+
+}
+
+
+if (leaderboardRollsButton) {
+
+    leaderboardRollsButton.addEventListener(
+        "click",
+        () => {
+
+            leaderboardRollsButton.classList.add(
+                "active"
+            );
+
+
+            if (leaderboardEpButton) {
+
+                leaderboardEpButton.classList.remove(
+                    "active"
+                );
+
+            }
+
+
+            loadLeaderboard(
+                "rolls"
+            );
+
+        }
+    );
+
+}
+
 
 // =========================================
 // LOAD LEADERBOARD
@@ -4419,6 +5223,12 @@ async function loadLeaderboard(
             "leaderboardList"
         );
 
+
+    if (!leaderboardList) {
+        return;
+    }
+
+
     leaderboardList.innerHTML =
         `
         <p class="leaderboard-empty">
@@ -4426,9 +5236,10 @@ async function loadLeaderboard(
         </p>
         `;
 
+
     try {
 
-        var {
+        const {
             data: players,
             error
         } =
@@ -4445,9 +5256,11 @@ async function loadLeaderboard(
                 )
                 .limit(100);
 
+
         if (error) {
             throw error;
         }
+
 
         if (
             !players ||
@@ -4462,9 +5275,13 @@ async function loadLeaderboard(
                 `;
 
             return;
+
         }
 
-        leaderboardList.innerHTML = "";
+
+        leaderboardList.innerHTML =
+            "";
+
 
         players.forEach(
             (
@@ -4472,22 +5289,26 @@ async function loadLeaderboard(
                 index
             ) => {
 
-                var username =
+                const username =
                     player.username ||
                     "Unknown Player";
 
-                var score =
+
+                const score =
                     sortBy === "ep"
                         ? player.ep ?? 0
                         : player.rolls ?? 0;
 
-                var row =
+
+                const row =
                     document.createElement(
                         "div"
                     );
 
+
                 row.className =
                     "leaderboard-row";
+
 
                 row.innerHTML =
                     `
@@ -4506,9 +5327,12 @@ async function loadLeaderboard(
                     <span
                         class="leaderboard-score"
                     >
-                        ${score.toLocaleString()}
+                        ${Number(
+                            score
+                        ).toLocaleString()}
                     </span>
                     `;
+
 
                 leaderboardList.appendChild(
                     row
@@ -4517,12 +5341,14 @@ async function loadLeaderboard(
             }
         );
 
+
     } catch (error) {
 
         console.error(
             "Leaderboard Error:",
             error
         );
+
 
         leaderboardList.innerHTML =
             `
@@ -4535,4 +5361,980 @@ async function loadLeaderboard(
 
 }
 
-loadLeaderboard("ep");
+
+loadLeaderboard(
+    "ep"
+);
+
+
+// =========================================
+// ACCOUNT MENU
+// =========================================
+
+const accountButton =
+    document.getElementById(
+        "accountButton"
+    );
+
+const accountPanel =
+    document.getElementById(
+        "accountPanel"
+    );
+
+const accountOverlay =
+    document.getElementById(
+        "accountOverlay"
+    );
+
+const closeAccountButton =
+    document.getElementById(
+        "closeAccountButton"
+    );
+
+
+// =========================================
+// OPEN ACCOUNT MENU
+// =========================================
+
+function openAccountMenu() {
+
+    if (!accountPanel) {
+        return;
+    }
+
+
+    accountPanel.hidden =
+        false;
+
+
+    if (accountOverlay) {
+
+        accountOverlay.hidden =
+            false;
+
+    }
+
+
+    if (accountButton) {
+
+        accountButton.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
+
+}
+
+
+// =========================================
+// CLOSE ACCOUNT MENU
+// =========================================
+
+function closeAccountMenu() {
+
+    if (!accountPanel) {
+        return;
+    }
+
+
+    accountPanel.hidden =
+        true;
+
+
+    if (accountOverlay) {
+
+        accountOverlay.hidden =
+            true;
+
+    }
+
+
+    if (accountButton) {
+
+        accountButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
+}
+
+
+// =========================================
+// ACCOUNT BUTTON
+// =========================================
+
+if (accountButton) {
+
+    accountButton.addEventListener(
+        "click",
+        () => {
+
+            if (
+                accountPanel &&
+                accountPanel.hidden
+            ) {
+
+                openAccountMenu();
+
+            } else {
+
+                closeAccountMenu();
+
+            }
+
+        }
+    );
+
+}
+
+
+// =========================================
+// CLOSE BUTTON
+// =========================================
+
+if (closeAccountButton) {
+
+    closeAccountButton.addEventListener(
+        "click",
+        closeAccountMenu
+    );
+
+}
+
+
+// =========================================
+// CLICK OUTSIDE PANEL
+// =========================================
+
+if (accountOverlay) {
+
+    accountOverlay.addEventListener(
+        "click",
+        closeAccountMenu
+    );
+
+}
+
+
+// =========================================
+// ESCAPE KEY
+// =========================================
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            accountPanel &&
+            !accountPanel.hidden
+        ) {
+
+            closeAccountMenu();
+
+        }
+
+    }
+);
+
+
+// =========================================
+// ACCOUNT / SIGN OUT
+// =========================================
+
+var signedInContainer =
+    document.getElementById(
+        "signedInContainer"
+    );
+
+var signedInUsername =
+    document.getElementById(
+        "signedInUsername"
+    );
+
+var signOutButton =
+    document.getElementById(
+        "signOutButton"
+    );
+
+var signOutMessage =
+    document.getElementById(
+        "signOutMessage"
+    );
+
+
+// =========================================
+// UPDATE ACCOUNT UI
+// =========================================
+
+async function updateAccountUI() {
+
+    try {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabase.auth.getUser();
+
+
+        if (user) {
+
+            await loadDataFromSupabase();
+
+
+            if (signedInContainer) {
+
+                signedInContainer.hidden =
+                    false;
+
+            }
+
+
+            const signUpContainer =
+                document.getElementById(
+                    "signUpContainer"
+                );
+
+
+            const signInContainer =
+                document.getElementById(
+                    "signInContainer"
+                );
+
+
+            if (signUpContainer) {
+
+                signUpContainer.hidden =
+                    true;
+
+            }
+
+
+            if (signInContainer) {
+
+                signInContainer.hidden =
+                    true;
+
+            }
+
+
+            if (signOutMessage) {
+
+                signOutMessage.textContent =
+                    "";
+
+            }
+
+
+            if (signInMessage) {
+
+                signInMessage.textContent =
+                    "";
+
+            }
+
+
+            const username =
+                user.user_metadata?.username ||
+                user.email ||
+                "Account";
+
+
+            if (signedInUsername) {
+
+                signedInUsername.textContent =
+                    "Signed In As: " +
+                    username;
+
+            }
+
+
+        } else {
+
+            if (signedInContainer) {
+
+                signedInContainer.hidden =
+                    true;
+
+            }
+
+
+            const signUpContainer =
+                document.getElementById(
+                    "signUpContainer"
+                );
+
+
+            const signInContainer =
+                document.getElementById(
+                    "signInContainer"
+                );
+
+
+            if (signUpContainer) {
+
+                signUpContainer.hidden =
+                    false;
+
+            }
+
+
+            if (signInContainer) {
+
+                signInContainer.hidden =
+                    false;
+
+            }
+
+
+            if (signOutMessage) {
+
+                signOutMessage.textContent =
+                    "";
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Account UI Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// =========================================
+// SIGN OUT
+// =========================================
+
+if (signOutButton) {
+
+    signOutButton.addEventListener(
+        "click",
+        async () => {
+
+            signOutButton.disabled =
+                true;
+
+
+            if (signOutMessage) {
+
+                signOutMessage.textContent =
+                    "Signing You Out...";
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabase.auth.signOut();
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                if (signOutMessage) {
+
+                    signOutMessage.textContent =
+                        "Signed Out Successfully!";
+
+                }
+
+
+                await updateAccountUI();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Sign Out Error:",
+                    error
+                );
+
+
+                if (signOutMessage) {
+
+                    signOutMessage.textContent =
+                        error.message ||
+                        "Unable To Sign Out.";
+
+                }
+
+            }
+
+
+            signOutButton.disabled =
+                false;
+
+        }
+    );
+
+}
+
+
+// =========================================
+// AUTH STATE
+// =========================================
+
+supabase.auth.onAuthStateChange(
+    async (
+        event,
+        session
+    ) => {
+
+        if (session?.user) {
+
+            await loadDataFromSupabase();
+
+        }
+
+
+        await updateAccountUI();
+
+    }
+);
+
+
+// =========================================
+// INITIALIZATION
+// =========================================
+
+async function initializeGame() {
+
+    loadData();
+
+
+    updateStreak();
+
+
+    await loadDataFromSupabase();
+
+
+    displayBadges();
+
+    displayBadgeIndex();
+
+    updateStats();
+
+    updateHistory();
+
+    updateCooldown();
+
+    updateShop();
+
+
+    showEpShop();
+
+
+    initializeBackgroundCustomization();
+
+
+    setInterval(
+        updateCooldown,
+        250
+    );
+
+
+    await updateAccountUI();
+
+}
+
+
+initializeGame();
+
+
+// =========================================
+// ADDITIONAL SHOP / REBIRTH SAFETY
+// =========================================
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+
+        try {
+
+            localStorage.setItem(
+                "rngdleData",
+                JSON.stringify(data)
+            );
+
+        } catch (error) {
+
+            console.warn(
+                "Could Not Save Before Unload:",
+                error
+            );
+
+        }
+
+    }
+);
+
+
+// =========================================
+// REBIRTH STATE RECOVERY
+// =========================================
+
+if (
+    typeof data.rebirths !== "number"
+) {
+
+    data.rebirths =
+        0;
+
+}
+
+
+if (
+    typeof data.rebirthTokens !== "number"
+) {
+
+    data.rebirthTokens =
+        0;
+
+}
+
+
+data.rebirths =
+    Math.max(
+        0,
+        Math.min(
+            MAX_REBIRTHS,
+            Number(data.rebirths) || 0
+        )
+    );
+
+
+data.rebirthTokens =
+    Math.max(
+        0,
+        Number(data.rebirthTokens) || 0
+    );
+
+
+// =========================================
+// REBIRTH COST PREVIEW
+// =========================================
+
+function getNextUpgradeCostMultiplier() {
+
+    if (
+        (data.rebirths || 0) >=
+        MAX_REBIRTHS
+    ) {
+
+        return REBIRTH_COST_MULTIPLIERS[
+            MAX_REBIRTHS
+        ];
+
+    }
+
+
+    return REBIRTH_COST_MULTIPLIERS[
+        Math.max(
+            0,
+            Number(data.rebirths) || 0
+        )
+    ];
+
+}
+
+
+function getNextRebirthNumber() {
+
+    return Math.min(
+        MAX_REBIRTHS,
+        (data.rebirths || 0) + 1
+    );
+
+}
+
+
+function getNextRebirthReward() {
+
+    return (
+        REBIRTH_TOKEN_REWARDS[
+            getNextRebirthNumber()
+        ] || 0
+    );
+
+}
+
+
+// =========================================
+// REBIRTH SHOP PLACEHOLDER
+// =========================================
+
+const REBIRTH_UPGRADES = {
+
+    // Rebirth Upgrades Will Be Added Here Later.
+
+};
+
+
+// =========================================
+// REBIRTH SHOP UPDATE
+// =========================================
+
+function updateRebirthShop() {
+
+    if (!rebirthShopContent) {
+        return;
+    }
+
+
+    if (
+        (data.rebirths || 0) <= 0
+    ) {
+
+        rebirthShopContent.hidden =
+            true;
+
+        return;
+
+    }
+
+
+    rebirthShopContent.hidden =
+        false;
+
+
+    if (rebirthShopTokensDisplay) {
+
+        rebirthShopTokensDisplay.textContent =
+            (
+                data.rebirthTokens || 0
+            ).toLocaleString();
+
+    }
+
+}
+
+
+// =========================================
+// REBIRTH COMPLETE STATE
+// =========================================
+
+function isMaxRebirth() {
+
+    return (
+        (data.rebirths || 0) >=
+        MAX_REBIRTHS
+    );
+
+}
+
+
+function getRebirthProgressText() {
+
+    const current =
+        Math.max(
+            0,
+            Math.min(
+                MAX_REBIRTHS,
+                Number(data.rebirths) || 0
+            )
+        );
+
+
+    if (
+        current >=
+        MAX_REBIRTHS
+    ) {
+
+        return "Maximum Rebirth Reached!";
+
+    }
+
+
+    return `${current} / ${MAX_REBIRTHS}`;
+
+}
+
+
+// =========================================
+// PROTECT EP DURING REBIRTH
+// =========================================
+
+function capturePermanentProgress() {
+
+    return {
+
+        totalEP:
+            data.totalEP,
+
+        totalRolls:
+            data.totalRolls,
+
+        bestRarity:
+            data.bestRarity,
+
+        totalBadges:
+            data.totalBadges,
+
+        totalRollValue:
+            data.totalRollValue,
+
+        highestNumber:
+            data.highestNumber,
+
+        dailyStreak:
+            data.dailyStreak,
+
+        lastRoll:
+            data.lastRoll,
+
+        lastRollDate:
+            data.lastRollDate,
+
+        history:
+            data.history,
+
+        badges:
+            data.badges,
+
+        backgroundColor:
+            data.backgroundColor,
+
+        shrihanCodeUsed:
+            data.shrihanCodeUsed,
+
+        shrihanChromaReady:
+            data.shrihanChromaReady
+
+    };
+
+}
+
+
+function verifyPermanentProgress(
+    snapshot
+) {
+
+    data.totalEP =
+        snapshot.totalEP;
+
+
+    data.totalRolls =
+        snapshot.totalRolls;
+
+
+    data.bestRarity =
+        snapshot.bestRarity;
+
+
+    data.totalBadges =
+        snapshot.totalBadges;
+
+
+    data.totalRollValue =
+        snapshot.totalRollValue;
+
+
+    data.highestNumber =
+        snapshot.highestNumber;
+
+
+    data.dailyStreak =
+        snapshot.dailyStreak;
+
+
+    data.lastRoll =
+        snapshot.lastRoll;
+
+
+    data.lastRollDate =
+        snapshot.lastRollDate;
+
+
+    data.history =
+        snapshot.history;
+
+
+    data.badges =
+        snapshot.badges;
+
+
+    data.backgroundColor =
+        snapshot.backgroundColor;
+
+
+    data.shrihanCodeUsed =
+        snapshot.shrihanCodeUsed;
+
+
+    data.shrihanChromaReady =
+        snapshot.shrihanChromaReady;
+
+}
+
+
+// =========================================
+// ORIGINAL REBIRTH HANDLER WRAPPER
+// =========================================
+
+const originalPerformRebirth =
+    performRebirth;
+
+
+async function performProtectedRebirth() {
+
+    if (!canRebirth()) {
+        return;
+    }
+
+
+    const snapshot =
+        capturePermanentProgress();
+
+
+    await originalPerformRebirth();
+
+
+    verifyPermanentProgress(
+        snapshot
+    );
+
+
+    saveData();
+
+
+    updateStats();
+
+    updateShop();
+
+    updateRebirthUI();
+
+    updateRebirthShop();
+
+}
+
+
+// =========================================
+// REBIRTH BUTTON REBIND
+// =========================================
+
+if (rebirthYesButton) {
+
+    rebirthYesButton.onclick =
+        null;
+
+
+    rebirthYesButton.addEventListener(
+        "click",
+        async () => {
+
+            if (!canRebirth()) {
+                return;
+            }
+
+
+            rebirthYesButton.disabled =
+                true;
+
+
+            try {
+
+                await performProtectedRebirth();
+
+            } catch (error) {
+
+                console.error(
+                    "Protected Rebirth Error:",
+                    error
+                );
+
+            } finally {
+
+                updateRebirthUI();
+
+                updateRebirthShop();
+
+
+                rebirthYesButton.disabled =
+                    !canRebirth();
+
+            }
+
+        }
+    );
+
+}
+
+
+// =========================================
+// REBIRTH SHOP STATE
+// =========================================
+
+if (rebirthShopTab) {
+
+    rebirthShopTab.addEventListener(
+        "click",
+        () => {
+
+            updateRebirthShop();
+
+        }
+    );
+
+}
+
+
+// =========================================
+// FINAL SHOP REFRESH
+// =========================================
+
+function refreshAllShopData() {
+
+    updateShop();
+
+    updateRebirthUI();
+
+    updateRebirthShop();
+
+    updateBackgroundButton();
+
+}
+
+
+// =========================================
+// PERIODIC REBIRTH UI UPDATE
+// =========================================
+
+setInterval(
+    () => {
+
+        updateRebirthUI();
+
+        updateRebirthShop();
+
+    },
+    1000
+);
+
+
+// =========================================
+// FINAL INITIAL STATE
+// =========================================
+
+refreshAllShopData();
+
+
+// =========================================
+// END
+// =========================================
