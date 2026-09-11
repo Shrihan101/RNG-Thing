@@ -11,7 +11,7 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>RNGdle</title>
+    <title>RNG Thing</title>
 
     <link
         rel="stylesheet"
@@ -52,6 +52,46 @@
             </small>
         </div>
 
+    </div>
+
+
+    <!-- =========================================
+         REBIRTH CUTSCENE
+    ========================================== -->
+
+    <div
+        id="rebirthEffect"
+        class="rebirth-effect"
+        aria-hidden="true"
+    >
+        <div class="rebirth-background"></div>
+        <div class="rebirth-rays"></div>
+        <div class="rebirth-ring rebirth-ring-one"></div>
+        <div class="rebirth-ring rebirth-ring-two"></div>
+        <div class="rebirth-particles"></div>
+
+        <div class="rebirth-title">
+            <div class="rebirth-crown">✦</div>
+            <span id="rebirthCutsceneTitle">REBIRTH 1</span>
+            <small id="rebirthCutsceneSubtitle">
+                YOUR UPGRADES HAVE BEEN REBORN
+            </small>
+        </div>
+
+        <div
+            id="rebirthCoin"
+            class="rebirth-coin"
+        >
+            <span>✦</span>
+            <small>REBIRTH</small>
+        </div>
+
+        <div
+            id="rebirthCutsceneReward"
+            class="rebirth-cutscene-reward"
+        >
+            +1 REBIRTH TOKEN
+        </div>
     </div>
 
 
@@ -577,6 +617,80 @@
 
     </div>
 
+    <div class="shop-tabs">
+        <button
+            id="epShopTab"
+            class="leaderboard-tab active"
+            type="button"
+        >
+            EP Shop
+        </button>
+
+        <button
+            id="rebirthShopTab"
+            class="leaderboard-tab"
+            type="button"
+            hidden
+        >
+            Rebirth Shop
+        </button>
+    </div>
+
+    <div
+        id="rebirthStatus"
+        class="rebirth-status"
+    >
+        <div>
+            <span>Rebirths</span>
+            <strong id="rebirthCount">0 / 5</strong>
+        </div>
+
+        <div>
+            <span>Rebirth Tokens</span>
+            <strong id="rebirthTokens">0</strong>
+        </div>
+
+        <div>
+            <span>Upgrade Cost</span>
+            <strong id="rebirthCostMultiplier">×1</strong>
+        </div>
+    </div>
+
+    <div
+        id="rebirthNotification"
+        class="rebirth-notification"
+        hidden
+    >
+        <div class="rebirth-notification-icon">✦</div>
+
+        <div class="rebirth-notification-content">
+            <strong>Rebirth Available!</strong>
+
+            <p id="rebirthNotificationText">
+                You Have Maxed Every Upgrade! Rebirth Now.
+            </p>
+        </div>
+
+        <div class="rebirth-notification-actions">
+            <button
+                id="rebirthYesButton"
+                class="rebirth-yes-button"
+                type="button"
+            >
+                Yes, Rebirth
+            </button>
+
+            <button
+                id="rebirthNoButton"
+                class="rebirth-no-button"
+                type="button"
+            >
+                Not Yet
+            </button>
+        </div>
+    </div>
+
+    <div id="epShopContent">
             <h2>
                 EP Shop
             </h2>
@@ -788,7 +902,40 @@
 
             </div>
 
-        </section>
+            </div>
+
+    <div
+        id="rebirthShopContent"
+        class="rebirth-shop-content"
+        hidden
+    >
+        <div class="rebirth-shop-header">
+            <h2>Rebirth Shop</h2>
+            <p class="subtitle">
+                Spend Rebirth Tokens On Permanent Upgrades
+            </p>
+        </div>
+
+        <div class="rebirth-token-balance">
+            <span>Available Rebirth Tokens</span>
+            <strong id="rebirthShopTokens">0</strong>
+        </div>
+
+        <div
+            id="rebirthUpgradeSlots"
+            class="rebirth-upgrade-slots"
+        >
+            <div class="rebirth-upgrade-placeholder">
+                <strong>Rebirth Upgrades</strong>
+                <small>
+                    Your Rebirth Upgrades Will Appear Here.
+                </small>
+                <span>Coming Soon</span>
+            </div>
+        </div>
+    </div>
+
+</section>
 
 
         <!-- STATISTICS -->
