@@ -712,6 +712,11 @@ const secretThingDescriptionDisplay = document.getElementById("secretThingDescri
 const secretThingCostDisplay = document.getElementById("secretThingCost");
 const buySecretThingButton = document.getElementById("buySecretThing");
 
+const buyRarityPurificationButton =
+    document.getElementById(
+        "buyRarityPurification"
+    );
+
 const rebirthCountDisplay =
     document.getElementById("rebirthCount");
 
@@ -867,6 +872,56 @@ const SHOP_UPGRADES = {
             1000000, 10000000, 100000000
         ]
     }
+};
+
+// =========================================
+// REBIRTH SHOP UPGRADES
+// =========================================
+
+const REBIRTH_SHOP_UPGRADE = {
+
+    name: "Rarity Purification",
+
+    levels: [
+
+        {
+            tokenCost: 0,
+            epCost: 0,
+            effect: "No Rarities Removed"
+        },
+
+        {
+            tokenCost: 1,
+            epCost: 500_000_000,
+            effect: "Removes Trash"
+        },
+
+        {
+            tokenCost: 3,
+            epCost: 1_000_000_000,
+            effect: "Removes Trash + Common"
+        },
+
+        {
+            tokenCost: 5,
+            epCost: 1_500_000_000,
+            effect: "Removes Trash + Common + Uncommon"
+        },
+
+        {
+            tokenCost: 7,
+            epCost: 3_000_000_000,
+            effect: "Removes Trash + Common + Uncommon + Rare"
+        },
+
+        {
+            tokenCost: 10,
+            epCost: 5_000_000_000,
+            effect: "Removes Trash + Common + Uncommon + Rare + Epic"
+        }
+
+    ]
+
 };
 
 // =========================================
@@ -1027,6 +1082,7 @@ let data = {
 
     rebirths: 0,
     rebirthTokens: 0,
+    rebirthShopUpgrade: 0,
 
     backgroundColor: null,
 
@@ -1299,6 +1355,10 @@ async function loadDataFromSupabase() {
                 0,
                 Number(data.rebirthTokens) || 0
             );
+
+if (typeof data.rebirthShopUpgrade !== "number") {
+    data.rebirthShopUpgrade = 0;
+}
 
         localStorage.setItem(
             "rngdleData",
@@ -1643,6 +1703,98 @@ function updateRebirthUI() {
         rebirthNoButton.disabled =
             false;
     }
+
+        // =========================================
+    // RARITY PURIFICATION UI
+    // =========================================
+
+    const purificationLevel =
+        data.rebirthShopUpgrade || 0;
+
+    const purificationMaxLevel =
+        REBIRTH_SHOP_UPGRADE.levels.length - 1;
+
+    const purificationLevelDisplay =
+        document.getElementById(
+            "rebirthPurificationLevel"
+        );
+
+    const purificationDescriptionDisplay =
+        document.getElementById(
+            "rebirthPurificationDescription"
+        );
+
+    const purificationCostDisplay =
+        document.getElementById(
+            "rebirthPurificationCost"
+        );
+
+    const purificationButton =
+        document.getElementById(
+            "buyRarityPurification"
+        );
+
+    if (purificationLevelDisplay) {
+        purificationLevelDisplay.textContent =
+            `Level ${purificationLevel} / ${purificationMaxLevel}`;
+    }
+
+    if (purificationDescriptionDisplay) {
+        purificationDescriptionDisplay.textContent =
+            REBIRTH_SHOP_UPGRADE
+                .levels[purificationLevel]
+                .effect;
+    }
+
+    if (purificationLevel >= purificationMaxLevel) {
+
+        if (purificationCostDisplay) {
+            purificationCostDisplay.textContent =
+                "MAX LEVEL REACHED";
+        }
+
+        if (purificationButton) {
+            purificationButton.textContent =
+                "MAXED";
+            purificationButton.disabled =
+                true;
+        }
+
+    } else {
+
+        const nextPurificationLevel =
+            purificationLevel + 1;
+
+        const nextPurification =
+            REBIRTH_SHOP_UPGRADE
+                .levels[nextPurificationLevel];
+
+        if (purificationCostDisplay) {
+            purificationCostDisplay.textContent =
+                `Cost: ${nextPurification.tokenCost.toLocaleString()} Rebirth Token${nextPurification.tokenCost === 1 ? "" : "s"} + ${nextPurification.epCost.toLocaleString()} EP`;
+        }
+
+        if (purificationButton) {
+
+    const hasEnoughTokens =
+        tokens >= nextPurification.tokenCost;
+
+    const hasEnoughEP =
+        data.totalEP >= nextPurification.epCost;
+
+    const canAfford =
+        hasEnoughTokens &&
+        hasEnoughEP;
+
+    purificationButton.textContent =
+        canAfford
+            ? "Buy"
+            : "Not Enough Resources";
+
+    purificationButton.disabled =
+        !canAfford;
+}
+    }
 }
 
 // =========================================
@@ -1737,6 +1889,63 @@ function buyUpgrade(upgradeName) {
 
     updateStats();
     updateShop();
+}
+
+// =========================================
+// BUY REBIRTH SHOP UPGRADE
+// =========================================
+
+function buyRebirthShopUpgrade() {
+
+    const currentLevel =
+        data.rebirthShopUpgrade || 0;
+
+    const maxLevel =
+        REBIRTH_SHOP_UPGRADE.levels.length - 1;
+
+    // Already Maxed
+    if (currentLevel >= maxLevel) {
+        return;
+    }
+
+    const nextLevel =
+        currentLevel + 1;
+
+    const upgrade =
+        REBIRTH_SHOP_UPGRADE.levels[nextLevel];
+
+    // Not Enough Rebirth Tokens
+    if (
+        (data.rebirthTokens || 0) <
+        upgrade.tokenCost
+    ) {
+        return;
+    }
+
+    // Not Enough EP
+    if (
+        data.totalEP <
+        upgrade.epCost
+    ) {
+        return;
+    }
+
+    // Pay Costs
+    data.rebirthTokens -=
+        upgrade.tokenCost;
+
+    data.totalEP -=
+        upgrade.epCost;
+
+    // Give Upgrade
+    data.rebirthShopUpgrade =
+        nextLevel;
+
+    saveData();
+
+    updateStats();
+    updateShop();
+    updateRebirthUI();
 }
 
 // =========================================
@@ -1857,6 +2066,19 @@ if (buySecretThingButton) {
     buySecretThingButton.addEventListener("click", () => {
         buyUpgrade("secretThing");
     });
+}
+
+if (buyRarityPurificationButton) {
+
+    buyRarityPurificationButton.addEventListener(
+        "click",
+        () => {
+
+            buyRebirthShopUpgrade();
+
+        }
+    );
+
 }
 
 // =========================================
@@ -2593,43 +2815,29 @@ function getRandomFallbackRarity() {
         getUpgradeValue("luck");
 
     const baseWeights = [
-        {
-            rarity: "Trash",
-            weight: 40
-        },
-        {
-            rarity: "Common",
-            weight: 30
-        },
-        {
-            rarity: "Uncommon",
-            weight: 20
-        },
-        {
-            rarity: "Rare",
-            weight: 15
-        },
-        {
-            rarity: "Epic",
-            weight: 10
-        },
-        {
-            rarity: "Legendary",
-            weight: 5
-        },
-        {
-            rarity: "Mythic",
-            weight: 1
-        },
-        {
-            rarity: "Chroma",
-            weight: 0.1
-        }
+        { rarity: "Trash", weight: 40 },
+        { rarity: "Common", weight: 30 },
+        { rarity: "Uncommon", weight: 20 },
+        { rarity: "Rare", weight: 15 },
+        { rarity: "Epic", weight: 10 },
+        { rarity: "Legendary", weight: 5 },
+        { rarity: "Mythic", weight: 1 },
+        { rarity: "Chroma", weight: 0.1 }
     ];
 
     const weights =
-        baseWeights.map(
-            (item, index) => {
+        baseWeights
+            .filter(item =>
+                isRarityAllowed(item.rarity)
+            )
+            .map(item => {
+                const index =
+                    baseWeights.findIndex(
+                        base =>
+                            base.rarity ===
+                            item.rarity
+                    );
+
                 if (index <= 1) {
                     return {
                         ...item,
@@ -2648,8 +2856,7 @@ function getRandomFallbackRarity() {
                             index / 2
                         )
                 };
-            }
-        );
+            });
 
     const totalWeight =
         weights.reduce(
@@ -2670,9 +2877,8 @@ function getRandomFallbackRarity() {
         }
     }
 
-    return "Trash";
+    return weights[weights.length - 1].rarity;
 }
-
 // =========================================
 // DETERMINE NATURAL PATTERN RARITY
 // =========================================
@@ -2690,49 +2896,100 @@ function getNaturalPatternRarity(number) {
     const formatted =
         formatNumber(number);
 
-    if (longestRun >= 5) {
-        return "Chroma";
-    }
-
-    if (number >= 999000) {
-        return "Chroma";
-    }
+    if (
+    isRarityAllowed("Chroma") &&
+    longestRun >= 5
+) {
+    return "Chroma";
+}
 
     if (
+    isRarityAllowed("Chroma") &&
+    number >= 999000
+) {
+    return "Chroma";
+}
+
+    if (
+    isRarityAllowed("Chroma") &&
+    (
         formatted === "123456" ||
         formatted === "654321"
-    ) {
-        return "Chroma";
-    }
+    )
+) {
+    return "Chroma";
+}
 
     if (
-        longestRun >= 4 &&
-        number >= 900000
-    ) {
-        return "Mythic";
-    }
+    isRarityAllowed("Mythic") &&
+    longestRun >= 4 &&
+    number >= 900000
+) {
+    return "Mythic";
+}
 
     if (longestRun === 4) {
+    if (isRarityAllowed("Legendary")) {
         return "Legendary";
     }
+}
 
-    if (highestDigitCount >= 4) {
+   if (highestDigitCount >= 4) {
+    if (isRarityAllowed("Epic")) {
         return "Epic";
     }
+}
 
     if (twoPairs) {
+    if (isRarityAllowed("Epic")) {
         return "Epic";
     }
+}
 
     if (highestDigitCount >= 3) {
+    if (isRarityAllowed("Epic")) {
         return "Epic";
     }
+}
 
-    if (longestRun === 2) {
+   if (longestRun === 2) {
+    if (isRarityAllowed("Rare")) {
         return "Rare";
     }
+}
 
-    return "Common";
+    return getRandomFallbackRarity();
+}
+
+// =========================================
+// REBIRTH SHOP RARITY FILTER
+// =========================================
+
+function isRarityAllowed(rarity) {
+    const level =
+        data.rebirthShopUpgrade || 0;
+
+    if (level >= 1 && rarity === "Trash") {
+        return false;
+    }
+
+    if (level >= 2 && rarity === "Common") {
+        return false;
+    }
+
+    if (level >= 3 && rarity === "Uncommon") {
+        return false;
+    }
+
+    if (level >= 4 && rarity === "Rare") {
+        return false;
+    }
+
+    if (level >= 5 && rarity === "Epic") {
+        return false;
+    }
+
+    return true;
 }
 
 // =========================================
@@ -2748,11 +3005,12 @@ function determineRarity(number) {
         SHOP_UPGRADES.secretThing.levels.length - 1;
 
     if (
-        secretThingMaxed &&
-        Math.random() < 0.001
-    ) {
-        return "Secret";
-    }
+    secretThingMaxed &&
+    isRarityAllowed("Secret") &&
+    Math.random() < 0.001
+) {
+    return "Secret";
+}
 
     // =========================================
     // CHROMA LOTTERY
@@ -2764,9 +3022,12 @@ function determineRarity(number) {
     const chromaChance =
         getChromaChance(luck);
 
-    if (Math.random() < chromaChance) {
-        return "Chroma";
-    }
+    if (
+    isRarityAllowed("Chroma") &&
+    Math.random() < chromaChance
+) {
+    return "Chroma";
+}
 
     const longestRun =
         getLongestRepeatedDigitRun(number);
@@ -2780,55 +3041,84 @@ function determineRarity(number) {
     const formatted =
         formatNumber(number);
 
-    if (longestRun >= 5) {
-        return "Chroma";
-    }
+   if (
+    isRarityAllowed("Chroma") &&
+    longestRun >= 5
+) {
+    return "Chroma";
+}
 
-    if (number >= 999000) {
-        return "Chroma";
-    }
+if (
+    isRarityAllowed("Chroma") &&
+    number >= 999000
+) {
+    return "Chroma";
+}
 
     if (
+    isRarityAllowed("Chroma") &&
+    (
         formatted === "123456" ||
         formatted === "654321"
-    ) {
-        return "Mythic";
-    }
+    )
+) {
+    return "Chroma";
+}
 
-    if (
-        longestRun >= 4 &&
-        number >= 900000
-    ) {
-        return "Mythic";
-    }
+if (
+    isRarityAllowed("Mythic") &&
+    longestRun >= 4 &&
+    number >= 900000
+) {
+    return "Mythic";
+}
 
-    if (longestRun === 4) {
-        return "Mythic";
-    }
+if (
+    isRarityAllowed("Mythic") &&
+    longestRun === 4
+) {
+    return "Mythic";
+}
 
     if (longestRun === 3) {
-        return Math.random() < 0.90
+    const rarity =
+        Math.random() < 0.90
             ? "Legendary"
             : "Epic";
+
+    if (isRarityAllowed(rarity)) {
+        return rarity;
     }
+}
 
     if (highestDigitCount >= 4) {
+    if (isRarityAllowed("Epic")) {
         return "Epic";
     }
+}
 
     if (twoPairs) {
+    if (isRarityAllowed("Epic")) {
         return "Epic";
     }
+}
 
     if (highestDigitCount >= 3) {
+    if (isRarityAllowed("Epic")) {
         return "Epic";
     }
+}
 
     if (longestRun === 2) {
-        return Math.random() < 0.70
+    const rarity =
+        Math.random() < 0.70
             ? "Rare"
             : "Epic";
+
+    if (isRarityAllowed(rarity)) {
+        return rarity;
     }
+}
 
     return getRandomFallbackRarity();
 }
@@ -5337,31 +5627,25 @@ function openShopMenu() {
         return;
     }
 
-
     shopPanel.hidden =
         false;
 
-
     if (shopOverlay) {
-
         shopOverlay.hidden =
             false;
-
     }
 
-
     if (shopButton) {
-
         shopButton.setAttribute(
             "aria-expanded",
             "true"
         );
-
     }
 
+    // Always Open The EP Shop First
+    showEpShop();
 
     updateShop();
-
 }
 
 
