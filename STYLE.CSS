@@ -5624,3 +5624,115 @@ body.rebirth-cutscene {
         height: 85px;
     }
 }
+
+
+/* =========================================
+   SPECIAL NUMBER EFFECTS
+========================================= */
+
+.number-gold {
+    color: #ffd84d !important;
+
+    text-shadow:
+        0 0 8px #ffd84d,
+        0 0 20px #ffb300,
+        0 0 40px rgba(255,190,0,0.8);
+
+    animation:
+        goldNumberPulse 1s infinite alternate;
+}
+
+@keyframes goldNumberPulse {
+
+    from {
+        filter: brightness(1);
+    }
+
+    to {
+        filter: brightness(1.45);
+    }
+
+}
+
+
+/* =========================================
+   DIAMOND NUMBER
+========================================= */
+
+.number-diamond {
+    color: #dffcff !important;
+
+    text-shadow:
+        0 0 8px white,
+        0 0 20px #8ff5ff,
+        0 0 40px #39dfff,
+        0 0 75px rgba(0,220,255,0.8);
+
+    animation:
+        diamondNumberPulse 1s infinite alternate;
+}
+
+@keyframes diamondNumberPulse {
+
+    from {
+        filter:
+            brightness(1)
+            saturate(1);
+    }
+
+    to {
+        filter:
+            brightness(1.6)
+            saturate(1.4);
+    }
+
+}
+
+
+/* =========================================
+   RAINBOW NUMBER
+========================================= */
+
+.number-rainbow {
+    background:
+        linear-gradient(
+            90deg,
+            #ff0000,
+            #ff7a00,
+            #ffee00,
+            #36ff00,
+            #00d9ff,
+            #4169ff,
+            #9b4dff,
+            #ff00d4
+        );
+
+    background-size:
+        300% 100%;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+
+    -webkit-text-fill-color:
+        transparent;
+
+    animation:
+        rainbowNumber 2s linear infinite;
+
+    text-shadow:
+        0 0 15px rgba(255,255,255,0.5);
+}
+
+@keyframes rainbowNumber {
+
+    0% {
+        background-position:
+            0% 50%;
+    }
+
+    100% {
+        background-position:
+            300% 50%;
+    }
+
+}
