@@ -25,10 +25,10 @@
 
         gameLocked = true;
 
-        // Prevent the game from continuing to receive input
+        // Prevent The Game From Continuing To Receive Input
         document.documentElement.style.pointerEvents = "none";
 
-        // Create overlay
+        // Create Overlay
         const overlay = document.createElement("div");
 
         overlay.id = "rng-devtools-lock";
@@ -90,7 +90,7 @@
         document.body.appendChild(overlay);
 
 
-        // Block interaction with the game
+        // Block Interaction With The Game
         const blockInteraction = (event) => {
 
             if (event.target === overlay ||
@@ -295,11 +295,12 @@
 
 
         /*
-            Large differences can happen when DevTools
-            are docked beside or below the page.
+            Large Differences Can Occur When DevTools
+            Are Docked Beside Or Below The Page.
 
-            This is only a deterrent and can have false positives
-            with unusual browser window sizes.
+            This Is Only A Deterrent And May Trigger False Positives
+            With Unusual Browser Window Sizes.
+
         */
 
         if (
@@ -315,14 +316,14 @@
     }
 
 
-    // Run periodically
+    // Run Periodically
     setInterval(
         checkDevToolsSize,
         DEVTOOLS_CHECK_INTERVAL
     );
 
 
-    // Also check when window size changes
+    // Also Check When Window Size Changes
     window.addEventListener(
         "resize",
         function () {
@@ -372,10 +373,11 @@
         function () {
 
             /*
-                We intentionally DON'T lock the game here.
+                We Intentionally DON'T Lock The Game Here.
 
-                Switching tabs, minimizing the browser,
-                opening another app, etc. is completely normal.
+                Switching Tabs, Minimizing The Browser,
+                Opening Another App, Etc. Is Completely Normal.
+
             */
 
         }
@@ -390,7 +392,7 @@
         "keydown",
         function (event) {
 
-            // Prevent common "view source" attempts
+            // Prevent Common "View Source" Attempts
             if (
                 (event.ctrlKey || event.metaKey) &&
                 event.key.toLowerCase() === "u"
@@ -717,6 +719,26 @@ const buyRarityPurificationButton =
         "buyRarityPurification"
     );
 
+    const rebirthNumberEffectLevelDisplay =
+    document.getElementById(
+        "rebirthNumberEffectLevel"
+    );
+
+const rebirthNumberEffectDescriptionDisplay =
+    document.getElementById(
+        "rebirthNumberEffectDescription"
+    );
+
+const rebirthNumberEffectCostDisplay =
+    document.getElementById(
+        "rebirthNumberEffectCost"
+    );
+
+const buyRebirthNumberEffectButton =
+    document.getElementById(
+        "buyRebirthNumberEffect"
+    );
+
 const rebirthCountDisplay =
     document.getElementById("rebirthCount");
 
@@ -925,10 +947,84 @@ const REBIRTH_SHOP_UPGRADE = {
 };
 
 // =========================================
+// REBIRTH SHOP — NUMBER EFFECTS
+// =========================================
+
+const REBIRTH_NUMBER_EFFECT_UPGRADE = {
+
+    name: "Number Effects",
+
+    levels: [
+
+        {
+            tokenCost: 0,
+            epCost: 0,
+
+            goldChance: 0,
+            diamondChance: 0,
+            rainbowChance: 0,
+
+            goldMultiplier: 1,
+            diamondMultiplier: 1,
+            rainbowMultiplier: 1,
+
+            effect: "No Special Number Effect"
+        },
+
+        {
+            tokenCost: 5,
+            epCost: 150_000_000,
+
+            goldChance: 0.01,
+            diamondChance: 0,
+            rainbowChance: 0,
+
+            goldMultiplier: 3,
+            diamondMultiplier: 1,
+            rainbowMultiplier: 1,
+
+            effect: "1% Chance For Gold"
+        },
+
+        {
+            tokenCost: 7,
+            epCost: 300_000_000,
+
+            goldChance: 0.10,
+            diamondChance: 0.01,
+            rainbowChance: 0,
+
+            goldMultiplier: 3,
+            diamondMultiplier: 7,
+            rainbowMultiplier: 1,
+
+            effect: "10% Gold + 1% Diamond"
+        },
+
+        {
+            tokenCost: 14,
+            epCost: 1_000_000_000,
+
+            goldChance: 0.30,
+            diamondChance: 0.10,
+            rainbowChance: 0.01,
+
+            goldMultiplier: 3,
+            diamondMultiplier: 7,
+            rainbowMultiplier: 15,
+
+            effect: "30% Gold + 10% Diamond + 1% Rainbow"
+        }
+
+    ]
+
+};
+
+// =========================================
 // REBIRTH SYSTEM
 // =========================================
 
-const MAX_REBIRTHS = 5;
+const MAX_REBIRTHS = 7;
 
 const REBIRTH_COST_MULTIPLIERS = [
     1,
@@ -936,7 +1032,9 @@ const REBIRTH_COST_MULTIPLIERS = [
     3,
     5,
     7,
-    10
+    10,
+    11,
+    15
 ];
 
 const REBIRTH_TOKEN_REWARDS = [
@@ -945,7 +1043,9 @@ const REBIRTH_TOKEN_REWARDS = [
     3,
     5,
     7,
-    10
+    10,
+    11,
+    15
 ];
 
 function getRebirthCostMultiplier() {
@@ -1015,7 +1115,7 @@ const EP_VALUES = {
     Legendary: 3000,
     Mythic: 15000,
     Chroma: 100000,
-    Secret: 700000
+    Secret: 1500000
 };
 
 // =========================================
@@ -1081,8 +1181,13 @@ let data = {
     },
 
     rebirths: 0,
-    rebirthTokens: 0,
-    rebirthShopUpgrade: 0,
+rebirthTokens: 0,
+
+// Rarity Purification
+rebirthShopUpgrade: 0,
+
+// Special Number Effects
+rebirthNumberEffectUpgrade: 0,
 
     backgroundColor: null,
 
@@ -1175,6 +1280,23 @@ function loadData() {
                 ...(parsed.upgrades || {})
             }
         };
+
+// =========================================
+// REMOVE RETIRED BADGES
+// =========================================
+
+if (Array.isArray(data.badges)) {
+
+    data.badges =
+        data.badges.filter(
+            badgeName =>
+                badgeName !== "W Day"
+        );
+
+    data.totalBadges =
+        data.badges.length;
+
+}
 
         if (
             typeof parsed.rebirths !== "number" &&
@@ -1303,14 +1425,24 @@ async function loadDataFromSupabase() {
             },
 
             rebirths:
-                profile.upgrades?.__rebirths ??
-                data.rebirths ??
-                0,
+    profile.upgrades?.__rebirths ??
+    data.rebirths ??
+    0,
 
-            rebirthTokens:
-                profile.upgrades?.__rebirthTokens ??
-                data.rebirthTokens ??
-                0,
+rebirthTokens:
+    profile.upgrades?.__rebirthTokens ??
+    data.rebirthTokens ??
+    0,
+
+rebirthShopUpgrade:
+    profile.upgrades?.__rebirthShopUpgrade ??
+    data.rebirthShopUpgrade ??
+    0,
+
+rebirthNumberEffectUpgrade:
+    profile.upgrades?.__rebirthNumberEffectUpgrade ??
+    data.rebirthNumberEffectUpgrade ??
+    0,
 
             backgroundColor:
                 profile.background_color ?? null,
@@ -1321,6 +1453,23 @@ async function loadDataFromSupabase() {
             shrihanChromaReady:
                 profile.shrihan_chroma_ready ?? false
         };
+
+// =========================================
+// REMOVE RETIRED BADGES FROM ACCOUNT
+// =========================================
+
+if (Array.isArray(data.badges)) {
+
+    data.badges =
+        data.badges.filter(
+            badgeName =>
+                badgeName !== "W Day"
+        );
+
+    data.totalBadges =
+        data.badges.length;
+
+}
 
                 if (
             !Number.isFinite(Number(data.totalRollValue)) ||
@@ -1358,6 +1507,10 @@ async function loadDataFromSupabase() {
 
 if (typeof data.rebirthShopUpgrade !== "number") {
     data.rebirthShopUpgrade = 0;
+}
+
+if (typeof data.rebirthNumberEffectUpgrade !== "number") {
+    data.rebirthNumberEffectUpgrade = 0;
 }
 
         localStorage.setItem(
@@ -1461,14 +1614,21 @@ console.log(
                     history:
                         data.history,
 
-                    upgrades:
-                        {
-                            ...data.upgrades,
-                            __rebirths:
-                                data.rebirths || 0,
-                            __rebirthTokens:
-                                data.rebirthTokens || 0
-                        },
+                   upgrades: {
+    ...data.upgrades,
+
+    __rebirths:
+        data.rebirths || 0,
+
+    __rebirthTokens:
+        data.rebirthTokens || 0,
+
+    __rebirthShopUpgrade:
+        data.rebirthShopUpgrade || 0,
+
+    __rebirthNumberEffectUpgrade:
+        data.rebirthNumberEffectUpgrade || 0
+},
 
                     background_color:
                         data.backgroundColor,
@@ -1704,7 +1864,7 @@ function updateRebirthUI() {
             false;
     }
 
-        // =========================================
+    // =========================================
     // RARITY PURIFICATION UI
     // =========================================
 
@@ -1795,8 +1955,97 @@ function updateRebirthUI() {
         !canAfford;
 }
     }
+
+// =========================================
+// NUMBER EFFECT UI
+// =========================================
+
+const numberEffectLevel =
+    data.rebirthNumberEffectUpgrade || 0;
+
+const numberEffectMaxLevel =
+    REBIRTH_NUMBER_EFFECT_UPGRADE
+        .levels.length - 1;
+
+const numberEffectUpgrade =
+    REBIRTH_NUMBER_EFFECT_UPGRADE
+        .levels[numberEffectLevel];
+
+if (rebirthNumberEffectLevelDisplay) {
+
+    rebirthNumberEffectLevelDisplay.textContent =
+        `Level ${numberEffectLevel} / ${numberEffectMaxLevel}`;
+
 }
 
+if (rebirthNumberEffectDescriptionDisplay) {
+
+    rebirthNumberEffectDescriptionDisplay.textContent =
+        numberEffectUpgrade.effect;
+
+}
+
+if (
+    numberEffectLevel >=
+    numberEffectMaxLevel
+) {
+
+    if (rebirthNumberEffectCostDisplay) {
+
+        rebirthNumberEffectCostDisplay.textContent =
+            "MAX LEVEL REACHED";
+
+    }
+
+    if (buyRebirthNumberEffectButton) {
+
+        buyRebirthNumberEffectButton.textContent =
+            "MAXED";
+
+        buyRebirthNumberEffectButton.disabled =
+            true;
+
+    }
+
+} else {
+
+    const nextNumberEffect =
+        REBIRTH_NUMBER_EFFECT_UPGRADE
+            .levels[numberEffectLevel + 1];
+
+    if (rebirthNumberEffectCostDisplay) {
+
+        rebirthNumberEffectCostDisplay.textContent =
+            `Cost: ${nextNumberEffect.tokenCost.toLocaleString()} Rebirth Token${nextNumberEffect.tokenCost === 1 ? "" : "s"} + ${nextNumberEffect.epCost.toLocaleString()} EP`;
+
+    }
+
+    const hasEnoughTokens =
+        (data.rebirthTokens || 0) >=
+        nextNumberEffect.tokenCost;
+
+    const hasEnoughEP =
+        data.totalEP >=
+        nextNumberEffect.epCost;
+
+    const canAfford =
+        hasEnoughTokens &&
+        hasEnoughEP;
+
+    if (buyRebirthNumberEffectButton) {
+
+        buyRebirthNumberEffectButton.textContent =
+            canAfford
+                ? "Buy"
+                : "Not Enough Resources";
+
+        buyRebirthNumberEffectButton.disabled =
+            !canAfford;
+
+    }
+
+}
+}
 // =========================================
 // UPDATE SHOP
 // =========================================
@@ -1949,6 +2198,64 @@ function buyRebirthShopUpgrade() {
 }
 
 // =========================================
+// BUY REBIRTH NUMBER EFFECT UPGRADE
+// =========================================
+
+function buyRebirthNumberEffectUpgrade() {
+
+    const currentLevel =
+        data.rebirthNumberEffectUpgrade || 0;
+
+    const maxLevel =
+        REBIRTH_NUMBER_EFFECT_UPGRADE.levels.length - 1;
+
+    // Already Maxed
+    if (currentLevel >= maxLevel) {
+        return;
+    }
+
+    const nextLevel =
+        currentLevel + 1;
+
+    const upgrade =
+        REBIRTH_NUMBER_EFFECT_UPGRADE
+            .levels[nextLevel];
+
+    // Not Enough Rebirth Tokens
+    if (
+        (data.rebirthTokens || 0) <
+        upgrade.tokenCost
+    ) {
+        return;
+    }
+
+    // Not Enough EP
+    if (
+        data.totalEP <
+        upgrade.epCost
+    ) {
+        return;
+    }
+
+    // Pay Costs
+    data.rebirthTokens -=
+        upgrade.tokenCost;
+
+    data.totalEP -=
+        upgrade.epCost;
+
+    // Give Upgrade
+    data.rebirthNumberEffectUpgrade =
+        nextLevel;
+
+    saveData();
+
+    updateStats();
+    updateShop();
+    updateRebirthUI();
+}
+
+// =========================================
 // REBIRTH
 // =========================================
 
@@ -2075,6 +2382,19 @@ if (buyRarityPurificationButton) {
         () => {
 
             buyRebirthShopUpgrade();
+
+        }
+    );
+
+}
+
+if (buyRebirthNumberEffectButton) {
+
+    buyRebirthNumberEffectButton.addEventListener(
+        "click",
+        () => {
+
+            buyRebirthNumberEffectUpgrade();
 
         }
     );
@@ -3289,14 +3609,6 @@ const BADGES = [
     },
 
     {
-        name: "W Day",
-        description: "Your Roll Contains 914 Together Somewhere",
-        rarity: "Epic",
-        check: number =>
-            formatNumber(number).includes("914")
-    },
-
-    {
         name: "Lucky 7",
         description: "Your Roll Contains 777 Together Somewhere",
         rarity: "Legendary",
@@ -3667,6 +3979,40 @@ function updateRarityDisplay(rarity) {
     rarityDisplay.classList.add(
         `rarity-${rarity.toLowerCase()}`
     );
+}
+
+// =========================================
+// SPECIAL NUMBER DISPLAY
+// =========================================
+
+function updateNumberEffectDisplay(effect) {
+
+    numberDisplay.classList.remove(
+        "number-gold",
+        "number-diamond",
+        "number-rainbow"
+    );
+
+    if (effect === "gold") {
+
+        numberDisplay.classList.add(
+            "number-gold"
+        );
+
+    } else if (effect === "diamond") {
+
+        numberDisplay.classList.add(
+            "number-diamond"
+        );
+
+    } else if (effect === "rainbow") {
+
+        numberDisplay.classList.add(
+            "number-rainbow"
+        );
+
+    }
+
 }
 
 // =========================================
@@ -4597,9 +4943,28 @@ function updateHistory() {
 
             entry.innerHTML = `
                 <div class="history-main">
-                    <span class="history-number">
-                        ${formatNumber(roll.number)}
-                    </span>
+                    <span
+    class="
+        history-number
+        ${
+            roll.numberEffect === "gold"
+                ? "number-gold"
+                : ""
+        }
+        ${
+            roll.numberEffect === "diamond"
+                ? "number-diamond"
+                : ""
+        }
+        ${
+            roll.numberEffect === "rainbow"
+                ? "number-rainbow"
+                : ""
+        }
+    "
+>
+    ${formatNumber(roll.number)}
+</span>
 
                     <span class="
                         history-rarity
@@ -4725,18 +5090,88 @@ async function processRoll() {
             : originalNumber;
 
     const baseEP =
-        EP_VALUES[rarity] || 0;
+    EP_VALUES[rarity] || 0;
 
-    const epMultiplier =
-        getUpgradeValue(
-            "epMultiplier"
-        );
+const epMultiplier =
+    getUpgradeValue(
+        "epMultiplier"
+    );
 
-    const earnedEP =
-        Math.floor(
-            baseEP *
-            epMultiplier
-        );    data.totalRolls++;
+
+// =========================================
+// SPECIAL NUMBER EFFECT
+// =========================================
+
+const numberEffectLevel =
+    data.rebirthNumberEffectUpgrade || 0;
+
+const numberEffect =
+    REBIRTH_NUMBER_EFFECT_UPGRADE
+        .levels[numberEffectLevel];
+
+let numberEffectType =
+    "normal";
+
+const effectRoll =
+    Math.random();
+
+if (
+    effectRoll <
+    numberEffect.rainbowChance
+) {
+
+    numberEffectType =
+        "rainbow";
+
+} else if (
+    effectRoll <
+    numberEffect.rainbowChance +
+    numberEffect.diamondChance
+) {
+
+    numberEffectType =
+        "diamond";
+
+} else if (
+    effectRoll <
+    numberEffect.rainbowChance +
+    numberEffect.diamondChance +
+    numberEffect.goldChance
+) {
+
+    numberEffectType =
+        "gold";
+
+}
+
+
+// =========================================
+// SPECIAL NUMBER EP
+// =========================================
+
+let numberEffectMultiplier =
+    1;
+
+if (numberEffectType === "gold") {
+
+    numberEffectMultiplier = 3;
+
+} else if (numberEffectType === "diamond") {
+
+    numberEffectMultiplier = 7;
+
+} else if (numberEffectType === "rainbow") {
+
+    numberEffectMultiplier = 15;
+
+}
+
+const earnedEP =
+    Math.floor(
+        baseEP *
+        epMultiplier *
+        numberEffectMultiplier
+    );    data.totalRolls++;
 
     data.totalEP +=
         earnedEP;
@@ -4776,24 +5211,27 @@ async function processRoll() {
         );
 
     data.history.push({
-        number:
-            Number(finalNumber),
+    number:
+        Number(finalNumber),
 
-        rarity:
-            rarity,
+    rarity:
+        rarity,
 
-        ep:
-            earnedEP,
+    ep:
+        earnedEP,
 
-        rollNumber:
-            data.totalRolls,
+    numberEffect:
+        numberEffectType,
 
-        badges:
-            rollBadges.map(
-                badge =>
-                    badge.name
-            )
-    });
+    rollNumber:
+        data.totalRolls,
+
+    badges:
+        rollBadges.map(
+            badge =>
+                badge.name
+        )
+});
 
     if (data.history.length > 100) {
         data.history =
@@ -4857,11 +5295,15 @@ async function processRoll() {
     );
 
     numberDisplay.textContent =
-        formatNumber(finalNumber);
+    formatNumber(finalNumber);
 
-    updateRarityDisplay(
-        rarity
-    );
+updateRarityDisplay(
+    rarity
+);
+
+updateNumberEffectDisplay(
+    numberEffectType
+);
 
     epDisplay.textContent =
         `+${earnedEP.toLocaleString()} EP`;
@@ -6982,5 +7424,3 @@ if (rebirthYesButton) {
     );
 
 }
-
-
