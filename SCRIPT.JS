@@ -6861,7 +6861,6 @@ async function updateAccountUI() {
 
 }
 
-
 // =========================================
 // SIGN OUT
 // =========================================
@@ -6875,14 +6874,12 @@ if (signOutButton) {
             signOutButton.disabled =
                 true;
 
-
             if (signOutMessage) {
 
                 signOutMessage.textContent =
                     "Signing You Out...";
 
             }
-
 
             try {
 
@@ -6891,11 +6888,69 @@ if (signOutButton) {
                 } =
                     await supabase.auth.signOut();
 
-
                 if (error) {
                     throw error;
                 }
 
+                // =========================================
+                // RESET LOCAL GAME DATA
+                // =========================================
+
+                data = {
+                    totalRolls: 0,
+                    totalEP: 0,
+                    bestRarity: null,
+                    totalBadges: 0,
+                    totalRollValue: 0,
+                    highestNumber: 0,
+                    dailyStreak: 0,
+                    lastRoll: null,
+                    lastRollDate: null,
+
+                    history: [],
+                    badges: [],
+
+                    upgrades: {
+                        rollSpeed: 0,
+                        epMultiplier: 0,
+                        luck: 0,
+                        numberFortune: 0,
+                        doubleRoll: 0,
+                        secretThing: 0
+                    },
+
+                    rebirths: 0,
+                    rebirthTokens: 0,
+
+                    rebirthShopUpgrade: 0,
+                    rebirthNumberEffectUpgrade: 0,
+
+                    backgroundColor: null,
+
+                    shrihanCodeUsed: false,
+                    shrihanChromaReady: false
+                };
+
+                // Remove the previous account's local save.
+                // This does NOT delete anything from Supabase.
+                localStorage.removeItem(
+                    "rngdleData"
+                );
+
+                // =========================================
+                // REFRESH GAME UI
+                // =========================================
+
+                displayBadges();
+                displayBadgeIndex();
+                updateStats();
+                updateHistory();
+                updateCooldown();
+                updateShop();
+                updateRebirthUI();
+                updateRebirthShop();
+                applyBackground();
+                updateBackgroundButton();
 
                 if (signOutMessage) {
 
@@ -6904,9 +6959,7 @@ if (signOutButton) {
 
                 }
 
-
                 await updateAccountUI();
-
 
             } catch (error) {
 
@@ -6914,7 +6967,6 @@ if (signOutButton) {
                     "Sign Out Error:",
                     error
                 );
-
 
                 if (signOutMessage) {
 
@@ -6926,7 +6978,6 @@ if (signOutButton) {
 
             }
 
-
             signOutButton.disabled =
                 false;
 
@@ -6934,7 +6985,6 @@ if (signOutButton) {
     );
 
 }
-
 
 // =========================================
 // AUTH STATE
