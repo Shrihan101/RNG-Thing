@@ -399,13 +399,29 @@
 
         <!-- NUMBER -->
 
-        <div class="number-box">
+       <div class="number-box">
 
-            <span id="number">
-                ------
-            </span>
+    <span
+        id="vipLuckDisplay"
+        class="vip-luck-display"
+        hidden
+    >
+        +5× Luck (VIP)
+    </span>
 
-        </div>
+    <span id="number">
+        ------
+    </span>
+
+    <span
+        id="vipEpDisplay"
+        class="vip-ep-display"
+        hidden
+    >
+        ×5 EP (VIP)
+    </span>
+
+</div>
 
 
         <button
@@ -507,6 +523,61 @@
 
         </section>
 
+                <!-- QUESTS -->
+
+        <section
+    class="quests quests-side-menu"
+>
+
+            <h2>
+                Quests
+            </h2>
+
+            <div
+                id="questContainer"
+                class="quest-container"
+            >
+
+                <div class="quest-card">
+
+                    <div class="quest-header">
+
+                        <span id="questName">
+                            Loading Quest...
+                        </span>
+
+                    </div>
+
+                    <p id="questDescription">
+                        Loading...
+                    </p>
+
+                    <div class="quest-progress">
+
+                        <div
+                            id="questProgressBar"
+                            class="quest-progress-bar"
+                        ></div>
+
+                    </div>
+
+                    <div class="quest-footer">
+
+                        <span id="questProgress">
+                            0 / 0
+                        </span>
+
+                        <span id="questReward">
+                            Reward: 0 EP
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
 
         <!-- BADGES -->
 
@@ -570,6 +641,75 @@
 
         </section>
 
+        <!-- VIP -->
+
+<section
+    id="vipPanel"
+    class="vip-panel"
+>
+
+    <div class="vip-panel-header">
+
+        <div>
+            <h2>👑 VIP</h2>
+
+            <p class="subtitle">
+                Unlock Permanent VIP Benefits
+            </p>
+        </div>
+
+    </div>
+
+    <div class="vip-benefits">
+
+        <div>×5 EP Multiplier</div>
+
+        <div>+5× Luck</div>
+
+        <div>50% Off EP Shop</div>
+
+        <div>Daily /VIPRoll</div>
+
+        <div>👑 VIP Title</div>
+
+        <div>Gold Leaderboard Name</div>
+
+    </div>
+
+    <div class="vip-price-section">
+
+        <div
+            id="vipPrice"
+            class="vip-price"
+        >
+            $15
+        </div>
+
+        <div
+            id="vipPriceLabel"
+            class="vip-price-label"
+        >
+            Launch Price
+        </div>
+
+        <div
+            id="vipCountdown"
+            class="vip-countdown"
+        >
+            Price Increases In: Loading...
+        </div>
+
+    </div>
+
+    <button
+        id="buyVIPButton"
+        class="vip-buy-button"
+        type="button"
+    >
+        Get VIP
+    </button>
+
+</section>
 
         <!-- EP SHOP -->
 
@@ -594,9 +734,13 @@
     class="shop shop-panel"
     hidden
 >
+
+    <!-- SHOP HEADER -->
+
     <div class="shop-panel-header">
 
         <div>
+
             <h2>
                 EP Shop
             </h2>
@@ -604,6 +748,7 @@
             <p class="subtitle">
                 Spend Your EP To Upgrade Stuff
             </p>
+
         </div>
 
         <button
@@ -617,7 +762,11 @@
 
     </div>
 
+
+    <!-- SHOP TABS -->
+
     <div class="shop-tabs">
+
         <button
             id="epShopTab"
             class="leaderboard-tab active"
@@ -634,44 +783,67 @@
         >
             Rebirth Shop
         </button>
+
     </div>
+
+
+    <!-- REBIRTH STATUS -->
 
     <div
         id="rebirthStatus"
         class="rebirth-status"
     >
+
         <div>
             <span>Rebirths</span>
-            <strong id="rebirthCount">0 / 7</strong>
+            <strong id="rebirthCount">
+                0 / 7
+            </strong>
         </div>
 
         <div>
             <span>Rebirth Tokens</span>
-            <strong id="rebirthTokens">0</strong>
+            <strong id="rebirthTokens">
+                0
+            </strong>
         </div>
 
         <div>
             <span>Upgrade Cost</span>
-            <strong id="rebirthCostMultiplier">×1</strong>
+            <strong id="rebirthCostMultiplier">
+                ×1
+            </strong>
         </div>
+
     </div>
+
+
+    <!-- REBIRTH NOTIFICATION -->
 
     <div
         id="rebirthNotification"
         class="rebirth-notification"
         hidden
     >
-        <div class="rebirth-notification-icon">✦</div>
+
+        <div class="rebirth-notification-icon">
+            ✦
+        </div>
 
         <div class="rebirth-notification-content">
-            <strong>Rebirth Available!</strong>
+
+            <strong>
+                Rebirth Available!
+            </strong>
 
             <p id="rebirthNotificationText">
                 You Have Maxed Every Upgrade! Rebirth Now.
             </p>
+
         </div>
 
         <div class="rebirth-notification-actions">
+
             <button
                 id="rebirthYesButton"
                 class="rebirth-yes-button"
@@ -687,222 +859,247 @@
             >
                 Not Yet
             </button>
+
         </div>
+
     </div>
 
+
+    <!-- EP SHOP CONTENT -->
+
     <div id="epShopContent">
-            <h2>
-                EP Shop
-            </h2>
 
-            <p class="subtitle">
-                Spend Your EP To Upgrade Stuff
-            </p>
+        <!-- VIP SHOP DISCOUNT -->
+
+        <div
+            id="vipShopDiscountDisplay"
+            class="vip-shop-banner"
+            hidden
+        >
+
+            <strong>
+                👑 VIP Shop Discount
+            </strong>
+
+            <span>
+                VIP Players Get 50% Off All EP Shop Upgrades!
+            </span>
+
+        </div>
 
 
-            <div class="result-row">
+        <h2>
+            EP Shop
+        </h2>
+
+        <p class="subtitle">
+            Spend Your EP To Upgrade Stuff
+        </p>
+
+
+        <div class="result-row">
+
+            <span>
+                Available EP
+            </span>
+
+            <strong id="shopEP">
+                0
+            </strong>
+
+        </div>
+
+
+        <div class="stat-grid">
+
+            <!-- ROLL SPEED -->
+
+            <div class="stat-card">
 
                 <span>
-                    Available EP
+                    ⚡ Roll Speed
                 </span>
 
-                <strong id="shopEP">
-                    0
+                <strong id="rollSpeedLevel">
+                    10s
                 </strong>
 
-            </div>
+                <small>
+                    Make Your Rolls Faster
+                </small>
 
+                <button
+                    id="buyRollSpeed"
+                    class="leaderboard-tab"
+                    type="button"
+                >
+                    Buy
+                </button>
 
-            <div class="stat-grid">
-
-                <!-- ROLL SPEED -->
-
-                <div class="stat-card">
-
-                    <span>
-                        ⚡ Roll Speed
-                    </span>
-
-                    <strong id="rollSpeedLevel">
-                        10s
-                    </strong>
-
-                    <small>
-                        Make Your Rolls Faster
-                    </small>
-
-                    <button
-                        id="buyRollSpeed"
-                        class="leaderboard-tab"
-                        type="button"
-                    >
-                        Buy
-                    </button>
-
-                    <small id="rollSpeedCost">
-                        Cost: 0 EP
-                    </small>
-
-                </div>
-
-
-                <!-- EP MULTIPLIER -->
-
-                <div class="stat-card">
-
-                    <span>
-                        💰 EP Multiplier
-                    </span>
-
-                    <strong id="epMultiplierLevel">
-                        1×
-                    </strong>
-
-                    <small>
-                        Earn More EP From Every Roll
-                    </small>
-
-                    <button
-                        id="buyEpMultiplier"
-                        class="leaderboard-tab"
-                        type="button"
-                    >
-                        Buy
-                    </button>
-
-                    <small id="epMultiplierCost">
-                        Cost: 0 EP
-                    </small>
-
-                </div>
-
-
-                <!-- LUCK -->
-
-                <div class="stat-card">
-
-                    <span>
-                        🍀 Luck
-                    </span>
-
-                    <strong id="luckLevel">
-                        1×
-                    </strong>
-
-                    <small>
-                        Improve Your Fallback Rarity Chances
-                    </small>
-
-                    <button
-                        id="buyLuck"
-                        class="leaderboard-tab"
-                        type="button"
-                    >
-                        Buy
-                    </button>
-
-                    <small id="luckCost">
-                        Cost: 0 EP
-                    </small>
-
-                </div>
-
-
-                <!-- NUMBER FORTUNE -->
-
-                <div class="stat-card">
-
-                    <span>
-                        🎯 Number Fortune
-                    </span>
-
-                    <strong id="numberFortuneLevel">
-                        1×
-                    </strong>
-
-                    <small>
-                        Increase Your Odds Of Higher Numbers
-                    </small>
-
-                    <button
-                        id="buyNumberFortune"
-                        class="leaderboard-tab"
-                        type="button"
-                    >
-                        Buy
-                    </button>
-
-                    <small id="numberFortuneCost">
-                        Cost: 0 EP
-                    </small>
-
-                </div>
-
-
-                <!-- DOUBLE ROLL -->
-
-                <div class="stat-card">
-
-                    <span>
-                        🎲 Double Roll Chance
-                    </span>
-
-                    <strong id="doubleRollLevel">
-                        0%
-                    </strong>
-
-                    <small>
-                        Chance To Immediately Roll Again
-                    </small>
-
-                    <button
-                        id="buyDoubleRoll"
-                        class="leaderboard-tab"
-                        type="button"
-                    >
-                        Buy
-                    </button>
-
-                    <small id="doubleRollCost">
-                        Cost: 0 EP
-                    </small>
-
-                </div>
-
-
-                <!-- SECRET THING -->
-
-                <div class="stat-card">
-
-                    <span>
-                        Secret Thing
-                    </span>
-
-                    <strong id="secretThingLevel">
-                        1
-                    </strong>
-
-                    <small id="secretThingDescription">
-                        Does Absolutely Nothing... Yet.
-                    </small>
-
-                    <button
-                        id="buySecretThing"
-                        class="leaderboard-tab"
-                        type="button"
-                    >
-                        Buy
-                    </button>
-
-                    <small id="secretThingCost">
-                        Cost: 10 EP
-                    </small>
-
-                </div>
+                <small id="rollSpeedCost">
+                    Cost: 0 EP
+                </small>
 
             </div>
 
+
+            <!-- EP MULTIPLIER -->
+
+            <div class="stat-card">
+
+                <span>
+                    💰 EP Multiplier
+                </span>
+
+                <strong id="epMultiplierLevel">
+                    1×
+                </strong>
+
+                <small>
+                    Earn More EP From Every Roll
+                </small>
+
+                <button
+                    id="buyEpMultiplier"
+                    class="leaderboard-tab"
+                    type="button"
+                >
+                    Buy
+                </button>
+
+                <small id="epMultiplierCost">
+                    Cost: 0 EP
+                </small>
+
             </div>
+
+
+            <!-- LUCK -->
+
+            <div class="stat-card">
+
+                <span>
+                    🍀 Luck
+                </span>
+
+                <strong id="luckLevel">
+                    1×
+                </strong>
+
+                <small>
+                    Improve Your Fallback Rarity Chances
+                </small>
+
+                <button
+                    id="buyLuck"
+                    class="leaderboard-tab"
+                    type="button"
+                >
+                    Buy
+                </button>
+
+                <small id="luckCost">
+                    Cost: 0 EP
+                </small>
+
+            </div>
+
+
+            <!-- NUMBER FORTUNE -->
+
+            <div class="stat-card">
+
+                <span>
+                    🎯 Number Fortune
+                </span>
+
+                <strong id="numberFortuneLevel">
+                    1×
+                </strong>
+
+                <small>
+                    Increase Your Odds Of Higher Numbers
+                </small>
+
+                <button
+                    id="buyNumberFortune"
+                    class="leaderboard-tab"
+                    type="button"
+                >
+                    Buy
+                </button>
+
+                <small id="numberFortuneCost">
+                    Cost: 0 EP
+                </small>
+
+            </div>
+
+
+            <!-- DOUBLE ROLL -->
+
+            <div class="stat-card">
+
+                <span>
+                    🎲 Double Roll Chance
+                </span>
+
+                <strong id="doubleRollLevel">
+                    0%
+                </strong>
+
+                <small>
+                    Chance To Immediately Roll Again
+                </small>
+
+                <button
+                    id="buyDoubleRoll"
+                    class="leaderboard-tab"
+                    type="button"
+                >
+                    Buy
+                </button>
+
+                <small id="doubleRollCost">
+                    Cost: 0 EP
+                </small>
+
+            </div>
+
+
+            <!-- SECRET THING -->
+
+            <div class="stat-card">
+
+                <span>
+                    Secret Thing
+                </span>
+
+                <strong id="secretThingLevel">
+                    1
+                </strong>
+
+                <small id="secretThingDescription">
+                    Does Absolutely Nothing... Yet.
+                </small>
+
+                <button
+                    id="buySecretThing"
+                    class="leaderboard-tab"
+                    type="button"
+                >
+                    Buy
+                </button>
+
+                <small id="secretThingCost">
+                    Cost: 10 EP
+                </small>
+
+            </div>
+
+        </div>
+
+    </div>
 
     <div
         id="rebirthShopContent"
