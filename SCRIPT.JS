@@ -462,6 +462,7 @@ const signUpMessage =
 signUpForm.addEventListener(
     "submit",
     async event => {
+
         event.preventDefault();
 
         const username =
@@ -473,19 +474,25 @@ signUpForm.addEventListener(
         const password =
             signUpPassword.value;
 
+
         if (!username || !email || !password) {
+
             signUpMessage.textContent =
                 "Please Fill In Every Field.";
 
             return;
         }
 
-        signUpButton.disabled = true;
+
+        signUpButton.disabled =
+            true;
 
         signUpMessage.textContent =
             "Creating Your Account...";
 
+
         try {
+
             const {
                 data: authData,
                 error
@@ -493,6 +500,7 @@ signUpForm.addEventListener(
                 await supabase.auth.signUp({
                     email: email,
                     password: password,
+
                     options: {
                         data: {
                             username: username
@@ -500,32 +508,131 @@ signUpForm.addEventListener(
                     }
                 });
 
+
             if (error) {
                 throw error;
             }
+
 
             console.log(
                 "Account Created:",
                 authData
             );
 
-            signUpMessage.textContent =
-                "Account Created Successfully!";
 
-            signUpForm.reset();
+            // =========================================
+            // NEW ACCOUNT MUST START WITH FRESH QUESTS
+            // =========================================
+
+            data.questsCompleted = 0;
+            data.currentQuestIndex = 0;
+            data.questProgress = 0;
+
+            // =========================================
+            // CLEAR GUEST'S LAST ROLL DISPLAY
+            // =========================================
+
+            data.lastRoll = null;
+
+            // =========================================
+            // SAVE FRESH QUEST DATA TO THE NEW ACCOUNT
+            // =========================================
+
+            if (authData.user) {
+
+                const currentUpgrades = {
+                    ...(data.upgrades || {}),
+
+                    __questsCompleted: 0,
+                    __currentQuestIndex: 0,
+                    __questProgress: 0
+                };
+
+
+                const {
+                    error: profileError
+                } =
+                    await supabase
+                        .from("profiles")
+                        .update({
+
+                            upgrades:
+                                currentUpgrades
+
+                        })
+                        .eq(
+                            "id",
+                            authData.user.id
+                        );
+
+
+                if (profileError) {
+
+                    console.error(
+                        "New Account Quest Reset Error:",
+                        profileError
+                    );
+
+                }
+
+            }
+
+
+            // =========================================
+            // REFRESH QUEST UI IMMEDIATELY
+            // =========================================
+
+            updateQuestDisplay();
+
+
+            // =========================================
+            // REFRESH LAST ROLL UI
+            // =========================================
+
+            numberDisplay.textContent =
+                "------";
+
+            rarityDisplay.textContent =
+                "";
+
+            epDisplay.textContent =
+                "";
+
+            signUpMessage.textContent =
+    "Account Created Successfully!";
+
+const loaded =
+    await loadDataFromSupabase();
+
+if (!loaded) {
+
+    signUpMessage.textContent =
+        "Account Created, But Unable To Load Your New Account Data.";
+
+    return;
+}
+
+signUpForm.reset();
+
 
         } catch (error) {
+
             console.error(
                 "Sign Up Error:",
                 error
             );
 
+
             signUpMessage.textContent =
                 error.message ||
                 "Unable To Create Account.";
+
         }
 
-        signUpButton.disabled = false;
+
+        signUpButton.disabled =
+            false;
+
     }
 );
 
@@ -609,10 +716,20 @@ signInForm.addEventListener(
 
 
             signInMessage.textContent =
-                "Signed In Successfully!";
+    "Signed In Successfully!";
 
+const loaded =
+    await loadDataFromSupabase();
 
-            signInForm.reset();
+if (!loaded) {
+
+    signInMessage.textContent =
+        "Signed In, But Unable To Load Your Account Data.";
+
+    return;
+}
+
+signInForm.reset();
 
 
         } catch (error) {
@@ -682,6 +799,34 @@ const countdownDisplay = document.getElementById("countdown");
 const dailyStatus = document.getElementById("dailyStatus");
 
 const mythicEffect = document.getElementById("mythicEffect");
+
+const questContainer =
+    document.getElementById("questContainer");
+
+const questName =
+    document.getElementById("questName");
+
+const questDescription =
+    document.getElementById("questDescription");
+
+const questProgressBar =
+    document.getElementById("questProgressBar");
+
+const questProgress =
+    document.getElementById("questProgress");
+
+const questReward =
+    document.getElementById("questReward");
+
+    const vipEpDisplay =
+    document.getElementById(
+        "vipEpDisplay"
+    );
+
+    const vipLuckDisplay =
+    document.getElementById(
+        "vipLuckDisplay"
+    );
 
 // =========================================
 // SHOP DOM ELEMENTS
@@ -775,6 +920,11 @@ const epShopContent =
 const rebirthShopContent =
     document.getElementById("rebirthShopContent");
 
+    const vipShopDiscountDisplay =
+    document.getElementById(
+        "vipShopDiscountDisplay"
+    );
+
 // =========================================
 // HIDE SECRET LEVEL DISPLAY
 // =========================================
@@ -796,6 +946,117 @@ const ANIMATION_INTERVAL = 45;
 // Set To null For Normal Rarity
 // Set To "Mythic", "Chroma", Or "Secret" To Force That Rarity
 const FORCE_RARITY = null;
+
+// =========================================
+// VIP ROLL
+// =========================================
+
+function canUseVIPRoll() {
+
+    if (!isPlayerVIP()) {
+        return false;
+    }
+
+    if (!data.vipRollLastUsed) {
+        return true;
+    }
+
+    const lastUsed =
+        new Date(
+            data.vipRollLastUsed
+        );
+
+    const now =
+        new Date();
+
+    return (
+        lastUsed.toDateString() !==
+        now.toDateString()
+    );
+}
+
+function activateVIPRoll() {
+
+    if (!canUseVIPRoll()) {
+
+        const message =
+            isPlayerVIP()
+                ? "VIPRoll Has Already Been Used Today!"
+                : "VIPRoll Is Only Available To VIP Players!";
+
+        vipRollMessageActive = true;
+
+        dailyStatus.textContent =
+            message;
+
+        setTimeout(() => {
+
+            vipRollMessageActive = false;
+
+            if (
+                dailyStatus.textContent ===
+                message
+            ) {
+                dailyStatus.textContent = "";
+            }
+
+        }, 5000);
+
+        return false;
+    }
+
+    data.vipRollArmed = true;
+
+    saveData();
+
+    const message =
+        "VIPRoll Activated! Your Next Roll Is Guaranteed Secret!";
+
+    vipRollMessageActive = true;
+
+    dailyStatus.textContent =
+        message;
+
+    setTimeout(() => {
+
+        vipRollMessageActive = false;
+
+        if (
+            dailyStatus.textContent ===
+            message
+        ) {
+            dailyStatus.textContent = "";
+        }
+
+    }, 5000);
+
+    return true;
+}
+
+function useVIPRoll() {
+
+    if (!data.vipRollArmed) {
+        return false;
+    }
+
+    if (!canUseVIPRoll()) {
+
+        data.vipRollArmed = false;
+
+        saveData();
+
+        return false;
+    }
+
+    data.vipRollLastUsed =
+        new Date().toISOString();
+
+    data.vipRollArmed = false;
+
+    saveData();
+
+    return true;
+}
 
 // =========================================
 // BACKGROUND CUSTOMIZATION
@@ -1132,26 +1393,285 @@ const CHROMA_LUCK_DENOMINATORS = {
     7: 300,
     8: 170,
     9: 150,
-    10: 100
+    10: 100,
+
+    // VIP Luck
+    11: 95,
+    12: 90,
+    13: 85,
+    14: 80,
+    15: 75
 };
 
 function getChromaDenominator(luck) {
-    const cappedLuck = Math.min(
-        10,
-        Math.max(
-            1,
-            Math.floor(luck)
-        )
-    );
 
-    return CHROMA_LUCK_DENOMINATORS[cappedLuck];
+    const cappedLuck =
+        Math.min(
+            15,
+            Math.max(
+                1,
+                Math.floor(luck)
+            )
+        );
+
+    return CHROMA_LUCK_DENOMINATORS[
+        cappedLuck
+    ];
 }
 
 function getChromaChance(luck) {
-    const denominator = getChromaDenominator(luck);
+
+    const denominator =
+        getChromaDenominator(luck);
 
     return 1 / denominator;
 }
+
+// =========================================
+// TITLES
+// =========================================
+
+const TITLES = [
+    {
+        id: "rookieRoller",
+        name: "Rookie Roller",
+        requirement: "Roll 100 Times",
+        check: () => data.totalRolls >= 100
+    },
+
+    {
+        id: "gettingStarted",
+        name: "Getting Started",
+        requirement: "Roll 500 Times",
+        check: () => data.totalRolls >= 500
+    },
+
+    {
+        id: "questRookie",
+        name: "Quest Rookie",
+        requirement: "Complete 10 Quests",
+        check: () => data.questsCompleted >= 10
+    },
+
+    {
+        id: "luckyStart",
+        name: "Lucky Start",
+        requirement: "Get Your First Mythic",
+        check: () => data.mythicRolls >= 1
+    },
+
+    {
+        id: "dedicated",
+        name: "Dedicated",
+        requirement: "Play For 3 Hours",
+        check: () => data.playTimeSeconds >= 10800
+    },
+
+    {
+        id: "roller",
+        name: "Roller",
+        requirement: "Roll 1,500 Times",
+        check: () => data.totalRolls >= 1500
+    },
+
+    {
+        id: "rareHunter",
+        name: "Rare Hunter",
+        requirement: "Get 500 Rare+ Rolls",
+        check: () => data.rarePlusRolls >= 500
+    },
+
+    {
+        id: "questSeeker",
+        name: "Quest Seeker",
+        requirement: "Complete 50 Quests",
+        check: () => data.questsCompleted >= 50
+    },
+
+    {
+        id: "secretFinder",
+        name: "Secret Finder",
+        requirement: "Get Your First Secret",
+        check: () => data.secretRolls >= 1
+    },
+
+    {
+        id: "luckyRoller",
+        name: "Lucky Roller",
+        requirement: "Earn 1,000,000,000 EP",
+        check: () => data.totalEP >= 1_000_000_000
+    },
+
+    {
+        id: "rngVeteran",
+        name: "RNG Veteran",
+        requirement: "Roll 25,000 Times",
+        check: () => data.totalRolls >= 25_000
+    },
+
+    {
+        id: "legendaryHunter",
+        name: "Legendary Hunter",
+        requirement: "Get 500 Legendary Rolls",
+        check: () => data.legendaryRolls >= 500
+    },
+
+    {
+        id: "mythicHunter",
+        name: "Mythic Hunter",
+        requirement: "Get 700 Mythics",
+        check: () => data.mythicRolls >= 700
+    },
+
+    {
+        id: "questLegend",
+        name: "Quest Legend",
+        requirement: "Complete 500 Quests",
+        check: () => data.questsCompleted >= 500
+    },
+
+    {
+        id: "rebirthMaster",
+        name: "Rebirth Master",
+        requirement: "Reach 5 Rebirths",
+        check: () => data.rebirths >= 5
+    },
+
+    {
+        id: "rngMaster",
+        name: "RNG Master",
+        requirement: "Roll 500,000 Times",
+        check: () => data.totalRolls >= 500_000
+    },
+
+    {
+        id: "chromaHunter",
+        name: "Chroma Hunter",
+        requirement: "Get 3,000 Chromas",
+        check: () => data.chromaRolls >= 3_000
+    },
+
+    {
+        id: "secretHunter",
+        name: "Secret Hunter",
+        requirement: "Get 50 Secrets",
+        check: () => data.secretRolls >= 50
+    },
+
+    {
+        id: "theImpossible",
+        name: "The Impossible",
+        requirement: "Roll 999,999",
+        check: () => data.rolled999999 === true
+    },
+
+    {
+        id: "rngThingLegend",
+        name: "RNG Thing Legend",
+        requirement: "Reach 7 Rebirths + 1,000,000 Rolls",
+        check: () =>
+            data.rebirths >= 7 &&
+            data.totalRolls >= 1_000_000
+    }
+];
+
+// =========================================
+// QUEST SYSTEM
+// =========================================
+
+const QUESTS = [
+
+    {
+        id: "roll10",
+        name: "Warm Up",
+        description: "Roll 10 Times",
+        requirement: 10,
+        reward: 100,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll25",
+        name: "Getting Rolling",
+        description: "Roll 25 Times",
+        requirement: 25,
+        reward: 250,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll50",
+        name: "Roller In Training",
+        description: "Roll 50 Times",
+        requirement: 50,
+        reward: 500,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll100",
+        name: "Century Roller",
+        description: "Roll 100 Times",
+        requirement: 100,
+        reward: 1_000,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll250",
+        name: "Dedicated Roller",
+        description: "Roll 250 Times",
+        requirement: 250,
+        reward: 2_500,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll500",
+        name: "Rolling Along",
+        description: "Roll 500 Times",
+        requirement: 500,
+        reward: 5_000,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll1000",
+        name: "Roll Machine",
+        description: "Roll 1,000 Times",
+        requirement: 1_000,
+        reward: 10_000,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll2500",
+        name: "RNG Grinder",
+        description: "Roll 2,500 Times",
+        requirement: 2_500,
+        reward: 25_000,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll5000",
+        name: "RNG Addict",
+        description: "Roll 5,000 Times",
+        requirement: 5_000,
+        reward: 50_000,
+        check: () => data.totalRolls
+    },
+
+    {
+        id: "roll10000",
+        name: "Ten Thousand",
+        description: "Roll 10,000 Times",
+        requirement: 10_000,
+        reward: 100_000,
+        check: () => data.totalRolls
+    }
+
+];
 
 // =========================================
 // DATA
@@ -1169,7 +1689,24 @@ let data = {
     lastRollDate: null,
 
     history: [],
-    badges: [],
+badges: [],
+
+titles: [],
+equippedTitle: null,
+
+questsCompleted: 0,
+currentQuestIndex: 0,
+questProgress: 0,
+
+mythicRolls: 0,
+legendaryRolls: 0,
+chromaRolls: 0,
+secretRolls: 0,
+rarePlusRolls: 0,
+
+rolled999999: false,
+
+playTimeSeconds: 0,
 
     upgrades: {
         rollSpeed: 0,
@@ -1191,9 +1728,147 @@ rebirthNumberEffectUpgrade: 0,
 
     backgroundColor: null,
 
-    shrihanCodeUsed: false,
-    shrihanChromaReady: false
+isVIP: false,
+vipRollLastUsed: null,
+vipRollArmed: false,
+
+shrihanCodeUsed: false,
+shrihanChromaReady: false
 };
+
+// =========================================
+// TITLE SYSTEM
+// =========================================
+
+function updateTitles() {
+
+    if (!Array.isArray(data.titles)) {
+        data.titles = [];
+    }
+
+    const newlyUnlocked = [];
+
+    TITLES.forEach(title => {
+
+        if (
+            !data.titles.includes(title.id) &&
+            title.check()
+        ) {
+
+            data.titles.push(title.id);
+
+            newlyUnlocked.push(title);
+
+            // Automatically Equip The First Title
+            if (!data.equippedTitle) {
+                data.equippedTitle = title.id;
+            }
+
+        }
+
+    });
+
+    if (newlyUnlocked.length > 0) {
+
+    const titleNames =
+        newlyUnlocked
+            .map(title => title.name)
+            .join(", ");
+
+    dailyStatus.textContent =
+        `New Title Unlocked: ${titleNames}!`;
+
+    saveData();
+
+    displayTitles();
+}
+
+    return newlyUnlocked;
+}
+
+
+function getEquippedTitle() {
+
+    if (!data.equippedTitle) {
+        return null;
+    }
+
+    return (
+        TITLES.find(
+            title =>
+                title.id ===
+                data.equippedTitle
+        ) || null
+    );
+
+}
+
+
+function equipTitle(titleId) {
+
+    if (
+        !data.titles.includes(titleId)
+    ) {
+        return false;
+    }
+
+    const title =
+        TITLES.find(
+            item =>
+                item.id === titleId
+        );
+
+    if (!title) {
+        return false;
+    }
+
+    data.equippedTitle =
+        titleId;
+
+    saveData();
+
+    return true;
+}
+
+function updateVIPEpDisplay() {
+
+    if (!vipEpDisplay) {
+        return;
+    }
+
+    if (isPlayerVIP()) {
+
+        vipEpDisplay.hidden =
+            false;
+
+    } else {
+
+        vipEpDisplay.hidden =
+            true;
+
+    }
+
+}
+
+function updateVIPLuckDisplay() {
+
+    if (!vipLuckDisplay) {
+        return;
+    }
+
+    if (isPlayerVIP()) {
+
+        vipLuckDisplay.hidden =
+            false;
+
+    } else {
+
+        vipLuckDisplay.hidden =
+            true;
+
+    }
+
+}
 
 // =========================================
 // ROLL LOCK
@@ -1206,6 +1881,8 @@ let isRolling = false;
 // =========================================
 
 let shrihanCodeBuffer = "";
+let vipRollCodeBuffer = "";
+let vipRollMessageActive = false;
 
 function activateShrihanCode() {
     if (data.shrihanCodeUsed) {
@@ -1258,6 +1935,72 @@ document.addEventListener("keydown", event => {
 });
 
 // =========================================
+// VIP ROLL CODE
+// =========================================
+
+document.addEventListener("keydown", event => {
+
+    if (!event) {
+        return;
+    }
+
+    const target = event.target;
+
+    if (
+        target &&
+        (
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable
+        )
+    ) {
+        return;
+    }
+
+    // Ignore modifier keys.
+    if (
+        event.key === "Shift" ||
+        event.key === "Control" ||
+        event.key === "Alt" ||
+        event.key === "Meta"
+    ) {
+        return;
+    }
+
+    const key = event.key;
+
+    if (
+        typeof key !== "string" ||
+        key.length === 0
+    ) {
+        return;
+    }
+
+    vipRollCodeBuffer += key;
+
+    if (vipRollCodeBuffer.length > 8) {
+        vipRollCodeBuffer =
+            vipRollCodeBuffer.slice(-8);
+    }
+
+    console.log(
+        "VIPRoll Buffer:",
+        vipRollCodeBuffer
+    );
+
+    if (
+        vipRollCodeBuffer ===
+        "/VIPRoll"
+    ) {
+
+        activateVIPRoll();
+
+        vipRollCodeBuffer = "";
+    }
+
+});
+
+// =========================================
 // LOAD DATA
 // =========================================
 
@@ -1280,6 +2023,81 @@ function loadData() {
                 ...(parsed.upgrades || {})
             }
         };
+
+        // =========================================
+        // TITLE DATA SAFETY
+        // =========================================
+
+        if (!Array.isArray(data.titles)) {
+            data.titles = [];
+        }
+
+        if (
+            typeof data.equippedTitle !== "string" &&
+            data.equippedTitle !== null
+        ) {
+            data.equippedTitle = null;
+        }
+
+        if (
+            typeof data.questsCompleted !== "number"
+        ) {
+            data.questsCompleted = 0;
+        }
+
+        if (
+            typeof data.mythicRolls !== "number"
+        ) {
+            data.mythicRolls = 0;
+        }
+
+        if (
+            typeof data.legendaryRolls !== "number"
+        ) {
+            data.legendaryRolls = 0;
+        }
+
+        if (
+            typeof data.chromaRolls !== "number"
+        ) {
+            data.chromaRolls = 0;
+        }
+
+        if (
+            typeof data.secretRolls !== "number"
+        ) {
+            data.secretRolls = 0;
+        }
+
+        if (
+            typeof data.rarePlusRolls !== "number"
+        ) {
+            data.rarePlusRolls = 0;
+        }
+
+        if (
+            typeof data.rolled999999 !== "boolean"
+        ) {
+            data.rolled999999 = false;
+        }
+
+        if (
+            typeof data.playTimeSeconds !== "number"
+        ) {
+            data.playTimeSeconds = 0;
+        }
+
+        if (
+            typeof data.currentQuestIndex !== "number"
+        ) {
+            data.currentQuestIndex = 0;
+        }
+
+        if (
+            typeof data.questProgress !== "number"
+        ) {
+            data.questProgress = 0;
+        }
 
 // =========================================
 // REMOVE RETIRED BADGES
@@ -1376,8 +2194,13 @@ async function loadDataFromSupabase() {
             return false;
         }
 
+                const profileUpgrades =
+            profile.upgrades &&
+            typeof profile.upgrades === "object"
+                ? profile.upgrades
+                : {};
+
         data = {
-            ...data,
 
             totalRolls:
                 profile.rolls ?? 0,
@@ -1419,30 +2242,99 @@ async function loadDataFromSupabase() {
                     : [],
 
             upgrades: {
-                ...data.upgrades,
+                ...profileUpgrades,
 
-                ...(profile.upgrades || {})
+                rollSpeed:
+                    profileUpgrades.rollSpeed ?? 0,
+
+                epMultiplier:
+                    profileUpgrades.epMultiplier ?? 0,
+
+                luck:
+                    profileUpgrades.luck ?? 0,
+
+                numberFortune:
+                    profileUpgrades.numberFortune ?? 0,
+
+                doubleRoll:
+                    profileUpgrades.doubleRoll ?? 0,
+
+                secretThing:
+                    profileUpgrades.secretThing ?? 0
             },
 
             rebirths:
-    profile.upgrades?.__rebirths ??
-    data.rebirths ??
-    0,
+                profileUpgrades.__rebirths ?? 0,
 
-rebirthTokens:
-    profile.upgrades?.__rebirthTokens ??
-    data.rebirthTokens ??
-    0,
+            rebirthTokens:
+                profileUpgrades.__rebirthTokens ?? 0,
 
-rebirthShopUpgrade:
-    profile.upgrades?.__rebirthShopUpgrade ??
-    data.rebirthShopUpgrade ??
-    0,
+            rebirthShopUpgrade:
+                profileUpgrades.__rebirthShopUpgrade ?? 0,
 
-rebirthNumberEffectUpgrade:
-    profile.upgrades?.__rebirthNumberEffectUpgrade ??
-    data.rebirthNumberEffectUpgrade ??
-    0,
+            rebirthNumberEffectUpgrade:
+                profileUpgrades.__rebirthNumberEffectUpgrade ?? 0,
+
+            titles:
+                Array.isArray(
+                    profileUpgrades.__titles
+                )
+                    ? profileUpgrades.__titles
+                    : [],
+
+            equippedTitle:
+                profileUpgrades.__equippedTitle ??
+                null,
+
+            questsCompleted:
+                profileUpgrades.__questsCompleted ??
+                0,
+
+            currentQuestIndex:
+                profileUpgrades.__currentQuestIndex ??
+                0,
+
+            questProgress:
+                profileUpgrades.__questProgress ??
+                0,
+
+            mythicRolls:
+                profileUpgrades.__mythicRolls ??
+                0,
+
+            legendaryRolls:
+                profileUpgrades.__legendaryRolls ??
+                0,
+
+            chromaRolls:
+                profileUpgrades.__chromaRolls ??
+                0,
+
+            secretRolls:
+                profileUpgrades.__secretRolls ??
+                0,
+
+            rarePlusRolls:
+                profileUpgrades.__rarePlusRolls ??
+                0,
+
+            rolled999999:
+                profileUpgrades.__rolled999999 ??
+                false,
+
+            playTimeSeconds:
+                profileUpgrades.__playTimeSeconds ??
+                0,
+
+            isVIP:
+                profileUpgrades.__isVIP === true,
+
+            vipRollLastUsed:
+    profileUpgrades.__vipRollLastUsed ??
+    null,
+
+    vipRollArmed:
+    profileUpgrades.__vipRollArmed === true,
 
             backgroundColor:
                 profile.background_color ?? null,
@@ -1526,6 +2418,11 @@ if (typeof data.rebirthNumberEffectUpgrade !== "number") {
         updateCooldown();
         updateBackgroundButton();
 
+        displayTitles();
+        updateVIPEpDisplay();
+        updateVIPLuckDisplay();
+        updateVIPPriceDisplay();
+        
         console.log(
             "RNGdle data loaded from Supabase!"
         );
@@ -1540,6 +2437,324 @@ if (typeof data.rebirthNumberEffectUpgrade !== "number") {
 
         return false;
     }
+}
+
+// =========================================
+// VIP SYSTEM
+// =========================================
+
+const VIP_EP_MULTIPLIER = 5;
+const VIP_LUCK_BONUS = 5;
+const VIP_SHOP_DISCOUNT = 0.50;
+
+
+// =========================================
+// VIP CHECK
+// =========================================
+
+function isPlayerVIP() {
+
+    return data.isVIP === true;
+
+}
+
+
+// =========================================
+// VIP EP MULTIPLIER
+// =========================================
+
+function getVIPEpMultiplier() {
+
+    return isPlayerVIP()
+        ? VIP_EP_MULTIPLIER
+        : 1;
+
+}
+
+
+// =========================================
+// VIP LUCK
+// =========================================
+
+function getVIPLuckBonus() {
+
+    return isPlayerVIP()
+        ? VIP_LUCK_BONUS
+        : 0;
+
+}
+
+
+// =========================================
+// FINAL LUCK
+// =========================================
+
+function getEffectiveLuck() {
+
+    const normalLuck =
+        getUpgradeValue("luck");
+
+    return Number(
+        (
+            normalLuck +
+            getVIPLuckBonus()
+        ).toFixed(1)
+    );
+
+}
+
+
+// =========================================
+// VIP SHOP DISCOUNT
+// =========================================
+
+function getVIPShopPrice(basePrice) {
+
+    if (!isPlayerVIP()) {
+        return basePrice;
+    }
+
+    return Math.ceil(
+        basePrice *
+        VIP_SHOP_DISCOUNT
+    );
+
+}
+
+// =========================================
+// VIP SHOP DISPLAY
+// =========================================
+
+function updateVIPShopDisplay() {
+
+    if (!vipShopDiscountDisplay) {
+        return;
+    }
+
+    vipShopDiscountDisplay.hidden =
+        !isPlayerVIP();
+
+}
+
+// =========================================
+// VIP PRICE SCHEDULE
+// =========================================
+
+const VIP_LAUNCH_DATE =
+    "2026-09-23T00:00:00-04:00";
+
+const VIP_FIRST_INCREASE =
+    "2026-09-30T00:00:00-04:00";
+
+const VIP_FINAL_INCREASE =
+    "2026-10-07T00:00:00-04:00";
+
+const VIP_PRICES = {
+    launch: 15,
+    second: 30,
+    final: 50
+};
+
+function getVIPPriceInfo() {
+
+    const now =
+        new Date();
+
+    const launchDate =
+        new Date(
+            VIP_LAUNCH_DATE
+        );
+
+    const firstIncrease =
+        new Date(
+            VIP_FIRST_INCREASE
+        );
+
+    const finalIncrease =
+        new Date(
+            VIP_FINAL_INCREASE
+        );
+
+    if (now < launchDate) {
+
+        return {
+            price: VIP_PRICES.launch,
+            label: "Launch Price",
+            nextDate: launchDate
+        };
+
+    }
+
+    if (now < firstIncrease) {
+
+        return {
+            price: VIP_PRICES.launch,
+            label: "Launch Price",
+            nextDate: firstIncrease
+        };
+
+    }
+
+    if (now < finalIncrease) {
+
+        return {
+            price: VIP_PRICES.second,
+            label: "Limited Price",
+            nextDate: finalIncrease
+        };
+
+    }
+
+    return {
+        price: VIP_PRICES.final,
+        label: "Final Price — No More Increases",
+        nextDate: null
+    };
+}
+
+function updateVIPPriceDisplay() {
+
+    const priceDisplay =
+        document.getElementById(
+            "vipPrice"
+        );
+
+    const labelDisplay =
+        document.getElementById(
+            "vipPriceLabel"
+        );
+
+    const countdownDisplay =
+        document.getElementById(
+            "vipCountdown"
+        );
+
+    const buyButton =
+        document.getElementById(
+            "buyVIPButton"
+        );
+
+    if (
+        !priceDisplay ||
+        !labelDisplay ||
+        !countdownDisplay ||
+        !buyButton
+    ) {
+        return;
+    }
+
+    if (isPlayerVIP()) {
+
+        priceDisplay.textContent =
+            "VIP Unlocked";
+
+        labelDisplay.textContent =
+            "Permanent VIP";
+
+        countdownDisplay.textContent =
+            "You Already Have VIP!";
+
+        buyButton.textContent =
+            "VIP Active";
+
+        buyButton.disabled =
+            true;
+
+        return;
+    }
+
+    const info =
+        getVIPPriceInfo();
+
+    priceDisplay.textContent =
+        `$${info.price}`;
+
+    labelDisplay.textContent =
+        info.label;
+
+    if (!info.nextDate) {
+
+        countdownDisplay.textContent =
+            "Final Price — No More Increases";
+
+        return;
+    }
+
+    const difference =
+        info.nextDate.getTime() -
+        Date.now();
+
+    if (difference <= 0) {
+        return;
+    }
+
+    const totalSeconds =
+        Math.floor(
+            difference / 1000
+        );
+
+    const days =
+        Math.floor(
+            totalSeconds / 86400
+        );
+
+    const hours =
+        Math.floor(
+            (totalSeconds % 86400) / 3600
+        );
+
+    const minutes =
+        Math.floor(
+            (totalSeconds % 3600) / 60
+        );
+
+    const seconds =
+        totalSeconds % 60;
+
+    countdownDisplay.textContent =
+        `Price Increases In: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+}
+
+// =========================================
+// VIP PURCHASE INFORMATION
+// =========================================
+
+const buyVIPButton =
+    document.getElementById(
+        "buyVIPButton"
+    );
+
+if (buyVIPButton) {
+
+    buyVIPButton.addEventListener(
+        "click",
+        () => {
+
+            if (isPlayerVIP()) {
+
+                alert(
+                    "You Already Have VIP! 👑"
+                );
+
+                return;
+            }
+
+            const vipInfo =
+                getVIPPriceInfo();
+
+            alert(
+                "👑 VIP Purchase\n\n" +
+                `Current Price: $${vipInfo.price}\n\n` +
+                "VIP Is Purchased Separately.\n\n" +
+                "Contact Shrihan To Purchase VIP. " +
+                "After Payment Is Confirmed, " +
+                "Your Account Will Be Granted VIP."
+            );
+
+        }
+    );
+
 }
 
 // =========================================
@@ -1627,7 +2842,54 @@ console.log(
         data.rebirthShopUpgrade || 0,
 
     __rebirthNumberEffectUpgrade:
-        data.rebirthNumberEffectUpgrade || 0
+    data.rebirthNumberEffectUpgrade || 0,
+
+__titles:
+    Array.isArray(data.titles)
+        ? data.titles
+        : [],
+
+__equippedTitle:
+    data.equippedTitle || null,
+
+__questsCompleted:
+    data.questsCompleted || 0,
+
+__currentQuestIndex:
+    data.currentQuestIndex || 0,
+
+__questProgress:
+    data.questProgress || 0,
+
+__mythicRolls:
+    data.mythicRolls || 0,
+
+__legendaryRolls:
+    data.legendaryRolls || 0,
+
+__chromaRolls:
+    data.chromaRolls || 0,
+
+__secretRolls:
+    data.secretRolls || 0,
+
+__rarePlusRolls:
+    data.rarePlusRolls || 0,
+
+__rolled999999:
+    data.rolled999999 || false,
+
+__playTimeSeconds:
+    data.playTimeSeconds || 0,
+
+__isVIP:
+    data.isVIP === true,
+
+__vipRollLastUsed:
+    data.vipRollLastUsed || null,
+
+    __vipRollArmed:
+    data.vipRollArmed === true
 },
 
                     background_color:
@@ -1675,6 +2937,167 @@ function saveData() {
 }
 
 // =========================================
+// QUEST SYSTEM
+// =========================================
+
+function getCurrentQuest() {
+
+    if (!QUESTS.length) {
+        return null;
+    }
+
+    const index =
+        Math.max(
+            0,
+            Math.min(
+                data.currentQuestIndex || 0,
+                QUESTS.length - 1
+            )
+        );
+
+    return QUESTS[index];
+}
+
+
+// =========================================
+// UPDATE QUEST DISPLAY
+// =========================================
+
+function updateQuestDisplay() {
+
+    const quest =
+        getCurrentQuest();
+
+    if (!quest) {
+        if (questName) {
+            questName.textContent =
+                "No Quest Available";
+        }
+
+        return;
+    }
+
+    const progress =
+        Math.min(
+            data.questProgress || 0,
+            quest.requirement
+        );
+
+    if (questName) {
+        questName.textContent =
+            quest.name;
+    }
+
+    if (questDescription) {
+        questDescription.textContent =
+            quest.description;
+    }
+
+    if (questProgress) {
+        questProgress.textContent =
+            `${progress.toLocaleString()} / ${quest.requirement.toLocaleString()}`;
+    }
+
+    if (questReward) {
+        questReward.textContent =
+            `Reward: ${quest.reward.toLocaleString()} EP`;
+    }
+
+    if (questProgressBar) {
+
+        const percentage =
+            Math.min(
+                100,
+                (progress / quest.requirement) * 100
+            );
+
+        questProgressBar.style.width =
+            `${percentage}%`;
+    }
+}
+
+
+// =========================================
+// ADD QUEST PROGRESS
+// =========================================
+
+function addQuestProgress(amount) {
+
+    const quest =
+        getCurrentQuest();
+
+    if (!quest) {
+        return;
+    }
+
+    data.questProgress =
+        Math.min(
+            quest.requirement,
+            (data.questProgress || 0) + amount
+        );
+
+    updateQuestDisplay();
+
+    if (
+        data.questProgress >=
+        quest.requirement
+    ) {
+        completeCurrentQuest();
+    }
+
+    saveData();
+}
+
+
+// =========================================
+// COMPLETE QUEST
+// =========================================
+
+function completeCurrentQuest() {
+
+    const quest =
+        getCurrentQuest();
+
+    if (!quest) {
+        return;
+    }
+
+    // Give EP Reward
+    data.totalEP +=
+        quest.reward;
+
+    // Increase Completed Quest Count
+    data.questsCompleted =
+        (data.questsCompleted || 0) + 1;
+
+    // Move To Next Quest
+    data.currentQuestIndex =
+        (data.currentQuestIndex || 0) + 1;
+
+    // Reset Progress
+    data.questProgress = 0;
+
+    // Loop Back If We Reach The End
+    if (
+        data.currentQuestIndex >=
+        QUESTS.length
+    ) {
+        data.currentQuestIndex = 0;
+    }
+
+    updateQuestDisplay();
+
+    updateStats();
+
+    dailyStatus.textContent =
+        `Quest Complete! +${quest.reward.toLocaleString()} EP!`;
+
+    updateTitles();
+
+    saveData();
+}
+
+// =========================================
 // SHOP VALUES
 // =========================================
 
@@ -1698,19 +3121,36 @@ function getUpgradeValue(upgradeName) {
 }
 
 function getUpgradeCost(upgradeName) {
-    const upgrade = SHOP_UPGRADES[upgradeName];
-    const level = getUpgradeLevel(upgradeName);
 
-    if (level >= upgrade.levels.length - 1) {
+    const upgrade =
+        SHOP_UPGRADES[upgradeName];
+
+    const level =
+        getUpgradeLevel(upgradeName);
+
+    if (
+        level >=
+        upgrade.levels.length - 1
+    ) {
         return null;
     }
 
-    const baseCost = upgrade.costs[level];
-    const multiplier = getRebirthCostMultiplier();
+    const baseCost =
+        upgrade.costs[level];
 
-    return Math.ceil(
-        baseCost * multiplier
+    const rebirthMultiplier =
+        getRebirthCostMultiplier();
+
+    const rebirthAdjustedCost =
+        Math.ceil(
+            baseCost *
+            rebirthMultiplier
+        );
+
+    return getVIPShopPrice(
+        rebirthAdjustedCost
     );
+
 }
 
 // =========================================
@@ -1777,13 +3217,55 @@ function updateShopUpgrade(upgradeName, levelDisplay, costDisplay, buyButton) {
         return;
     }
 
+   if (isPlayerVIP()) {
+
+    const upgrade =
+        SHOP_UPGRADES[upgradeName];
+
+    const level =
+        getUpgradeLevel(upgradeName);
+
+    const baseCost =
+        upgrade.costs[level];
+
+    const rebirthMultiplier =
+        getRebirthCostMultiplier();
+
+    const originalCost =
+        Math.ceil(
+            baseCost *
+            rebirthMultiplier
+        );
+
+    costDisplay.innerHTML =
+        `
+        <span class="vip-original-price">
+            ${originalCost.toLocaleString()} EP
+        </span>
+
+        <span class="vip-sale-price">
+            ${cost.toLocaleString()} EP
+        </span>
+
+        <span class="vip-sale-label">
+            50% OFF — VIP
+        </span>
+        `;
+
+} else {
+
     costDisplay.textContent =
         `Cost: ${cost.toLocaleString()} EP`;
 
-    buyButton.textContent =
-        data.totalEP >= cost
-            ? "Buy"
-            : "Not Enough EP";
+}
+
+buyButton.textContent =
+    data.totalEP >= cost
+        ? "Buy"
+        : "Not Enough EP";
+
+buyButton.disabled =
+    data.totalEP < cost;
 
     buyButton.disabled =
         data.totalEP < cost;
@@ -2051,6 +3533,9 @@ if (
 // =========================================
 
 function updateShop() {
+
+    updateVIPShopDisplay();
+
     shopEPDisplay.textContent =
         data.totalEP.toLocaleString();
 
@@ -3132,7 +4617,7 @@ function hasTwoPairs(number) {
 
 function getRandomFallbackRarity() {
     const luck =
-        getUpgradeValue("luck");
+    getEffectiveLuck();
 
     const baseWeights = [
         { rarity: "Trash", weight: 40 },
@@ -3337,10 +4822,10 @@ function determineRarity(number) {
     // =========================================
 
     const luck =
-        getUpgradeValue("luck");
+    getEffectiveLuck();
 
-    const chromaChance =
-        getChromaChance(luck);
+const chromaChance =
+    getChromaChance(luck);
 
     if (
     isRarityAllowed("Chroma") &&
@@ -3821,6 +5306,967 @@ function findBadges(
         data.badges.length;
 
     return unlocked;
+}
+
+// =========================================
+// TITLES UI STYLES
+// =========================================
+
+function createTitlesStyles() {
+
+    if (
+        document.getElementById(
+            "titlesStyles"
+        )
+    ) {
+        return;
+    }
+
+    const style =
+        document.createElement("style");
+
+    style.id =
+        "titlesStyles";
+
+    style.textContent = `
+
+        #titlesSection {
+
+            margin-top: 24px;
+            padding: 24px;
+
+            border-radius: 18px;
+
+            background:
+                rgba(255, 255, 255, 0.06);
+
+            border:
+                1px solid
+                rgba(255, 255, 255, 0.12);
+
+            box-shadow:
+                0 10px 35px
+                rgba(0, 0, 0, 0.18);
+
+        }
+
+        .titles-header {
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            gap: 20px;
+
+            margin-bottom: 20px;
+
+        }
+
+        .titles-header h2 {
+
+            margin: 0;
+
+        }
+
+        #equippedTitleDisplay {
+
+            margin:
+                6px 0 0;
+
+            opacity: .7;
+
+            font-size: 14px;
+
+        }
+
+        .titles-progress {
+
+            font-weight: 700;
+
+            opacity: .8;
+
+            white-space: nowrap;
+
+        }
+
+        .titles-container {
+
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 10px;
+
+        }
+
+        .titles-tier-title {
+
+            margin-top: 18px;
+
+            margin-bottom: 4px;
+
+            font-size: 14px;
+
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: .08em;
+
+            opacity: .8;
+
+        }
+
+        .titles-tier-title:first-child {
+
+            margin-top: 0;
+
+        }
+
+        .title-card {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 16px;
+
+            padding: 15px 17px;
+
+            border-radius: 13px;
+
+            border:
+                1px solid
+                rgba(255, 255, 255, .10);
+
+            background:
+                rgba(255, 255, 255, .035);
+
+            transition:
+                transform .15s ease,
+                background .15s ease,
+                border-color .15s ease;
+
+        }
+
+        .title-card:hover {
+
+            transform:
+                translateY(-1px);
+
+            background:
+                rgba(255, 255, 255, .06);
+
+        }
+
+        .title-unlocked {
+
+            border-color:
+                rgba(255, 255, 255, .18);
+
+        }
+
+        .title-locked {
+
+            opacity: .55;
+
+        }
+
+        .title-equipped {
+
+            border-color:
+                rgba(255, 215, 0, .65);
+
+            box-shadow:
+                0 0 18px
+                rgba(255, 215, 0, .10);
+
+        }
+
+        .title-card-name {
+
+            font-size: 17px;
+
+            font-weight: 800;
+
+        }
+
+        .title-locked .title-card-name {
+
+            color:
+                rgba(255, 255, 255, .55);
+
+        }
+
+        .title-card-requirement {
+
+            margin-top: 3px;
+
+            font-size: 13px;
+
+            opacity: .65;
+
+        }
+
+        .title-card-progress {
+
+            margin-top: 5px;
+
+            font-size: 12px;
+
+            opacity: .5;
+
+        }
+
+        .title-card-action {
+
+            flex-shrink: 0;
+
+        }
+
+        .title-equip-button {
+
+            padding:
+                8px 14px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            cursor: pointer;
+
+            font-weight: 700;
+
+            background:
+                rgba(255, 255, 255, .12);
+
+            color: inherit;
+
+        }
+
+        .title-equip-button:hover {
+
+            background:
+                rgba(255, 255, 255, .20);
+
+        }
+
+        .title-equip-button:disabled {
+
+            cursor: default;
+
+            opacity: .55;
+
+        }
+
+        .title-locked-label {
+
+            font-size: 13px;
+
+            opacity: .5;
+
+        }
+
+        @media (max-width: 600px) {
+
+            #titlesSection {
+
+                padding: 16px;
+
+            }
+
+            .titles-header {
+
+                align-items: flex-start;
+
+            }
+
+            .title-card {
+
+                align-items: flex-start;
+
+            }
+
+            .title-card-action {
+
+                margin-top: 2px;
+
+            }
+
+        }
+
+    `;
+
+    document.head.appendChild(
+        style
+    );
+
+}
+
+// =========================================
+// TITLES UI
+// =========================================
+
+function createTitlesUI() {
+
+    createTitlesStyles();
+
+    // Prevent Duplicate Titles UI
+    if (
+        document.getElementById(
+            "titlesSection"
+        )
+    ) {
+        return;
+    }
+
+    const titlesSection =
+        document.createElement("section");
+
+    titlesSection.id =
+        "titlesSection";
+
+    titlesSection.innerHTML = `
+        <div
+            class="titles-header"
+            id="titlesHeader"
+            role="button"
+            tabindex="0"
+            aria-expanded="false"
+        >
+
+            <div>
+                <h2>Player Titles</h2>
+
+                <p id="equippedTitleDisplay">
+                    No Title Equipped
+                </p>
+            </div>
+
+            <div
+                class="titles-header-right"
+            >
+
+                <div
+                    id="titlesProgressDisplay"
+                    class="titles-progress"
+                >
+                    0 / ${TITLES.length}
+                </div>
+
+                <span
+                    id="titlesDropdownArrow"
+                    class="titles-dropdown-arrow"
+                >
+                    ▼
+                </span>
+
+            </div>
+
+        </div>
+
+        <div
+            id="titlesContainer"
+            class="titles-container"
+            hidden
+        ></div>
+    `;
+
+    /*
+        Try To Place The Titles Section
+        Directly After The Badges Section.
+    */
+
+    const badgeSection =
+        badgeContainer?.closest(
+            "section"
+        );
+
+    if (badgeSection) {
+
+        badgeSection.insertAdjacentElement(
+            "afterend",
+            titlesSection
+        );
+
+    } else if (
+        badgeContainer?.parentElement
+    ) {
+
+        badgeContainer.parentElement
+            .insertAdjacentElement(
+                "afterend",
+                titlesSection
+            );
+
+    } else {
+
+        document.body.appendChild(
+            titlesSection
+        );
+
+    }
+
+    // =========================================
+    // TITLES DROPDOWN
+    // =========================================
+
+    const titlesHeader =
+        document.getElementById(
+            "titlesHeader"
+        );
+
+    const titlesContainer =
+        document.getElementById(
+            "titlesContainer"
+        );
+
+    const titlesDropdownArrow =
+        document.getElementById(
+            "titlesDropdownArrow"
+        );
+
+    function toggleTitles() {
+
+        const isOpen =
+            !titlesContainer.hidden;
+
+        titlesContainer.hidden =
+            isOpen;
+
+        titlesHeader.setAttribute(
+            "aria-expanded",
+            String(!isOpen)
+        );
+
+        titlesHeader.classList.toggle(
+            "titles-open",
+            !isOpen
+        );
+
+        if (titlesDropdownArrow) {
+
+            titlesDropdownArrow.textContent =
+                isOpen
+                    ? "▼"
+                    : "▲";
+
+        }
+
+        if (!isOpen) {
+
+            displayTitles();
+
+        }
+
+    }
+
+    titlesHeader.addEventListener(
+        "click",
+        toggleTitles
+    );
+
+    titlesHeader.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Enter" ||
+                event.key === " "
+            ) {
+
+                event.preventDefault();
+
+                toggleTitles();
+
+            }
+
+        }
+    );
+
+    displayTitles();
+}
+
+// =========================================
+// DISPLAY TITLES
+// =========================================
+
+function displayTitles() {
+
+    const container =
+        document.getElementById(
+            "titlesContainer"
+        );
+
+    const equippedDisplay =
+        document.getElementById(
+            "equippedTitleDisplay"
+        );
+
+    const progressDisplay =
+        document.getElementById(
+            "titlesProgressDisplay"
+        );
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    const unlockedTitles =
+        TITLES.filter(
+            title =>
+                data.titles.includes(
+                    title.id
+                )
+        );
+
+    // =========================================
+    // EQUIPPED TITLE
+    // =========================================
+
+    const equippedTitle =
+        getEquippedTitle();
+
+    if (equippedDisplay) {
+
+        equippedDisplay.textContent =
+            equippedTitle
+                ? `Equipped Title: ${equippedTitle.name}`
+                : "No Title Equipped";
+
+    }
+
+    // =========================================
+    // TITLE PROGRESS
+    // =========================================
+
+    if (progressDisplay) {
+
+        progressDisplay.textContent =
+            `${unlockedTitles.length} / ${TITLES.length}`;
+
+    }
+
+    // =========================================
+    // TIER DISPLAY
+    // =========================================
+
+    const tiers = [
+        {
+            name: "🟢 Beginner",
+            start: 0,
+            end: 5,
+            className: "titles-tier-easy"
+        },
+        {
+            name: "🔵 Advanced",
+            start: 5,
+            end: 10,
+            className: "titles-tier-hour"
+        },
+        {
+            name: "🟣 Elite",
+            start: 10,
+            end: 15,
+            className: "titles-tier-grind"
+        },
+        {
+            name: "🔴 Legendary",
+            start: 15,
+            end: 20,
+            className: "titles-tier-impossible"
+        }
+    ];
+
+    tiers.forEach(
+        tier => {
+
+            const tierTitle =
+                document.createElement(
+                    "div"
+                );
+
+            tierTitle.className =
+                `titles-tier-title ${tier.className}`;
+
+            tierTitle.textContent =
+                tier.name;
+
+            container.appendChild(
+                tierTitle
+            );
+
+            for (
+                let index = tier.start;
+                index < tier.end;
+                index++
+            ) {
+
+                const title =
+                    TITLES[index];
+
+                if (!title) {
+                    continue;
+                }
+
+                const unlocked =
+                    data.titles.includes(
+                        title.id
+                    );
+
+                const equipped =
+                    data.equippedTitle ===
+                    title.id;
+
+                const card =
+                    document.createElement(
+                        "div"
+                    );
+
+                card.className =
+                    "title-card";
+
+                if (unlocked) {
+                    card.classList.add(
+                        "title-unlocked"
+                    );
+                } else {
+                    card.classList.add(
+                        "title-locked"
+                    );
+                }
+
+                if (equipped) {
+                    card.classList.add(
+                        "title-equipped"
+                    );
+                }
+
+                const progress =
+                    getTitleProgress(
+                        title
+                    );
+
+                card.innerHTML = `
+                    <div class="title-card-info">
+
+                        <div class="title-card-name">
+                            ${unlocked
+                                ? title.name
+                                : "Locked Title"
+                            }
+                        </div>
+
+                        <div class="title-card-requirement">
+                            ${title.requirement}
+                        </div>
+
+                        <div class="title-card-progress">
+                            ${progress.text}
+                        </div>
+
+                    </div>
+
+                    <div class="title-card-action">
+
+                        ${
+                            unlocked
+                                ? `
+                                    <button
+                                        class="title-equip-button"
+                                        data-title-id="${title.id}"
+                                        ${
+                                            equipped
+                                                ? "disabled"
+                                                : ""
+                                        }
+                                    >
+                                        ${
+                                            equipped
+                                                ? "Equipped"
+                                                : "Equip"
+                                        }
+                                    </button>
+                                `
+                                : `
+                                    <span class="title-locked-label">
+                                        🔒 Locked
+                                    </span>
+                                `
+                        }
+
+                    </div>
+                `;
+
+                container.appendChild(
+                    card
+                );
+
+            }
+
+        }
+    );
+
+    // =========================================
+    // EQUIP BUTTONS
+    // =========================================
+
+    container
+        .querySelectorAll(
+            ".title-equip-button"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        const titleId =
+                            button.dataset
+                                .titleId;
+
+                        if (
+                            equipTitle(
+                                titleId
+                            )
+                        ) {
+
+                            displayTitles();
+
+                            saveData();
+
+                        }
+
+                    }
+                );
+
+            }
+        );
+}
+
+
+// =========================================
+// TITLE PROGRESS
+// =========================================
+
+function getTitleProgress(title) {
+
+    switch (title.id) {
+
+        case "rookieRoller":
+            return {
+                current: data.totalRolls,
+                required: 100,
+                text:
+                    `${Math.min(data.totalRolls, 100).toLocaleString()} / 100 Rolls`
+            };
+
+        case "gettingStarted":
+            return {
+                current: data.totalRolls,
+                required: 500,
+                text:
+                    `${Math.min(data.totalRolls, 500).toLocaleString()} / 500 Rolls`
+            };
+
+        case "questRookie":
+            return {
+                current: data.questsCompleted,
+                required: 10,
+                text:
+                    `${Math.min(data.questsCompleted, 10)} / 10 Quests`
+            };
+
+        case "luckyStart":
+            return {
+                current: data.mythicRolls,
+                required: 1,
+                text:
+                    `${Math.min(data.mythicRolls, 1)} / 1 Mythic`
+            };
+
+        case "dedicated":
+            return {
+                current: data.playTimeSeconds,
+                required: 10800,
+                text:
+                    `${formatPlayTime(
+                        Math.min(
+                            data.playTimeSeconds,
+                            10800
+                        )
+                    )} / 3 Hours`
+            };
+
+        case "roller":
+            return {
+                current: data.totalRolls,
+                required: 1500,
+                text:
+                    `${Math.min(data.totalRolls, 1500).toLocaleString()} / 1,500 Rolls`
+            };
+
+        case "rareHunter":
+            return {
+                current: data.rarePlusRolls,
+                required: 500,
+                text:
+                    `${Math.min(data.rarePlusRolls, 500).toLocaleString()} / 500 Rare+ Rolls`
+            };
+
+        case "questSeeker":
+            return {
+                current: data.questsCompleted,
+                required: 50,
+                text:
+                    `${Math.min(data.questsCompleted, 50)} / 50 Quests`
+            };
+
+        case "secretFinder":
+            return {
+                current: data.secretRolls,
+                required: 1,
+                text:
+                    `${Math.min(data.secretRolls, 1)} / 1 Secret`
+            };
+
+        case "luckyRoller":
+            return {
+                current: data.totalEP,
+                required: 1_000_000_000,
+                text:
+                    `${Math.min(
+                        data.totalEP,
+                        1_000_000_000
+                    ).toLocaleString()} / 1,000,000,000 EP`
+            };
+
+        case "rngVeteran":
+            return {
+                current: data.totalRolls,
+                required: 25_000,
+                text:
+                    `${Math.min(data.totalRolls, 25_000).toLocaleString()} / 25,000 Rolls`
+            };
+
+        case "legendaryHunter":
+            return {
+                current: data.legendaryRolls,
+                required: 500,
+                text:
+                    `${Math.min(data.legendaryRolls, 500).toLocaleString()} / 500 Legendary Rolls`
+            };
+
+        case "mythicHunter":
+            return {
+                current: data.mythicRolls,
+                required: 700,
+                text:
+                    `${Math.min(data.mythicRolls, 700).toLocaleString()} / 700 Mythics`
+            };
+
+        case "questLegend":
+            return {
+                current: data.questsCompleted,
+                required: 500,
+                text:
+                    `${Math.min(data.questsCompleted, 500)} / 500 Quests`
+            };
+
+        case "rebirthMaster":
+            return {
+                current: data.rebirths,
+                required: 5,
+                text:
+                    `${Math.min(data.rebirths, 5)} / 5 Rebirths`
+            };
+
+        case "rngMaster":
+            return {
+                current: data.totalRolls,
+                required: 500_000,
+                text:
+                    `${Math.min(data.totalRolls, 500_000).toLocaleString()} / 500,000 Rolls`
+            };
+
+        case "chromaHunter":
+            return {
+                current: data.chromaRolls,
+                required: 3_000,
+                text:
+                    `${Math.min(data.chromaRolls, 3_000).toLocaleString()} / 3,000 Chromas`
+            };
+
+        case "secretHunter":
+            return {
+                current: data.secretRolls,
+                required: 50,
+                text:
+                    `${Math.min(data.secretRolls, 50)} / 50 Secrets`
+            };
+
+        case "theImpossible":
+            return {
+                current:
+                    data.rolled999999
+                        ? 1
+                        : 0,
+                required: 1,
+                text:
+                    data.rolled999999
+                        ? "999,999 Rolled!"
+                        : "0 / 1 — Roll 999,999"
+            };
+
+        case "rngThingLegend":
+            return {
+                current:
+                    Math.min(
+                        data.rebirths,
+                        7
+                    ),
+                required: 7,
+                text:
+                    `${Math.min(data.rebirths, 7)} / 7 Rebirths + ${Math.min(data.totalRolls, 1_000_000).toLocaleString()} / 1,000,000 Rolls`
+            };
+
+        default:
+            return {
+                current: 0,
+                required: 1,
+                text: title.requirement
+            };
+
+    }
+
+}
+
+
+// =========================================
+// FORMAT PLAY TIME
+// =========================================
+
+function formatPlayTime(seconds) {
+
+    const hours =
+        Math.floor(
+            seconds / 3600
+        );
+
+    const minutes =
+        Math.floor(
+            (seconds % 3600) / 60
+        );
+
+    const remainingSeconds =
+        seconds % 60;
+
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
 }
 
 // =========================================
@@ -4812,6 +7258,10 @@ function getRemainingCooldown() {
 }
 
 function updateCooldown() {
+
+    if (vipRollMessageActive) {
+    return;
+}
     if (isRolling) {
         countdownDisplay.textContent =
             "Rolling...";
@@ -5037,24 +7487,42 @@ async function processRoll() {
 
     let rarity;
 
-    // =========================================
-    // FORCE RARITY TESTING
-    // =========================================
+const vipRollActive =
+    data.vipRollArmed &&
+    canUseVIPRoll();
 
-    if (FORCE_RARITY) {
-        rarity =
-            FORCE_RARITY;
-    } else if (
-        data.shrihanChromaReady
-    ) {
-        rarity =
-            "Chroma";
-    } else {
-        rarity =
-            determineRarity(
-                originalNumber
-            );
-    }
+
+// =========================================
+// FORCE RARITY TESTING
+// =========================================
+
+if (FORCE_RARITY) {
+
+    rarity =
+        FORCE_RARITY;
+
+} else if (
+    vipRollActive
+) {
+
+    rarity =
+        "Secret";
+
+} else if (
+    data.shrihanChromaReady
+) {
+
+    rarity =
+        "Chroma";
+
+} else {
+
+    rarity =
+        determineRarity(
+            originalNumber
+        );
+
+}
 
     // =========================================
     // DETERMINE IF SPECIAL NUMBER IS NEEDED
@@ -5115,35 +7583,62 @@ let numberEffectType =
 const effectRoll =
     Math.random();
 
-if (
-    effectRoll <
-    numberEffect.rainbowChance
-) {
+if (vipRollActive) {
 
-    numberEffectType =
-        "rainbow";
+    // VIPRoll:
+    // Rainbow = 10%
+    // Diamond = 35%
+    // Gold = 55%
 
-} else if (
-    effectRoll <
-    numberEffect.rainbowChance +
-    numberEffect.diamondChance
-) {
+    if (effectRoll < 0.10) {
 
-    numberEffectType =
-        "diamond";
+        numberEffectType =
+            "rainbow";
 
-} else if (
-    effectRoll <
-    numberEffect.rainbowChance +
-    numberEffect.diamondChance +
-    numberEffect.goldChance
-) {
+    } else if (effectRoll < 0.45) {
 
-    numberEffectType =
-        "gold";
+        numberEffectType =
+            "diamond";
+
+    } else {
+
+        numberEffectType =
+            "gold";
+
+    }
+
+} else {
+
+    if (
+        effectRoll <
+        numberEffect.rainbowChance
+    ) {
+
+        numberEffectType =
+            "rainbow";
+
+    } else if (
+        effectRoll <
+        numberEffect.rainbowChance +
+        numberEffect.diamondChance
+    ) {
+
+        numberEffectType =
+            "diamond";
+
+    } else if (
+        effectRoll <
+        numberEffect.rainbowChance +
+        numberEffect.diamondChance +
+        numberEffect.goldChance
+    ) {
+
+        numberEffectType =
+            "gold";
+
+    }
 
 }
-
 
 // =========================================
 // SPECIAL NUMBER EP
@@ -5170,11 +7665,61 @@ const earnedEP =
     Math.floor(
         baseEP *
         epMultiplier *
-        numberEffectMultiplier
+        numberEffectMultiplier *
+        getVIPEpMultiplier()
     );    data.totalRolls++;
 
+    if (vipRollActive) {
+    useVIPRoll();
+}
+
+addQuestProgress(1);
     data.totalEP +=
         earnedEP;
+
+    // =========================================
+    // TITLE PROGRESS
+    // =========================================
+
+    if (rarity === "Mythic") {
+        data.mythicRolls++;
+    }
+
+    if (rarity === "Legendary") {
+        data.legendaryRolls++;
+    }
+
+    if (rarity === "Chroma") {
+        data.chromaRolls++;
+    }
+
+    if (rarity === "Secret") {
+        data.secretRolls++;
+    }
+
+    if (
+        [
+            "Rare",
+            "Epic",
+            "Legendary",
+            "Mythic",
+            "Chroma",
+            "Secret"
+        ].includes(rarity)
+    ) {
+        data.rarePlusRolls++;
+    }
+
+    if (
+        Number(finalNumber) ===
+        999999
+    ) {
+        data.rolled999999 = true;
+    }
+
+    updateTitles();
+
+displayTitles();
 
     data.totalRollValue +=
     Number(finalNumber);
@@ -5377,7 +7922,6 @@ rollButton.addEventListener(
     }
 );
 
-
 // =========================================
 // ERASE DATA
 // =========================================
@@ -5388,6 +7932,68 @@ if (eraseDataButton) {
         "click",
         async () => {
 
+            // =========================================
+            // CHECK IF USER IS SIGNED IN
+            // =========================================
+
+            const {
+                data: {
+                    user
+                }
+            } = await supabase.auth.getUser();
+
+
+            // =========================================
+            // PASSWORD VERIFICATION
+            // ONLY REQUIRED WHEN SIGNED IN
+            // =========================================
+
+            if (user) {
+
+                const password =
+                    prompt(
+                        "Enter Your Password To Continue:"
+                    );
+
+                if (password === null) {
+                    return;
+                }
+
+                if (!password) {
+
+                    alert(
+                        "Password Required."
+                    );
+
+                    return;
+                }
+
+
+                const {
+                    error: passwordError
+                } =
+                    await supabase.auth.signInWithPassword({
+                        email: user.email,
+                        password: password
+                    });
+
+
+                if (passwordError) {
+
+                    alert(
+                        "Incorrect Password. Your Data Was Not Erased."
+                    );
+
+                    return;
+                }
+
+            }
+
+
+            // =========================================
+            // FINAL CONFIRMATION
+            // =========================================
+
             const confirmed =
                 confirm(
                     "Are You Sure You Want To Erase All RNG Thing Data?"
@@ -5397,7 +8003,21 @@ if (eraseDataButton) {
                 return;
             }
 
-            data = {
+
+            // =========================================
+            // RESET LOCAL DATA
+            // =========================================
+
+const preservedVIP =
+    data.isVIP === true;
+
+const preservedVIPRollLastUsed =
+    data.vipRollLastUsed || null;
+
+    const preservedVIPRollArmed =
+    false;
+
+data = {
                 totalRolls: 0,
 
                 totalEP: 0,
@@ -5420,6 +8040,30 @@ if (eraseDataButton) {
 
                 badges: [],
 
+                titles: [],
+
+equippedTitle: null,
+
+questsCompleted: 0,
+
+currentQuestIndex: 0,
+
+questProgress: 0,
+
+mythicRolls: 0,
+
+                legendaryRolls: 0,
+
+                chromaRolls: 0,
+
+                secretRolls: 0,
+
+                rarePlusRolls: 0,
+
+                rolled999999: false,
+
+                playTimeSeconds: 0,
+
                 upgrades: {
                     rollSpeed: 0,
                     epMultiplier: 0,
@@ -5433,11 +8077,24 @@ if (eraseDataButton) {
 
                 rebirthTokens: 0,
 
+                rebirthShopUpgrade: 0,
+
+                rebirthNumberEffectUpgrade: 0,
+
                 backgroundColor: null,
 
-                shrihanCodeUsed: false,
+isVIP:
+    preservedVIP,
 
-                shrihanChromaReady: false
+vipRollLastUsed:
+    preservedVIPRollLastUsed,
+
+vipRollArmed:
+    preservedVIPRollArmed,
+
+shrihanCodeUsed: false,
+
+shrihanChromaReady: false
             };
 
 
@@ -5446,17 +8103,21 @@ if (eraseDataButton) {
             );
 
 
+            // =========================================
+            // RESET SUPABASE DATA IF SIGNED IN
+            // =========================================
+
             try {
 
                 const {
                     data: {
-                        user
+                        currentUser
                     }
                 } =
                     await supabase.auth.getUser();
 
 
-                if (user) {
+                if (currentUser) {
 
                     const {
                         error
@@ -5464,6 +8125,7 @@ if (eraseDataButton) {
                         await supabase
                             .from("profiles")
                             .update({
+
                                 ep: 0,
 
                                 rolls: 0,
@@ -5487,6 +8149,7 @@ if (eraseDataButton) {
                                 history: [],
 
                                 upgrades: {
+
                                     rollSpeed: 0,
 
                                     epMultiplier: 0,
@@ -5501,7 +8164,41 @@ if (eraseDataButton) {
 
                                     __rebirths: 0,
 
-                                    __rebirthTokens: 0
+                                    __rebirthTokens: 0,
+
+                                    __rebirthShopUpgrade: 0,
+
+                                    __rebirthNumberEffectUpgrade: 0,
+
+                                    __titles: [],
+
+                                    __equippedTitle: null,
+
+                                    __questsCompleted: 0,
+
+                                    __mythicRolls: 0,
+
+                                    __legendaryRolls: 0,
+
+                                    __chromaRolls: 0,
+
+                                    __secretRolls: 0,
+
+                                    __rarePlusRolls: 0,
+
+                                    __rolled999999: false,
+
+                                    __playTimeSeconds: 0,
+
+__isVIP:
+    preservedVIP === true,
+
+__vipRollLastUsed:
+    preservedVIPRollLastUsed,
+
+__vipRollArmed:
+    false
+
                                 },
 
                                 background_color: null,
@@ -5513,17 +8210,12 @@ if (eraseDataButton) {
                             })
                             .eq(
                                 "id",
-                                user.id
+                                currentUser.id
                             );
 
 
                     if (error) {
-
-                        console.error(
-                            "Supabase Erase Error:",
-                            error
-                        );
-
+                        throw error;
                     }
 
                 }
@@ -5535,8 +8227,17 @@ if (eraseDataButton) {
                     error
                 );
 
+                alert(
+                    "Unable To Erase Your Data."
+                );
+
+                return;
             }
 
+
+            // =========================================
+            // REFRESH UI
+            // =========================================
 
             numberDisplay.textContent =
                 "------";
@@ -5557,6 +8258,8 @@ if (eraseDataButton) {
 
             displayBadgeIndex();
 
+            displayTitles();
+
             updateStats();
 
             updateHistory();
@@ -5569,11 +8272,18 @@ if (eraseDataButton) {
 
             updateBackgroundButton();
 
+
+            if (dailyStatus) {
+
+                dailyStatus.textContent =
+                    "All RNG Thing Data Has Been Erased.";
+
+            }
+
         }
     );
 
 }
-
 
 // =========================================
 // DELETE ACCOUNT
@@ -5648,6 +8358,62 @@ if (deleteAccountButton) {
 
                 }
 
+// =========================================
+// PASSWORD VERIFICATION
+// =========================================
+
+const deletePassword =
+    prompt(
+        "Enter Your Password To Continue:"
+    );
+
+if (deletePassword === null) {
+    deleteAccountButton.disabled = false;
+    return;
+}
+
+if (!deletePassword) {
+
+    if (deleteAccountMessage) {
+
+        deleteAccountMessage.textContent =
+            "Password Required.";
+
+    }
+
+    deleteAccountButton.disabled = false;
+
+    return;
+}
+
+
+const {
+    error: deletePasswordError
+} =
+    await supabase.auth.signInWithPassword({
+
+        email: user.email,
+
+        password:
+            deletePassword
+
+    });
+
+
+if (deletePasswordError) {
+
+    if (deleteAccountMessage) {
+
+        deleteAccountMessage.textContent =
+            "Incorrect Password. Your Account Was Not Deleted.";
+
+    }
+
+    deleteAccountButton.disabled = false;
+
+    return;
+}
+
 
                 const {
                     data: {
@@ -5692,6 +8458,26 @@ if (deleteAccountButton) {
                     history: [],
 
                     badges: [],
+
+                    titles: [],
+
+equippedTitle: null,
+
+questsCompleted: 0,
+
+currentQuestIndex: 0,
+
+questProgress: 0,
+
+mythicRolls: 0,
+legendaryRolls: 0,
+chromaRolls: 0,
+secretRolls: 0,
+rarePlusRolls: 0,
+
+rolled999999: false,
+
+playTimeSeconds: 0,
 
                     upgrades: {
                         rollSpeed: 0,
@@ -6395,8 +9181,8 @@ async function loadLeaderboard(
             await supabase
                 .from("leaderboard")
                 .select(
-                    "username, ep, rolls"
-                )
+    "username, ep, rolls, is_vip"
+)
                 .order(
                     sortBy,
                     {
@@ -6459,28 +9245,42 @@ async function loadLeaderboard(
                     "leaderboard-row";
 
 
-                row.innerHTML =
-                    `
-                    <span
-                        class="leaderboard-rank"
-                    >
-                        #${index + 1}
-                    </span>
+                const vipDisplay =
+    player.is_vip === true
+        ? `
+            <span class="leaderboard-vip">
+                👑 VIP
+            </span>
+        `
+        : "";
 
-                    <span
-                        class="leaderboard-player"
-                    >
-                        ${username}
-                    </span>
+row.innerHTML =
+    `
+    <span
+        class="leaderboard-rank"
+    >
+        #${index + 1}
+    </span>
 
-                    <span
-                        class="leaderboard-score"
-                    >
-                        ${Number(
-                            score
-                        ).toLocaleString()}
-                    </span>
-                    `;
+    <span
+        class="leaderboard-player ${
+            player.is_vip === true
+                ? "leaderboard-player-vip"
+                : ""
+        }"
+    >
+        ${username}
+        ${vipDisplay}
+    </span>
+
+    <span
+        class="leaderboard-score"
+    >
+        ${Number(
+            score
+        ).toLocaleString()}
+    </span>
+    `;
 
 
                 leaderboardList.appendChild(
@@ -6910,6 +9710,21 @@ if (signOutButton) {
                     history: [],
                     badges: [],
 
+                    titles: [],
+equippedTitle: null,
+
+questsCompleted: 0,
+
+mythicRolls: 0,
+legendaryRolls: 0,
+chromaRolls: 0,
+secretRolls: 0,
+rarePlusRolls: 0,
+
+rolled999999: false,
+
+playTimeSeconds: 0,
+
                     upgrades: {
                         rollSpeed: 0,
                         epMultiplier: 0,
@@ -7024,6 +9839,11 @@ async function initializeGame() {
     await loadDataFromSupabase();
 
 
+    updateTitles();
+
+    createTitlesUI();
+
+
     displayBadges();
 
     displayBadgeIndex();
@@ -7036,6 +9856,13 @@ async function initializeGame() {
 
     updateShop();
 
+    updateQuestDisplay();
+
+    updateVIPEpDisplay();
+
+    updateVIPLuckDisplay();
+
+    updateVIPPriceDisplay();
 
     showEpShop();
 
@@ -7046,6 +9873,43 @@ async function initializeGame() {
     setInterval(
         updateCooldown,
         250
+    );
+
+    setInterval(
+    updateVIPPriceDisplay,
+    1000
+);
+
+    // =========================================
+    // PLAY TIME TRACKER
+    // =========================================
+
+    setInterval(
+        () => {
+
+            if (
+                document.visibilityState !==
+                "visible"
+            ) {
+                return;
+            }
+
+            data.playTimeSeconds++;
+
+            const previousTitleCount =
+                data.titles.length;
+
+            updateTitles();
+
+            if (
+                data.titles.length !==
+                previousTitleCount
+            ) {
+                saveData();
+            }
+
+        },
+        1000
     );
 
 
@@ -7420,6 +10284,8 @@ async function performProtectedRebirth() {
     updateRebirthUI();
 
     updateRebirthShop();
+
+    displayTitles();
 
 }
 
