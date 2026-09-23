@@ -5736,3 +5736,261 @@ body.rebirth-cutscene {
     }
 
 }
+
+        .titles-header {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .titles-header:focus {
+            outline: none;
+        }
+
+        .titles-header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .titles-dropdown-arrow {
+            font-size: 12px;
+            opacity: .65;
+            transition:
+                transform .15s ease,
+                opacity .15s ease;
+        }
+
+        .titles-header:hover
+        .titles-dropdown-arrow {
+            opacity: .9;
+        }
+
+        .titles-header.titles-open
+        .titles-dropdown-arrow {
+            transform: rotate(0deg);
+        }
+
+        .titles-container[hidden] {
+            display: none;
+        }
+
+/* =========================================
+   VIP SHOP
+   ========================================= */
+
+.vip-shop-banner {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    padding: 14px 18px;
+
+    border-radius: 12px;
+
+    background: rgba(255, 215, 0, 0.10);
+    border: 1px solid rgba(255, 215, 0, 0.30);
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    text-align: center;
+}
+
+.vip-shop-banner strong {
+    font-size: 1rem;
+}
+
+.vip-shop-banner span {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}
+
+.vip-original-price {
+    display: block;
+
+    text-decoration: line-through;
+    opacity: 0.5;
+
+    font-size: 0.85rem;
+}
+
+.vip-sale-price {
+    display: block;
+
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.vip-sale-label {
+    display: block;
+
+    margin-top: 3px;
+
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+/* =========================================
+   VIP PANEL
+   ========================================= */
+
+.vip-panel {
+    width: 100%;
+    box-sizing: border-box;
+
+    margin: 20px 0;
+    padding: 24px;
+
+    border-radius: 16px;
+
+    background: rgba(255, 215, 0, 0.08);
+    border: 1px solid rgba(255, 215, 0, 0.30);
+
+    text-align: center;
+}
+
+.vip-panel-header h2 {
+    margin-bottom: 4px;
+}
+
+.vip-benefits {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin: 20px 0;
+}
+
+.vip-benefits div {
+    padding: 10px;
+
+    border-radius: 10px;
+
+    background: rgba(255, 215, 0, 0.07);
+
+    font-size: 0.9rem;
+}
+
+.vip-price-section {
+    margin-top: 20px;
+}
+
+.vip-price {
+    font-size: 2.5rem;
+    font-weight: 800;
+}
+
+.vip-price-label {
+    margin-top: 4px;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.vip-countdown {
+    margin-top: 8px;
+
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+.vip-buy-button {
+    width: 100%;
+
+    margin-top: 20px;
+    padding: 13px 18px;
+
+    border: none;
+    border-radius: 10px;
+
+    font-size: 1rem;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.vip-buy-button:disabled {
+    cursor: default;
+    opacity: 0.6;
+}
+
+/* =========================================
+   QUEST SIDE MENU
+========================================= */
+
+.quests-side-menu {
+    position: fixed;
+
+    left: 20px;
+    top: 50%;
+
+    width: 230px;
+
+    transform:
+        translateY(-50%);
+
+    z-index: 900;
+
+    padding: 18px;
+
+    border-radius: 16px;
+
+    background:
+        rgba(20, 20, 25, 0.94);
+
+    border:
+        1px solid rgba(255, 255, 255, 0.10);
+
+    backdrop-filter:
+        blur(14px);
+
+    box-shadow:
+        0 15px 45px rgba(0, 0, 0, 0.35);
+}
+
+.quests-side-menu h2 {
+    margin-top: 0;
+
+    margin-bottom: 14px;
+
+    font-size: 1.1rem;
+}
+
+.quests-side-menu .quest-card {
+    margin: 0;
+}
+
+@media (max-width: 1000px) {
+
+    .quests-side-menu {
+        position: relative;
+
+        left: auto;
+        top: auto;
+
+        width: auto;
+
+        transform: none;
+
+        margin: 20px 0;
+    }
+
+}
+
+/* =========================================
+   VIP LEADERBOARD
+   ========================================= */
+
+.leaderboard-player-vip {
+    color: #FFD700;
+    font-weight: 700;
+}
+
+.leaderboard-vip {
+    margin-left: 6px;
+    color: #FFD700;
+    font-size: 0.8rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
