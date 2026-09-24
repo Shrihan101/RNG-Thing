@@ -9651,9 +9651,6 @@ function closeShopMenu() {
             "false"
         );
     }
-
-    // Reload The Game After Closing Shop.
-    window.location.reload();
 }
 
 
@@ -10144,9 +10141,6 @@ function closeAccountMenu() {
             "false"
         );
     }
-
-    // Reload The Game After Closing Account.
-    window.location.reload();
 }
 
 
