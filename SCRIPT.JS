@@ -9434,33 +9434,23 @@ function openShopMenu() {
 
 
 function closeShopMenu() {
+    if (!shopPanel) return;
 
-    if (!shopPanel) {
-        return;
-    }
-
-
-    shopPanel.hidden =
-        true;
-
+    shopPanel.hidden = true;
 
     if (shopOverlay) {
-
-        shopOverlay.hidden =
-            true;
-
+        shopOverlay.hidden = true;
     }
 
-
     if (shopButton) {
-
         shopButton.setAttribute(
             "aria-expanded",
             "false"
         );
-
     }
 
+    // Reload The Game After Closing Shop.
+    window.location.reload();
 }
 
 
@@ -9937,33 +9927,23 @@ function openAccountMenu() {
 // =========================================
 
 function closeAccountMenu() {
+    if (!accountPanel) return;
 
-    if (!accountPanel) {
-        return;
-    }
-
-
-    accountPanel.hidden =
-        true;
-
+    accountPanel.hidden = true;
 
     if (accountOverlay) {
-
-        accountOverlay.hidden =
-            true;
-
+        accountOverlay.hidden = true;
     }
 
-
     if (accountButton) {
-
         accountButton.setAttribute(
             "aria-expanded",
             "false"
         );
-
     }
 
+    // Reload The Game After Closing Account.
+    window.location.reload();
 }
 
 
