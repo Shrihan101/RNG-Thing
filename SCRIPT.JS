@@ -904,6 +904,11 @@ const buyAutoRollerButton =
         "buyAutoRoller"
     );
 
+    const toggleAutoRollerButton =
+    document.getElementById(
+        "toggleAutoRollerButton"
+    );
+
 const rebirthCountDisplay =
     document.getElementById("rebirthCount");
 
@@ -1492,133 +1497,254 @@ const TITLES = [
         id: "rookieRoller",
         name: "Rookie Roller",
         requirement: "Roll 100 Times",
-        check: () => data.totalRolls >= 100
+        check: () => data.totalRolls >= 100,
+
+        buffs: {
+            epMultiplier: 1.1
+        },
+
+        buffText: "×1.1 EP"
     },
 
     {
         id: "gettingStarted",
         name: "Getting Started",
         requirement: "Roll 500 Times",
-        check: () => data.totalRolls >= 500
+        check: () => data.totalRolls >= 500,
+
+        buffs: {
+            epMultiplier: 1.15
+        },
+
+        buffText: "×1.15 EP"
     },
 
     {
         id: "questRookie",
         name: "Quest Rookie",
         requirement: "Complete 10 Quests",
-        check: () => data.questsCompleted >= 10
+        check: () => data.questsCompleted >= 10,
+
+        buffs: {
+            questMultiplier: 1.5
+        },
+
+        buffText: "×1.5 Quest Rewards"
     },
 
     {
         id: "luckyStart",
         name: "Lucky Start",
         requirement: "Get Your First Mythic",
-        check: () => data.mythicRolls >= 1
+        check: () => data.mythicRolls >= 1,
+
+        buffs: {
+            luck: 1.3
+        },
+
+        buffText: "+1.3 Luck"
     },
 
     {
         id: "dedicated",
         name: "Dedicated",
         requirement: "Play For 3 Hours",
-        check: () => data.playTimeSeconds >= 10800
+        check: () => data.playTimeSeconds >= 10800,
+
+        buffs: {
+            epMultiplier: 1.3
+        },
+
+        buffText: "×1.3 EP"
     },
 
     {
         id: "roller",
         name: "Roller",
         requirement: "Roll 1,500 Times",
-        check: () => data.totalRolls >= 1500
+        check: () => data.totalRolls >= 1500,
+
+        buffs: {
+            numberFortune: 1.5
+        },
+
+        buffText: "+1.5 Number Fortune"
     },
 
     {
         id: "rareHunter",
         name: "Rare Hunter",
         requirement: "Get 500 Rare+ Rolls",
-        check: () => data.rarePlusRolls >= 500
+        check: () => data.rarePlusRolls >= 500,
+
+        buffs: {
+            luck: 1.5
+        },
+
+        buffText: "+1.5 Luck"
     },
 
     {
         id: "questSeeker",
         name: "Quest Seeker",
         requirement: "Complete 50 Quests",
-        check: () => data.questsCompleted >= 50
+        check: () => data.questsCompleted >= 50,
+
+        buffs: {
+            questMultiplier: 1.75
+        },
+
+        buffText: "×1.75 Quest Rewards"
     },
 
     {
         id: "secretFinder",
         name: "Secret Finder",
         requirement: "Get Your First Secret",
-        check: () => data.secretRolls >= 1
+        check: () => data.secretRolls >= 1,
+
+        buffs: {
+            luck: 1.5
+        },
+
+        buffText: "+1.5 Luck"
     },
 
     {
         id: "luckyRoller",
         name: "Lucky Roller",
         requirement: "Earn 1,000,000,000 EP",
-        check: () => data.totalEP >= 1_000_000_000
+        check: () => data.totalEP >= 1_000_000_000,
+
+        buffs: {
+            luck: 1.75
+        },
+
+        buffText: "+1.75 Luck"
     },
 
     {
         id: "rngVeteran",
         name: "RNG Veteran",
         requirement: "Roll 25,000 Times",
-        check: () => data.totalRolls >= 25_000
+        check: () => data.totalRolls >= 25_000,
+
+        buffs: {
+            epMultiplier: 1.5,
+            luck: 1.5,
+            numberFortune: 1.5
+        },
+
+        buffText: "×1.5 EP + +1.5 Luck + +1.5 Number Fortune"
     },
 
     {
         id: "legendaryHunter",
         name: "Legendary Hunter",
         requirement: "Get 500 Legendary Rolls",
-        check: () => data.legendaryRolls >= 500
+        check: () => data.legendaryRolls >= 500,
+
+        buffs: {
+            luck: 3
+        },
+
+        buffText: "+3 Luck"
     },
 
     {
         id: "mythicHunter",
         name: "Mythic Hunter",
         requirement: "Get 700 Mythics",
-        check: () => data.mythicRolls >= 700
+        check: () => data.mythicRolls >= 700,
+
+        buffs: {
+            luck: 3.5
+        },
+
+        buffText: "+3.5 Luck"
     },
 
     {
         id: "questLegend",
         name: "Quest Legend",
         requirement: "Complete 500 Quests",
-        check: () => data.questsCompleted >= 500
+        check: () => data.questsCompleted >= 500,
+
+        buffs: {
+            questMultiplier: 3
+        },
+
+        buffText: "×3 Quest Rewards"
     },
 
     {
         id: "rebirthMaster",
         name: "Rebirth Master",
         requirement: "Reach 5 Rebirths",
-        check: () => data.rebirths >= 5
+        check: () => data.rebirths >= 5,
+
+        buffs: {
+            epMultiplier: 1.9,
+            luck: 3
+        },
+
+        buffText: "×1.9 EP + +3 Luck"
     },
 
     {
         id: "rngMaster",
         name: "RNG Master",
         requirement: "Roll 500,000 Times",
-        check: () => data.totalRolls >= 500_000
+        check: () => data.totalRolls >= 500_000,
+
+        buffs: {
+            epMultiplier: 1.9,
+            luck: 3,
+            numberFortune: 3
+        },
+
+        buffText: "×1.9 EP + +3 Luck + +3 Number Fortune"
     },
 
     {
         id: "chromaHunter",
         name: "Chroma Hunter",
         requirement: "Get 3,000 Chromas",
-        check: () => data.chromaRolls >= 3_000
+        check: () => data.chromaRolls >= 3_000,
+
+        buffs: {
+            luck: 3.5
+        },
+
+        buffText: "+3.5 Luck"
     },
 
     {
         id: "secretHunter",
         name: "Secret Hunter",
         requirement: "Get 50 Secrets",
-        check: () => data.secretRolls >= 50
+        check: () => data.secretRolls >= 50,
+
+        buffs: {
+            luck: 5
+        },
+
+        buffText: "+5 Luck"
     },
 
     {
         id: "theImpossible",
         name: "The Impossible",
         requirement: "Roll 999,999",
-        check: () => data.rolled999999 === true
+        check: () => data.rolled999999 === true,
+
+        buffs: {
+            epMultiplier: 3,
+            luck: 5,
+            numberFortune: 5
+        },
+
+        buffText: "×3 EP + +5 Luck + +5 Number Fortune"
     },
 
     {
@@ -1627,7 +1753,15 @@ const TITLES = [
         requirement: "Reach 7 Rebirths + 1,000,000 Rolls",
         check: () =>
             data.rebirths >= 7 &&
-            data.totalRolls >= 1_000_000
+            data.totalRolls >= 1_000_000,
+
+        buffs: {
+            epMultiplier: 3,
+            luck: 5,
+            numberFortune: 5
+        },
+
+        buffText: "×3 EP + +5 Luck + +5 Number Fortune"
     }
 ];
 
@@ -1642,7 +1776,7 @@ const QUESTS = [
         name: "Warm Up",
         description: "Roll 10 Times",
         requirement: 10,
-        reward: 100,
+        reward: 10_000,
         check: () => data.totalRolls
     },
 
@@ -1651,7 +1785,7 @@ const QUESTS = [
         name: "Getting Rolling",
         description: "Roll 25 Times",
         requirement: 25,
-        reward: 250,
+        reward: 50_000,
         check: () => data.totalRolls
     },
 
@@ -1660,7 +1794,7 @@ const QUESTS = [
         name: "Roller In Training",
         description: "Roll 50 Times",
         requirement: 50,
-        reward: 500,
+        reward: 250_000,
         check: () => data.totalRolls
     },
 
@@ -1669,7 +1803,7 @@ const QUESTS = [
         name: "Century Roller",
         description: "Roll 100 Times",
         requirement: 100,
-        reward: 1_000,
+        reward: 1_000_000,
         check: () => data.totalRolls
     },
 
@@ -1678,7 +1812,7 @@ const QUESTS = [
         name: "Dedicated Roller",
         description: "Roll 250 Times",
         requirement: 250,
-        reward: 2_500,
+        reward: 5_000_000,
         check: () => data.totalRolls
     },
 
@@ -1687,7 +1821,7 @@ const QUESTS = [
         name: "Rolling Along",
         description: "Roll 500 Times",
         requirement: 500,
-        reward: 5_000,
+        reward: 25_000_000,
         check: () => data.totalRolls
     },
 
@@ -1696,7 +1830,7 @@ const QUESTS = [
         name: "Roll Machine",
         description: "Roll 1,000 Times",
         requirement: 1_000,
-        reward: 10_000,
+        reward: 100_000_000,
         check: () => data.totalRolls
     },
 
@@ -1705,16 +1839,16 @@ const QUESTS = [
         name: "RNG Grinder",
         description: "Roll 2,500 Times",
         requirement: 2_500,
-        reward: 25_000,
+        reward: 500_000_000,
         check: () => data.totalRolls
     },
 
     {
         id: "roll5000",
-        name: "RNG Addict",
+        name: "RNG Enthusiast",
         description: "Roll 5,000 Times",
         requirement: 5_000,
-        reward: 50_000,
+        reward: 2_000_000_000,
         check: () => data.totalRolls
     },
 
@@ -1723,7 +1857,7 @@ const QUESTS = [
         name: "Ten Thousand",
         description: "Roll 10,000 Times",
         requirement: 10_000,
-        reward: 100_000,
+        reward: 10_000_000_000,
         check: () => data.totalRolls
     }
 
@@ -1781,6 +1915,9 @@ rebirthShopUpgrade: 0,
 
 // Special Number Effects
 rebirthNumberEffectUpgrade: 0,
+
+autoRollerLevel: 0,
+autoRollerEnabled: true,
 
     backgroundColor: null,
 
@@ -1859,6 +1996,41 @@ function getEquippedTitle() {
 
 }
 
+// =========================================
+// EQUIPPED TITLE BUFFS
+// =========================================
+
+function getEquippedTitleBuffs() {
+
+    const title =
+        getEquippedTitle();
+
+    if (
+        !title ||
+        !title.buffs
+    ) {
+        return {
+            epMultiplier: 1,
+            luck: 0,
+            numberFortune: 0,
+            questMultiplier: 1
+        };
+    }
+
+    return {
+        epMultiplier:
+            title.buffs.epMultiplier || 1,
+
+        luck:
+            title.buffs.luck || 0,
+
+        numberFortune:
+            title.buffs.numberFortune || 0,
+
+        questMultiplier:
+            title.buffs.questMultiplier || 1
+    };
+}
 
 function equipTitle(titleId) {
 
@@ -2065,11 +2237,14 @@ function startAutoRoller() {
     stopAutoRoller();
 
     const level =
-        Number(data.autoRollerLevel) || 0;
+    Number(data.autoRollerLevel) || 0;
 
-    if (level <= 0) {
-        return;
-    }
+if (
+    level <= 0 ||
+    data.autoRollerEnabled !== true
+) {
+    return;
+}
 
     const upgrade =
         AUTO_ROLLER_UPGRADES.find(
@@ -2389,6 +2564,20 @@ if (Array.isArray(data.badges)) {
         parsed.upgrades.__autoRollerLevel;
 }
 
+if (
+    typeof parsed.autoRollerEnabled !== "boolean" &&
+    typeof parsed.upgrades?.__autoRollerEnabled === "boolean"
+) {
+    data.autoRollerEnabled =
+        parsed.upgrades.__autoRollerEnabled;
+}
+
+if (
+    typeof data.autoRollerEnabled !== "boolean"
+) {
+    data.autoRollerEnabled = true;
+}
+
         data.rebirths =
             Math.max(
                 0,
@@ -2534,6 +2723,9 @@ async function loadDataFromSupabase() {
 
                 autoRollerLevel:
     profileUpgrades.__autoRollerLevel ?? 0,
+
+autoRollerEnabled:
+    profileUpgrades.__autoRollerEnabled !== false,
 
             titles:
                 Array.isArray(
@@ -2753,7 +2945,6 @@ function getVIPLuckBonus() {
 
 }
 
-
 // =========================================
 // FINAL LUCK
 // =========================================
@@ -2763,15 +2954,18 @@ function getEffectiveLuck() {
     const normalLuck =
         getUpgradeValue("luck");
 
+    const titleBuffs =
+        getEquippedTitleBuffs();
+
     return Number(
         (
             normalLuck +
-            getVIPLuckBonus()
+            getVIPLuckBonus() +
+            titleBuffs.luck
         ).toFixed(1)
     );
 
 }
-
 
 // =========================================
 // VIP SHOP DISCOUNT
@@ -3109,6 +3303,9 @@ console.log(
 
         __autoRollerLevel:
     data.autoRollerLevel || 0,
+
+    __autoRollerEnabled:
+    data.autoRollerEnabled !== false,
 
     __rebirthShopUpgrade:
         data.rebirthShopUpgrade || 0,
@@ -3807,12 +4004,49 @@ if (
 const autoRollerLevel =
     Number(data.autoRollerLevel) || 0;
 
+const autoRollerEnabled =
+    data.autoRollerEnabled === true;
+
+
+// =========================================
+// LEVEL DISPLAY
+// =========================================
+
 if (autoRollerLevelDisplay) {
 
     autoRollerLevelDisplay.textContent =
         `Level ${autoRollerLevel} / ${MAX_AUTO_ROLLER_LEVEL}`;
 
 }
+
+
+// =========================================
+// TOGGLE BUTTON
+// =========================================
+
+if (toggleAutoRollerButton) {
+
+    if (autoRollerLevel <= 0) {
+
+        toggleAutoRollerButton.hidden = true;
+
+    } else {
+
+        toggleAutoRollerButton.hidden = false;
+
+        toggleAutoRollerButton.textContent =
+            autoRollerEnabled
+                ? "Turn Off"
+                : "Turn On";
+
+    }
+
+}
+
+
+// =========================================
+// MAX LEVEL
+// =========================================
 
 if (autoRollerLevel >= MAX_AUTO_ROLLER_LEVEL) {
 
@@ -3842,6 +4076,11 @@ if (autoRollerLevel >= MAX_AUTO_ROLLER_LEVEL) {
 
 } else {
 
+
+// =========================================
+// NEXT AUTO ROLLER UPGRADE
+// =========================================
+
     const nextAutoRoller =
         AUTO_ROLLER_UPGRADES.find(
             upgrade =>
@@ -3865,6 +4104,11 @@ if (autoRollerLevel >= MAX_AUTO_ROLLER_LEVEL) {
 
         }
 
+
+        // =========================================
+        // CHECK RESOURCES
+        // =========================================
+
         const hasEnoughTokens =
             tokens >=
             nextAutoRoller.tokenCost;
@@ -3876,6 +4120,11 @@ if (autoRollerLevel >= MAX_AUTO_ROLLER_LEVEL) {
         const canAffordAutoRoller =
             hasEnoughTokens &&
             hasEnoughEP;
+
+
+        // =========================================
+        // BUY BUTTON
+        // =========================================
 
         if (buyAutoRollerButton) {
 
@@ -4333,6 +4582,40 @@ if (buyAutoRollerButton) {
 
 }
 
+if (toggleAutoRollerButton) {
+
+    toggleAutoRollerButton.addEventListener(
+        "click",
+        () => {
+
+            if (
+                (Number(data.autoRollerLevel) || 0) <= 0
+            ) {
+                return;
+            }
+
+            data.autoRollerEnabled =
+                data.autoRollerEnabled !== true;
+
+            if (data.autoRollerEnabled) {
+
+                startAutoRoller();
+
+            } else {
+
+                stopAutoRoller();
+
+            }
+
+            saveData();
+
+            updateShop();
+
+        }
+    );
+
+}
+
 // =========================================
 // BACKGROUND CUSTOMIZATION
 // =========================================
@@ -4558,15 +4841,29 @@ function initializeBackgroundCustomization() {
 // RANDOM NUMBER
 // =========================================
 
+// =========================================
+// RANDOM NUMBER
+// =========================================
+
 function randomNumber() {
-    const fortune =
+
+    const normalFortune =
         getUpgradeValue("numberFortune");
 
+    const titleBuffs =
+        getEquippedTitleBuffs();
+
+    const fortune =
+        normalFortune +
+        titleBuffs.numberFortune;
+
     if (fortune <= 1) {
+
         return Math.floor(
             Math.random() *
             (MAX_NUMBER - MIN_NUMBER + 1)
         ) + MIN_NUMBER;
+
     }
 
     const random =
@@ -6280,12 +6577,12 @@ function displayTitles() {
 
     if (equippedDisplay) {
 
-        equippedDisplay.textContent =
-            equippedTitle
-                ? `Equipped Title: ${equippedTitle.name}`
-                : "No Title Equipped";
+    equippedDisplay.textContent =
+        equippedTitle
+            ? `Equipped Title: ${equippedTitle.name} — ${equippedTitle.buffText || "No Buff"}`
+            : "No Title Equipped";
 
-    }
+}
 
     // =========================================
     // TITLE PROGRESS
@@ -6399,55 +6696,65 @@ function displayTitles() {
                     );
 
                 card.innerHTML = `
-                    <div class="title-card-info">
+    <div class="title-card-info">
 
-                        <div class="title-card-name">
-                            ${unlocked
-                                ? title.name
-                                : "Locked Title"
-                            }
-                        </div>
+        <div class="title-card-name">
+            ${unlocked
+                ? title.name
+                : "Locked Title"
+            }
+        </div>
 
-                        <div class="title-card-requirement">
-                            ${title.requirement}
-                        </div>
+        <div class="title-card-requirement">
+            ${title.requirement}
+        </div>
 
-                        <div class="title-card-progress">
-                            ${progress.text}
-                        </div>
-
+        ${
+            unlocked
+                ? `
+                    <div class="title-card-buff">
+                        Boost: ${title.buffText || "No Buff"}
                     </div>
+                `
+                : ""
+        }
 
-                    <div class="title-card-action">
+        <div class="title-card-progress">
+            ${progress.text}
+        </div>
 
+    </div>
+
+    <div class="title-card-action">
+
+        ${
+            unlocked
+                ? `
+                    <button
+                        class="title-equip-button"
+                        data-title-id="${title.id}"
                         ${
-                            unlocked
-                                ? `
-                                    <button
-                                        class="title-equip-button"
-                                        data-title-id="${title.id}"
-                                        ${
-                                            equipped
-                                                ? "disabled"
-                                                : ""
-                                        }
-                                    >
-                                        ${
-                                            equipped
-                                                ? "Equipped"
-                                                : "Equip"
-                                        }
-                                    </button>
-                                `
-                                : `
-                                    <span class="title-locked-label">
-                                        🔒 Locked
-                                    </span>
-                                `
+                            equipped
+                                ? "disabled"
+                                : ""
                         }
+                    >
+                        ${
+                            equipped
+                                ? "Equipped"
+                                : "Equip"
+                        }
+                    </button>
+                `
+                : `
+                    <span class="title-locked-label">
+                        🔒 Locked
+                    </span>
+                `
+        }
 
-                    </div>
-                `;
+    </div>
+`;
 
                 container.appendChild(
                     card
@@ -6671,16 +6978,16 @@ function getTitleProgress(title) {
             };
 
         case "rngThingLegend":
-            return {
-                current:
-                    Math.min(
-                        data.rebirths,
-                        7
-                    ),
-                required: 7,
-                text:
-                    `${Math.min(data.rebirths, 7)} / 7 Rebirths + ${Math.min(data.totalRolls, 1_000_000).toLocaleString()} / 1,000,000 Rolls`
-            };
+    return {
+        current:
+            Math.min(
+                data.rebirths,
+                10
+            ),
+        required: 10,
+        text:
+            `${Math.min(data.rebirths, 10)} / 10 Rebirths + ${Math.min(data.totalRolls, 1_000_000).toLocaleString()} / 1,000,000 Rolls`
+    };
 
         default:
             return {
@@ -8108,17 +8415,17 @@ if (numberEffectType === "gold") {
 
 }
 
+const titleBuffs =
+    getEquippedTitleBuffs();
+
 const earnedEP =
     Math.floor(
         baseEP *
         epMultiplier *
         numberEffectMultiplier *
-        getVIPEpMultiplier()
-    );    data.totalRolls++;
-
-    if (vipRollActive) {
-    useVIPRoll();
-}
+        getVIPEpMultiplier() *
+        titleBuffs.epMultiplier
+    );
 
 addQuestProgress(1);
     data.totalEP +=
