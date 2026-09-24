@@ -884,6 +884,26 @@ const buyRebirthNumberEffectButton =
         "buyRebirthNumberEffect"
     );
 
+    const autoRollerLevelDisplay =
+    document.getElementById(
+        "autoRollerLevel"
+    );
+
+const autoRollerDescriptionDisplay =
+    document.getElementById(
+        "autoRollerDescription"
+    );
+
+const autoRollerCostDisplay =
+    document.getElementById(
+        "autoRollerCost"
+    );
+
+const buyAutoRollerButton =
+    document.getElementById(
+        "buyAutoRoller"
+    );
+
 const rebirthCountDisplay =
     document.getElementById("rebirthCount");
 
@@ -1285,7 +1305,7 @@ const REBIRTH_NUMBER_EFFECT_UPGRADE = {
 // REBIRTH SYSTEM
 // =========================================
 
-const MAX_REBIRTHS = 7;
+const MAX_REBIRTHS = 10;
 
 const REBIRTH_COST_MULTIPLIERS = [
     1,
@@ -1295,7 +1315,10 @@ const REBIRTH_COST_MULTIPLIERS = [
     7,
     10,
     11,
-    15
+    15,
+    17,
+    19,
+    21
 ];
 
 const REBIRTH_TOKEN_REWARDS = [
@@ -1306,8 +1329,41 @@ const REBIRTH_TOKEN_REWARDS = [
     7,
     10,
     11,
-    15
+    15,
+    17,
+    19,
+    21
 ];
+
+// =========================================
+// AUTO ROLLER SYSTEM
+// =========================================
+
+const AUTO_ROLLER_UPGRADES = [
+    {
+        level: 1,
+        name: "Auto Roller I",
+        epCost: 100_000_000,
+        tokenCost: 15,
+        interval: 30_000
+    },
+    {
+        level: 2,
+        name: "Auto Roller II",
+        epCost: 1_000_000_000,
+        tokenCost: 17,
+        interval: 10_000
+    },
+    {
+        level: 3,
+        name: "Auto Roller III",
+        epCost: 10_000_000_000,
+        tokenCost: 19,
+        interval: 3_000
+    }
+];
+
+const MAX_AUTO_ROLLER_LEVEL = 3;
 
 function getRebirthCostMultiplier() {
     const rebirthLevel =
@@ -1877,6 +1933,210 @@ function updateVIPLuckDisplay() {
 let isRolling = false;
 
 // =========================================
+// AUTO-CLICKER DETECTION
+// =========================================
+
+let manualRollClickTimes = [];
+
+let autoClickerDetected = false;
+
+const AUTO_CLICKER_CHECK_WINDOW = 5 * 60 * 1000;
+
+// How Many Manual Clicks Must Be Recorded
+// Before The Pattern Can Be Analyzed.
+const AUTO_CLICKER_MIN_CLICKS = 100;
+
+// Maximum Allowed Variation Between Click
+// Intervals Before We Consider The Pattern
+// Suspiciously Consistent.
+const AUTO_CLICKER_INTERVAL_TOLERANCE = 80;
+
+function recordManualRollClick() {
+
+    if (autoClickerDetected) {
+        return;
+    }
+
+    const now =
+        Date.now();
+
+    manualRollClickTimes.push(
+        now
+    );
+
+    // Only Keep Clicks From The Last 5 Minutes.
+    manualRollClickTimes =
+        manualRollClickTimes.filter(
+            time =>
+                now - time <=
+                AUTO_CLICKER_CHECK_WINDOW
+        );
+
+    if (
+        manualRollClickTimes.length <
+        AUTO_CLICKER_MIN_CLICKS
+    ) {
+        return;
+    }
+
+    checkForAutoClicker();
+
+}
+
+function checkForAutoClicker() {
+
+    if (autoClickerDetected) {
+        return;
+    }
+
+    const clicks =
+        manualRollClickTimes;
+
+    if (
+        clicks.length <
+        AUTO_CLICKER_MIN_CLICKS
+    ) {
+        return;
+    }
+
+    const intervals = [];
+
+    for (
+        let i = 1;
+        i < clicks.length;
+        i++
+    ) {
+
+        intervals.push(
+            clicks[i] -
+            clicks[i - 1]
+        );
+
+    }
+
+    if (!intervals.length) {
+        return;
+    }
+
+    const average =
+        intervals.reduce(
+            (
+                total,
+                interval
+            ) =>
+                total + interval,
+            0
+        ) /
+        intervals.length;
+
+    const maxDifference =
+        Math.max(
+            ...intervals.map(
+                interval =>
+                    Math.abs(
+                        interval -
+                        average
+                    )
+            )
+        );
+
+    if (
+        maxDifference <=
+        AUTO_CLICKER_INTERVAL_TOLERANCE
+    ) {
+
+        lockGameForAutoClicker();
+
+    }
+
+}
+
+// =========================================
+// AUTO ROLLER
+// =========================================
+
+let autoRollerInterval = null;
+
+function stopAutoRoller() {
+
+    if (autoRollerInterval !== null) {
+
+        clearInterval(
+            autoRollerInterval
+        );
+
+        autoRollerInterval = null;
+
+    }
+
+}
+
+function startAutoRoller() {
+
+    stopAutoRoller();
+
+    const level =
+        Number(data.autoRollerLevel) || 0;
+
+    if (level <= 0) {
+        return;
+    }
+
+    const upgrade =
+        AUTO_ROLLER_UPGRADES.find(
+            item =>
+                item.level === level
+        );
+
+    if (!upgrade) {
+        return;
+    }
+
+    autoRollerInterval =
+        setInterval(
+            async () => {
+
+                if (isRolling) {
+                    return;
+                }
+
+                if (
+                    getRemainingCooldown() >
+                    0
+                ) {
+                    return;
+                }
+
+                isRolling = true;
+
+                updateCooldown();
+
+                try {
+
+                    await processRoll();
+
+                } catch (error) {
+
+                    console.error(
+                        "Auto Roller Error:",
+                        error
+                    );
+
+                } finally {
+
+                    isRolling = false;
+
+                    updateCooldown();
+
+                }
+
+            },
+            upgrade.interval
+        );
+
+}
+
+// =========================================
 // SECRET CODE
 // =========================================
 
@@ -2132,6 +2392,14 @@ if (Array.isArray(data.badges)) {
                 parsed.upgrades.__rebirthTokens;
         }
 
+        if (
+    typeof parsed.autoRollerLevel !== "number" &&
+    typeof parsed.upgrades?.__autoRollerLevel === "number"
+) {
+    data.autoRollerLevel =
+        parsed.upgrades.__autoRollerLevel;
+}
+
         data.rebirths =
             Math.max(
                 0,
@@ -2275,6 +2543,9 @@ async function loadDataFromSupabase() {
             rebirthNumberEffectUpgrade:
                 profileUpgrades.__rebirthNumberEffectUpgrade ?? 0,
 
+                autoRollerLevel:
+    profileUpgrades.__autoRollerLevel ?? 0,
+
             titles:
                 Array.isArray(
                     profileUpgrades.__titles
@@ -2397,6 +2668,15 @@ if (Array.isArray(data.badges)) {
                 Number(data.rebirthTokens) || 0
             );
 
+            data.autoRollerLevel =
+    Math.max(
+        0,
+        Math.min(
+            MAX_AUTO_ROLLER_LEVEL,
+            Number(data.autoRollerLevel) || 0
+        )
+    );
+
 if (typeof data.rebirthShopUpgrade !== "number") {
     data.rebirthShopUpgrade = 0;
 }
@@ -2419,13 +2699,13 @@ if (typeof data.rebirthNumberEffectUpgrade !== "number") {
         updateBackgroundButton();
 
         displayTitles();
-        updateVIPEpDisplay();
-        updateVIPLuckDisplay();
-        updateVIPPriceDisplay();
-        
-        console.log(
-            "RNGdle data loaded from Supabase!"
-        );
+updateVIPEpDisplay();
+updateVIPLuckDisplay();
+updateVIPPriceDisplay();
+
+console.log(
+    "RNGdle data loaded from Supabase!"
+);
 
         return true;
 
@@ -2837,6 +3117,9 @@ console.log(
 
     __rebirthTokens:
         data.rebirthTokens || 0,
+
+        __autoRollerLevel:
+    data.autoRollerLevel || 0,
 
     __rebirthShopUpgrade:
         data.rebirthShopUpgrade || 0,
@@ -3527,7 +3810,102 @@ if (
     }
 
 }
+
+// =========================================
+// AUTO ROLLER UI
+// =========================================
+
+const autoRollerLevel =
+    Number(data.autoRollerLevel) || 0;
+
+if (autoRollerLevelDisplay) {
+
+    autoRollerLevelDisplay.textContent =
+        `Level ${autoRollerLevel} / ${MAX_AUTO_ROLLER_LEVEL}`;
+
 }
+
+if (autoRollerLevel >= MAX_AUTO_ROLLER_LEVEL) {
+
+    if (autoRollerDescriptionDisplay) {
+
+        autoRollerDescriptionDisplay.textContent =
+            "Automatically Rolls Every 3 Seconds";
+
+    }
+
+    if (autoRollerCostDisplay) {
+
+        autoRollerCostDisplay.textContent =
+            "MAX LEVEL REACHED";
+
+    }
+
+    if (buyAutoRollerButton) {
+
+        buyAutoRollerButton.textContent =
+            "MAXED";
+
+        buyAutoRollerButton.disabled =
+            true;
+
+    }
+
+} else {
+
+    const nextAutoRoller =
+        AUTO_ROLLER_UPGRADES.find(
+            upgrade =>
+                upgrade.level ===
+                autoRollerLevel + 1
+        );
+
+    if (nextAutoRoller) {
+
+        if (autoRollerDescriptionDisplay) {
+
+            autoRollerDescriptionDisplay.textContent =
+                `Automatically Rolls Every ${nextAutoRoller.interval / 1000} Seconds`;
+
+        }
+
+        if (autoRollerCostDisplay) {
+
+            autoRollerCostDisplay.textContent =
+                `Cost: ${nextAutoRoller.tokenCost.toLocaleString()} Rebirth Token${nextAutoRoller.tokenCost === 1 ? "" : "s"} + ${nextAutoRoller.epCost.toLocaleString()} EP`;
+
+        }
+
+        const hasEnoughTokens =
+            tokens >=
+            nextAutoRoller.tokenCost;
+
+        const hasEnoughEP =
+            data.totalEP >=
+            nextAutoRoller.epCost;
+
+        const canAffordAutoRoller =
+            hasEnoughTokens &&
+            hasEnoughEP;
+
+        if (buyAutoRollerButton) {
+
+            buyAutoRollerButton.textContent =
+                canAffordAutoRoller
+                    ? "Buy"
+                    : "Not Enough Resources";
+
+            buyAutoRollerButton.disabled =
+                !canAffordAutoRoller;
+
+        }
+
+    }
+
+}
+
+}
+
 // =========================================
 // UPDATE SHOP
 // =========================================
@@ -3680,6 +4058,73 @@ function buyRebirthShopUpgrade() {
     updateStats();
     updateShop();
     updateRebirthUI();
+}
+
+// =========================================
+// AUTO ROLLER PURCHASE
+// =========================================
+
+function buyAutoRollerUpgrade() {
+
+    const currentLevel =
+        Number(data.autoRollerLevel) || 0;
+
+    // Already Maxed
+    if (
+        currentLevel >=
+        MAX_AUTO_ROLLER_LEVEL
+    ) {
+        return;
+    }
+
+    const nextLevel =
+        currentLevel + 1;
+
+    const upgrade =
+        AUTO_ROLLER_UPGRADES.find(
+            item =>
+                item.level ===
+                nextLevel
+        );
+
+    if (!upgrade) {
+        return;
+    }
+
+    // Not Enough Rebirth Tokens
+    if (
+        (data.rebirthTokens || 0) <
+        upgrade.tokenCost
+    ) {
+        return;
+    }
+
+    // Not Enough EP
+    if (
+        data.totalEP <
+        upgrade.epCost
+    ) {
+        return;
+    }
+
+    // Pay Costs
+    data.rebirthTokens -=
+        upgrade.tokenCost;
+
+    data.totalEP -=
+        upgrade.epCost;
+
+    // Give Upgrade
+    data.autoRollerLevel =
+        nextLevel;
+
+    saveData();
+
+updateStats();
+updateShop();
+updateRebirthUI();
+
+startAutoRoller();
 }
 
 // =========================================
@@ -3880,6 +4325,19 @@ if (buyRebirthNumberEffectButton) {
         () => {
 
             buyRebirthNumberEffectUpgrade();
+
+        }
+    );
+
+}
+
+if (buyAutoRollerButton) {
+
+    buyAutoRollerButton.addEventListener(
+        "click",
+        () => {
+
+            buyAutoRollerUpgrade();
 
         }
     );
@@ -7878,12 +8336,92 @@ updateNumberEffectDisplay(
 }
 
 // =========================================
+// AUTO-CLICKER INPUT TRACKING
+// =========================================
+
+window.addEventListener(
+    "pointerdown",
+    event => {
+
+        if (autoClickerDetected) {
+            return;
+        }
+
+        // Ignore Clicks Generated By The Game Itself.
+        // Auto Roller Uses processRoll() Directly And
+        // Does Not Create Pointer Events.
+
+        recordManualRollClick();
+
+    },
+    true
+);
+
+function lockGameForAutoClicker() {
+
+    if (autoClickerDetected) {
+        return;
+    }
+
+    autoClickerDetected =
+        true;
+
+    stopAutoRoller();
+
+    isRolling = false;
+
+    if (rollButton) {
+
+        rollButton.disabled =
+            true;
+
+    }
+
+    const overlay =
+        document.createElement(
+            "div"
+        );
+
+    overlay.id =
+        "autoClickerLockScreen";
+
+    overlay.innerHTML = `
+        <div id="autoClickerLockBox">
+
+            <div id="autoClickerLockTitle">
+                Automated Clicking Detected
+            </div>
+
+            <div id="autoClickerLockText">
+                Automated Clicking Is Not Allowed.
+                <br><br>
+                RNG Thing Has Been Locked.
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(
+        overlay
+    );
+
+    console.warn(
+        "RNG Thing Locked: Automated Clicking Detected."
+    );
+
+}
+
+// =========================================
 // ROLL BUTTON
 // =========================================
 
 rollButton.addEventListener(
     "click",
     async () => {
+
+        if (autoClickerDetected) {
+            return;
+        }
 
         if (isRolling) {
             return;
@@ -8004,9 +8542,16 @@ if (eraseDataButton) {
             }
 
 
-            // =========================================
-            // RESET LOCAL DATA
-            // =========================================
+// =========================================
+// STOP AUTO ROLLER
+// =========================================
+
+stopAutoRoller();
+
+
+// =========================================
+// RESET LOCAL DATA
+// =========================================
 
 const preservedVIP =
     data.isVIP === true;
@@ -8076,6 +8621,8 @@ mythicRolls: 0,
                 rebirths: 0,
 
                 rebirthTokens: 0,
+
+                autoRollerLevel: 0,
 
                 rebirthShopUpgrade: 0,
 
@@ -8165,6 +8712,8 @@ shrihanChromaReady: false
                                     __rebirths: 0,
 
                                     __rebirthTokens: 0,
+
+                                    __autoRollerLevel: 0,
 
                                     __rebirthShopUpgrade: 0,
 
@@ -8432,11 +8981,18 @@ if (deletePasswordError) {
                 }
 
 
-                // =========================================
-                // ERASE ALL GAME DATA FIRST
-                // =========================================
+ // =========================================
+// STOP AUTO ROLLER
+// =========================================
 
-                data = {
+stopAutoRoller();
+
+
+// =========================================
+// ERASE ALL GAME DATA FIRST
+// =========================================
+
+data = {
                     totalRolls: 0,
 
                     totalEP: 0,
@@ -9668,11 +10224,17 @@ async function updateAccountUI() {
 if (signOutButton) {
 
     signOutButton.addEventListener(
-        "click",
-        async () => {
+    "click",
+    async () => {
 
-            signOutButton.disabled =
-                true;
+        // =========================================
+        // STOP AUTO ROLLER BEFORE SIGNING OUT
+        // =========================================
+
+        stopAutoRoller();
+
+        signOutButton.disabled =
+            true;
 
             if (signOutMessage) {
 
@@ -9733,6 +10295,8 @@ playTimeSeconds: 0,
                         doubleRoll: 0,
                         secretThing: 0
                     },
+
+                    autoRollerLevel: 0,
 
                     rebirths: 0,
                     rebirthTokens: 0,
@@ -9813,16 +10377,19 @@ supabase.auth.onAuthStateChange(
 
         if (session?.user) {
 
+            // Load the signed-in account's data.
             await loadDataFromSupabase();
 
         }
 
+        // Start Auto Roller using whichever
+        // data is currently active.
+        startAutoRoller();
 
         await updateAccountUI();
 
     }
 );
-
 
 // =========================================
 // INITIALIZATION
@@ -9914,6 +10481,8 @@ async function initializeGame() {
 
 
     await updateAccountUI();
+
+startAutoRoller();
 
 }
 
