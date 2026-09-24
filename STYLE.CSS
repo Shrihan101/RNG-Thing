@@ -5774,6 +5774,18 @@ body.rebirth-cutscene {
             display: none;
         }
 
+        .title-card-buff {
+
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    opacity: .9;
+
+}
+
 /* =========================================
    VIP SHOP
    ========================================= */
@@ -6045,4 +6057,26 @@ body.rebirth-cutscene {
     line-height: 1.6;
 
     opacity: 0.9;
+}
+
+.title-buff {
+    margin: 6px 0 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.title-buff-locked {
+    opacity: 0.5;
+}
+
+.title-equipped {
+    font-weight: 700;
+}
+
+.title-unlocked {
+    font-weight: 700;
+}
+
+.title-locked {
+    opacity: 0.5;
 }
