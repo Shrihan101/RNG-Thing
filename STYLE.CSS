@@ -5994,3 +5994,55 @@ body.rebirth-cutscene {
     font-weight: 700;
     white-space: nowrap;
 }
+
+/* =========================================
+   AUTO-CLICKER LOCK SCREEN
+   ========================================= */
+
+#autoClickerLockScreen {
+    position: fixed;
+    inset: 0;
+
+    z-index: 999999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.96);
+
+    user-select: none;
+}
+
+#autoClickerLockBox {
+    width: min(500px, 90%);
+
+    padding: 35px;
+
+    text-align: center;
+
+    border-radius: 18px;
+
+    background: #111;
+
+    border: 2px solid #ff4444;
+
+    box-shadow:
+        0 0 40px rgba(255, 0, 0, 0.25);
+}
+
+#autoClickerLockTitle {
+    font-size: 2rem;
+
+    font-weight: 800;
+
+    margin-bottom: 20px;
+}
+
+#autoClickerLockText {
+    font-size: 1.05rem;
+
+    line-height: 1.6;
+
+    opacity: 0.9;
+}
