@@ -8427,6 +8427,8 @@ const earnedEP =
         titleBuffs.epMultiplier
     );
 
+data.totalRolls++;
+
 addQuestProgress(1);
     data.totalEP +=
         earnedEP;
