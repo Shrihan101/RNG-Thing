@@ -1,3 +1,424 @@
+// ============================================================
+// RNG THING — DEVTOOLS / INSPECT DETERRENT
+// ============================================================
+
+(() => {
+    "use strict";
+
+    // ------------------------------------------------------------
+    // SETTINGS
+    // ------------------------------------------------------------
+
+    const DEVTOOLS_CHECK_INTERVAL = 1000;
+    const DEVTOOLS_SIZE_THRESHOLD = 180;
+
+    let gameLocked = false;
+
+
+    // ------------------------------------------------------------
+    // LOCK GAME
+    // ------------------------------------------------------------
+
+    function lockGame(reason = "Developer Tools Were Detected.") {
+
+        if (gameLocked) return;
+
+        gameLocked = true;
+
+        // Prevent The Game From Continuing To Receive Input
+        document.documentElement.style.pointerEvents = "none";
+
+        // Create Overlay
+        const overlay = document.createElement("div");
+
+        overlay.id = "rng-devtools-lock";
+
+        overlay.style.position = "fixed";
+        overlay.style.inset = "0";
+        overlay.style.zIndex = "2147483647";
+
+        overlay.style.display = "flex";
+        overlay.style.flexDirection = "column";
+        overlay.style.alignItems = "center";
+        overlay.style.justifyContent = "center";
+
+        overlay.style.background = "#080808";
+        overlay.style.color = "#ffffff";
+
+        overlay.style.fontFamily =
+            "Arial, Helvetica, sans-serif";
+
+        overlay.style.textAlign = "center";
+
+        overlay.style.pointerEvents = "auto";
+
+        overlay.innerHTML = `
+            <div
+                style="
+                    font-size:48px;
+                    margin-bottom:20px;
+                "
+            >
+                🔒
+            </div>
+
+            <div
+                style="
+                    font-size:30px;
+                    font-weight:bold;
+                    margin-bottom:12px;
+                "
+            >
+                Game Locked
+            </div>
+
+            <div
+                style="
+                    font-size:17px;
+                    opacity:.75;
+                    max-width:500px;
+                    padding:0 20px;
+                    line-height:1.5;
+                "
+            >
+                ${reason}
+                <br>
+                Please Close Developer Tools And Reload RNG Thing.
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+
+        // Block Interaction With The Game
+        const blockInteraction = (event) => {
+
+            if (event.target === overlay ||
+                overlay.contains(event.target)) {
+
+                return;
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
+        };
+
+        [
+            "click",
+            "mousedown",
+            "mouseup",
+            "pointerdown",
+            "pointerup",
+            "touchstart",
+            "touchend",
+            "keydown",
+            "keyup",
+            "keypress"
+        ].forEach(eventName => {
+
+            document.addEventListener(
+                eventName,
+                blockInteraction,
+                true
+            );
+
+        });
+    }
+
+
+    // ------------------------------------------------------------
+    // KEYBOARD SHORTCUT BLOCKING
+    // ------------------------------------------------------------
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            const key = String(event.key).toLowerCase();
+
+            const ctrl = event.ctrlKey;
+            const cmd = event.metaKey;
+            const shift = event.shiftKey;
+            const alt = event.altKey;
+
+
+            // F12
+            if (key === "f12") {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                return;
+            }
+
+
+            // Ctrl + Shift + I
+            // Cmd + Shift + I
+            // Cmd + Option + I
+            if (
+                (ctrl && shift && key === "i") ||
+                (cmd && shift && key === "i") ||
+                (cmd && alt && key === "i")
+            ) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                return;
+            }
+
+
+            // Ctrl + Shift + J
+            // Cmd + Shift + J
+            // Cmd + Option + J
+            if (
+                (ctrl && shift && key === "j") ||
+                (cmd && shift && key === "j") ||
+                (cmd && alt && key === "j")
+            ) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                return;
+            }
+
+
+            // Ctrl + Shift + C
+            // Cmd + Shift + C
+            // Cmd + Option + C
+            if (
+                (ctrl && shift && key === "c") ||
+                (cmd && shift && key === "c") ||
+                (cmd && alt && key === "c")
+            ) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                return;
+            }
+
+
+            // Ctrl + U / Cmd + U
+            if (
+                (ctrl || cmd) &&
+                key === "u"
+            ) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                return;
+            }
+
+
+            // Ctrl + Shift + K
+            // Ctrl + Shift + S
+            // Ctrl + Shift + E
+            if (
+                ctrl &&
+                shift &&
+                ["k", "s", "e"].includes(key)
+            ) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                return;
+            }
+
+
+            // Cmd + Option + K
+            // Cmd + Option + E
+            if (
+                cmd &&
+                alt &&
+                ["k", "e"].includes(key)
+            ) {
+
+                event.preventDefault();
+                event.stopPropagation();
+
+                return;
+            }
+
+        },
+        true
+    );
+
+
+    // ------------------------------------------------------------
+    // RIGHT CLICK
+    // ------------------------------------------------------------
+
+    document.addEventListener(
+        "contextmenu",
+        function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+        },
+        true
+    );
+
+
+    // ------------------------------------------------------------
+    // TEXT / ELEMENT DRAGGING
+    // ------------------------------------------------------------
+
+    document.addEventListener(
+        "dragstart",
+        function (event) {
+
+            event.preventDefault();
+
+        },
+        true
+    );
+
+
+    // ------------------------------------------------------------
+    // DEVTOOLS WINDOW SIZE DETECTION
+    // ------------------------------------------------------------
+
+    function checkDevToolsSize() {
+
+        if (gameLocked) return;
+
+        const widthDifference =
+            window.outerWidth - window.innerWidth;
+
+        const heightDifference =
+            window.outerHeight - window.innerHeight;
+
+
+        /*
+            Large Differences Can Occur When DevTools
+            Are Docked Beside Or Below The Page.
+
+            This Is Only A Deterrent And May Trigger False Positives
+            With Unusual Browser Window Sizes.
+
+        */
+
+        if (
+            widthDifference > DEVTOOLS_SIZE_THRESHOLD ||
+            heightDifference > DEVTOOLS_SIZE_THRESHOLD
+        ) {
+
+            lockGame(
+                "Developer Tools Were Detected."
+            );
+
+        }
+    }
+
+
+    // Run Periodically
+    setInterval(
+        checkDevToolsSize,
+        DEVTOOLS_CHECK_INTERVAL
+    );
+
+
+    // Also Check When Window Size Changes
+    window.addEventListener(
+        "resize",
+        function () {
+
+            checkDevToolsSize();
+
+        }
+    );
+
+
+    // ------------------------------------------------------------
+    // PREVENT SELECTION OUTSIDE INPUTS
+    // ------------------------------------------------------------
+
+    document.addEventListener(
+        "selectstart",
+        function (event) {
+
+            const element =
+                event.target;
+
+            if (
+                element &&
+                (
+                    element.tagName === "INPUT" ||
+                    element.tagName === "TEXTAREA" ||
+                    element.tagName === "SELECT"
+                )
+            ) {
+
+                return;
+            }
+
+            event.preventDefault();
+
+        },
+        true
+    );
+
+
+    // ------------------------------------------------------------
+    // VISIBILITY CHECK
+    // ------------------------------------------------------------
+
+    document.addEventListener(
+        "visibilitychange",
+        function () {
+
+            /*
+                We Intentionally DON'T Lock The Game Here.
+
+                Switching Tabs, Minimizing The Browser,
+                Opening Another App, Etc. Is Completely Normal.
+
+            */
+
+        }
+    );
+
+
+    // ------------------------------------------------------------
+    // EXTRA INSPECT DETERRENT
+    // ------------------------------------------------------------
+
+    document.addEventListener(
+        "keydown",
+        function (event) {
+
+            // Prevent Common "View Source" Attempts
+            if (
+                (event.ctrlKey || event.metaKey) &&
+                event.key.toLowerCase() === "u"
+            ) {
+
+                event.preventDefault();
+
+            }
+
+        },
+        true
+    );
+
+
+    // ------------------------------------------------------------
+    // INITIAL CHECK
+    // ------------------------------------------------------------
+
+    setTimeout(
+        checkDevToolsSize,
+        1500
+    );
+
+})();
+
+
 const SUPABASE_URL = "https://vkuxbhnptsvwwcmqblrr.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_aSmWV8Z1yitZvf5kricD3Q_aoslLEwE";
 
