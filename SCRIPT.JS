@@ -1,423 +1,3 @@
-// ============================================================
-// RNG THING — DEVTOOLS / INSPECT DETERRENT
-// ============================================================
-
-(() => {
-    "use strict";
-
-    // ------------------------------------------------------------
-    // SETTINGS
-    // ------------------------------------------------------------
-
-    const DEVTOOLS_CHECK_INTERVAL = 1000;
-    const DEVTOOLS_SIZE_THRESHOLD = 180;
-
-    let gameLocked = false;
-
-
-    // ------------------------------------------------------------
-    // LOCK GAME
-    // ------------------------------------------------------------
-
-    function lockGame(reason = "Developer Tools Were Detected.") {
-
-        if (gameLocked) return;
-
-        gameLocked = true;
-
-        // Prevent The Game From Continuing To Receive Input
-        document.documentElement.style.pointerEvents = "none";
-
-        // Create Overlay
-        const overlay = document.createElement("div");
-
-        overlay.id = "rng-devtools-lock";
-
-        overlay.style.position = "fixed";
-        overlay.style.inset = "0";
-        overlay.style.zIndex = "2147483647";
-
-        overlay.style.display = "flex";
-        overlay.style.flexDirection = "column";
-        overlay.style.alignItems = "center";
-        overlay.style.justifyContent = "center";
-
-        overlay.style.background = "#080808";
-        overlay.style.color = "#ffffff";
-
-        overlay.style.fontFamily =
-            "Arial, Helvetica, sans-serif";
-
-        overlay.style.textAlign = "center";
-
-        overlay.style.pointerEvents = "auto";
-
-        overlay.innerHTML = `
-            <div
-                style="
-                    font-size:48px;
-                    margin-bottom:20px;
-                "
-            >
-                🔒
-            </div>
-
-            <div
-                style="
-                    font-size:30px;
-                    font-weight:bold;
-                    margin-bottom:12px;
-                "
-            >
-                Game Locked
-            </div>
-
-            <div
-                style="
-                    font-size:17px;
-                    opacity:.75;
-                    max-width:500px;
-                    padding:0 20px;
-                    line-height:1.5;
-                "
-            >
-                ${reason}
-                <br>
-                Please Close Developer Tools And Reload RNG Thing.
-            </div>
-        `;
-
-        document.body.appendChild(overlay);
-
-
-        // Block Interaction With The Game
-        const blockInteraction = (event) => {
-
-            if (event.target === overlay ||
-                overlay.contains(event.target)) {
-
-                return;
-            }
-
-            event.preventDefault();
-            event.stopPropagation();
-        };
-
-        [
-            "click",
-            "mousedown",
-            "mouseup",
-            "pointerdown",
-            "pointerup",
-            "touchstart",
-            "touchend",
-            "keydown",
-            "keyup",
-            "keypress"
-        ].forEach(eventName => {
-
-            document.addEventListener(
-                eventName,
-                blockInteraction,
-                true
-            );
-
-        });
-    }
-
-
-    // ------------------------------------------------------------
-    // KEYBOARD SHORTCUT BLOCKING
-    // ------------------------------------------------------------
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            const key = String(event.key).toLowerCase();
-
-            const ctrl = event.ctrlKey;
-            const cmd = event.metaKey;
-            const shift = event.shiftKey;
-            const alt = event.altKey;
-
-
-            // F12
-            if (key === "f12") {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                return;
-            }
-
-
-            // Ctrl + Shift + I
-            // Cmd + Shift + I
-            // Cmd + Option + I
-            if (
-                (ctrl && shift && key === "i") ||
-                (cmd && shift && key === "i") ||
-                (cmd && alt && key === "i")
-            ) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                return;
-            }
-
-
-            // Ctrl + Shift + J
-            // Cmd + Shift + J
-            // Cmd + Option + J
-            if (
-                (ctrl && shift && key === "j") ||
-                (cmd && shift && key === "j") ||
-                (cmd && alt && key === "j")
-            ) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                return;
-            }
-
-
-            // Ctrl + Shift + C
-            // Cmd + Shift + C
-            // Cmd + Option + C
-            if (
-                (ctrl && shift && key === "c") ||
-                (cmd && shift && key === "c") ||
-                (cmd && alt && key === "c")
-            ) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                return;
-            }
-
-
-            // Ctrl + U / Cmd + U
-            if (
-                (ctrl || cmd) &&
-                key === "u"
-            ) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                return;
-            }
-
-
-            // Ctrl + Shift + K
-            // Ctrl + Shift + S
-            // Ctrl + Shift + E
-            if (
-                ctrl &&
-                shift &&
-                ["k", "s", "e"].includes(key)
-            ) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                return;
-            }
-
-
-            // Cmd + Option + K
-            // Cmd + Option + E
-            if (
-                cmd &&
-                alt &&
-                ["k", "e"].includes(key)
-            ) {
-
-                event.preventDefault();
-                event.stopPropagation();
-
-                return;
-            }
-
-        },
-        true
-    );
-
-
-    // ------------------------------------------------------------
-    // RIGHT CLICK
-    // ------------------------------------------------------------
-
-    document.addEventListener(
-        "contextmenu",
-        function (event) {
-
-            event.preventDefault();
-            event.stopPropagation();
-
-        },
-        true
-    );
-
-
-    // ------------------------------------------------------------
-    // TEXT / ELEMENT DRAGGING
-    // ------------------------------------------------------------
-
-    document.addEventListener(
-        "dragstart",
-        function (event) {
-
-            event.preventDefault();
-
-        },
-        true
-    );
-
-
-    // ------------------------------------------------------------
-    // DEVTOOLS WINDOW SIZE DETECTION
-    // ------------------------------------------------------------
-
-    function checkDevToolsSize() {
-
-        if (gameLocked) return;
-
-        const widthDifference =
-            window.outerWidth - window.innerWidth;
-
-        const heightDifference =
-            window.outerHeight - window.innerHeight;
-
-
-        /*
-            Large Differences Can Occur When DevTools
-            Are Docked Beside Or Below The Page.
-
-            This Is Only A Deterrent And May Trigger False Positives
-            With Unusual Browser Window Sizes.
-
-        */
-
-        if (
-            widthDifference > DEVTOOLS_SIZE_THRESHOLD ||
-            heightDifference > DEVTOOLS_SIZE_THRESHOLD
-        ) {
-
-            lockGame(
-                "Developer Tools Were Detected."
-            );
-
-        }
-    }
-
-
-    // Run Periodically
-    setInterval(
-        checkDevToolsSize,
-        DEVTOOLS_CHECK_INTERVAL
-    );
-
-
-    // Also Check When Window Size Changes
-    window.addEventListener(
-        "resize",
-        function () {
-
-            checkDevToolsSize();
-
-        }
-    );
-
-
-    // ------------------------------------------------------------
-    // PREVENT SELECTION OUTSIDE INPUTS
-    // ------------------------------------------------------------
-
-    document.addEventListener(
-        "selectstart",
-        function (event) {
-
-            const element =
-                event.target;
-
-            if (
-                element &&
-                (
-                    element.tagName === "INPUT" ||
-                    element.tagName === "TEXTAREA" ||
-                    element.tagName === "SELECT"
-                )
-            ) {
-
-                return;
-            }
-
-            event.preventDefault();
-
-        },
-        true
-    );
-
-
-    // ------------------------------------------------------------
-    // VISIBILITY CHECK
-    // ------------------------------------------------------------
-
-    document.addEventListener(
-        "visibilitychange",
-        function () {
-
-            /*
-                We Intentionally DON'T Lock The Game Here.
-
-                Switching Tabs, Minimizing The Browser,
-                Opening Another App, Etc. Is Completely Normal.
-
-            */
-
-        }
-    );
-
-
-    // ------------------------------------------------------------
-    // EXTRA INSPECT DETERRENT
-    // ------------------------------------------------------------
-
-    document.addEventListener(
-        "keydown",
-        function (event) {
-
-            // Prevent Common "View Source" Attempts
-            if (
-                (event.ctrlKey || event.metaKey) &&
-                event.key.toLowerCase() === "u"
-            ) {
-
-                event.preventDefault();
-
-            }
-
-        },
-        true
-    );
-
-
-    // ------------------------------------------------------------
-    // INITIAL CHECK
-    // ------------------------------------------------------------
-
-    setTimeout(
-        checkDevToolsSize,
-        1500
-    );
-
-})();
-
 
 const SUPABASE_URL = "https://vkuxbhnptsvwwcmqblrr.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_aSmWV8Z1yitZvf5kricD3Q_aoslLEwE";
@@ -1926,7 +1506,10 @@ vipRollLastUsed: null,
 vipRollArmed: false,
 
 shrihanCodeUsed: false,
-shrihanChromaReady: false
+shrihanChromaReady: false,
+
+ccu100CodeUsed: false,
+ccu100ChromaReady: false,
 };
 
 // =========================================
@@ -2305,6 +1888,7 @@ if (
 // =========================================
 
 let shrihanCodeBuffer = "";
+let ccu100CodeBuffer = "";
 let vipRollCodeBuffer = "";
 let vipRollMessageActive = false;
 
@@ -2356,6 +1940,67 @@ document.addEventListener("keydown", event => {
         activateShrihanCode();
         shrihanCodeBuffer = "";
     }
+});
+
+// =========================================
+// 100CCU CODE
+// =========================================
+
+function activate100CCUCode() {
+
+    if (data.ccu100CodeUsed) {
+        return;
+    }
+
+    data.ccu100CodeUsed = true;
+    data.ccu100ChromaReady = true;
+
+    saveData();
+
+    dailyStatus.textContent =
+        "100CCU Code Activated! Next Roll = 100100 Chroma!";
+}
+
+document.addEventListener("keydown", event => {
+
+    if (
+        !event ||
+        typeof event.key !== "string" ||
+        event.key.length !== 1
+    ) {
+        return;
+    }
+
+    const target = event.target;
+
+    if (
+        target &&
+        (
+            target.tagName === "INPUT" ||
+            target.tagName === "TEXTAREA" ||
+            target.isContentEditable
+        )
+    ) {
+        return;
+    }
+
+    ccu100CodeBuffer += event.key;
+
+    if (ccu100CodeBuffer.length > 6) {
+        ccu100CodeBuffer =
+            ccu100CodeBuffer.slice(-6);
+    }
+
+    if (
+        ccu100CodeBuffer.toUpperCase() ===
+        "100CCU"
+    ) {
+
+        activate100CCUCode();
+
+        ccu100CodeBuffer = "";
+    }
+
 });
 
 // =========================================
@@ -2949,6 +2594,10 @@ function getVIPLuckBonus() {
 // FINAL LUCK
 // =========================================
 
+// =========================================
+// FINAL LUCK
+// =========================================
+
 function getEffectiveLuck() {
 
     const normalLuck =
@@ -2957,11 +2606,17 @@ function getEffectiveLuck() {
     const titleBuffs =
         getEquippedTitleBuffs();
 
+    const clanMultiplier =
+        getCurrentClanPassiveMultiplier();
+
     return Number(
         (
-            normalLuck +
-            getVIPLuckBonus() +
-            titleBuffs.luck
+            (
+                normalLuck +
+                getVIPLuckBonus() +
+                titleBuffs.luck
+            ) *
+            clanMultiplier
         ).toFixed(1)
     );
 
@@ -5428,6 +5083,7 @@ function getRandomFallbackRarity() {
 
     return weights[weights.length - 1].rarity;
 }
+
 // =========================================
 // DETERMINE NATURAL PATTERN RARITY
 // =========================================
@@ -8033,38 +7689,68 @@ function updateCooldown() {
         getRemainingCooldown();
 
     if (remaining <= 0) {
-        countdownDisplay.textContent =
-            "Ready!";
-
-        if (
-            data.shrihanChromaReady
-        ) {
-            dailyStatus.textContent =
-                "Shrihan Code Active! Next Roll = Chroma!";
-        } else {
-            dailyStatus.textContent =
-                "Your Roll Is Ready!";
-        }
-
-        rollButton.disabled =
-            false;
-
-        return;
-    }
-
-    const seconds =
-        Math.ceil(
-            remaining / 1000
-        );
 
     countdownDisplay.textContent =
-        `${seconds}s`;
+        "Ready!";
+
+    if (
+        data.ccu100ChromaReady
+    ) {
+
+        dailyStatus.textContent =
+            "100CCU Code Active! Next Roll = 100100 Chroma!";
+
+    } else if (
+        data.shrihanChromaReady
+    ) {
+
+        dailyStatus.textContent =
+            "Shrihan Code Active! Next Roll = Chroma!";
+
+    } else {
+
+        dailyStatus.textContent =
+            "Your Roll Is Ready!";
+
+    }
+
+    rollButton.disabled =
+        false;
+
+    return;
+}
+
+const seconds =
+    Math.ceil(
+        remaining / 1000
+    );
+
+countdownDisplay.textContent =
+    `${seconds}s`;
+
+if (
+    data.ccu100ChromaReady
+) {
+
+    dailyStatus.textContent =
+        "100CCU Code Active! Next Roll = 100100 Chroma!";
+
+} else if (
+    data.shrihanChromaReady
+) {
+
+    dailyStatus.textContent =
+        "Shrihan Code Active! Next Roll = Chroma!";
+
+} else {
 
     dailyStatus.textContent =
         "Roll Cooldown Active";
 
-    rollButton.disabled =
-        true;
+}
+
+rollButton.disabled =
+    true;
 }
 
 // =========================================
@@ -8263,6 +7949,13 @@ if (FORCE_RARITY) {
         "Secret";
 
 } else if (
+    data.ccu100ChromaReady
+) {
+
+    rarity =
+        "Chroma";
+
+} else if (
     data.shrihanChromaReady
 ) {
 
@@ -8303,13 +7996,24 @@ if (FORCE_RARITY) {
             naturalRarity !== "Chroma"
         );
 
-    const finalNumber =
+    let finalNumber;
+
+if (data.ccu100ChromaReady) {
+
+    finalNumber =
+        100100;
+
+} else {
+
+    finalNumber =
         shouldUseSpecialNumber
             ? getFinalRollNumber(
                 rarity,
                 originalNumber
             )
             : originalNumber;
+
+}
 
     const baseEP =
     EP_VALUES[rarity] || 0;
@@ -8419,12 +8123,21 @@ const titleBuffs =
     getEquippedTitleBuffs();
 
 const earnedEP =
+
     Math.floor(
+
         baseEP *
+
         epMultiplier *
+
         numberEffectMultiplier *
+
         getVIPEpMultiplier() *
-        titleBuffs.epMultiplier
+
+        titleBuffs.epMultiplier *
+
+        getCurrentClanPassiveMultiplier()
+
     );
 
 data.totalRolls++;
@@ -8584,10 +8297,21 @@ displayTitles();
             today;
     }
 
-    if (data.shrihanChromaReady) {
-        data.shrihanChromaReady =
-            false;
-    }
+    if (data.ccu100ChromaReady) {
+
+    data.ccu100ChromaReady =
+        false;
+
+}
+
+if (data.shrihanChromaReady) {
+
+    data.shrihanChromaReady =
+        false;
+
+}
+
+saveData();
 
     saveData();
 
@@ -10370,6 +10094,1789 @@ loadLeaderboard(
     "ep"
 );
 
+// ============================================================
+// RNG THING — CLANS
+// ============================================================
+
+
+// ============================================================
+// CLAN STATE
+// ============================================================
+
+let currentClan = null;
+
+
+// ============================================================
+// CLAN DOM ELEMENTS
+// ============================================================
+
+const clanButton =
+    document.getElementById(
+        "clanButton"
+    );
+
+const clanPanel =
+    document.getElementById(
+        "clanPanel"
+    );
+
+const clanOverlay =
+    document.getElementById(
+        "clanOverlay"
+    );
+
+const closeClanButton =
+    document.getElementById(
+        "closeClanButton"
+    );
+
+
+const clanSignInMessage =
+    document.getElementById(
+        "clanSignInMessage"
+    );
+
+
+const clanNoClanContainer =
+    document.getElementById(
+        "clanNoClanContainer"
+    );
+
+const clanCurrentContainer =
+    document.getElementById(
+        "clanCurrentContainer"
+    );
+
+
+const createClanForm =
+    document.getElementById(
+        "createClanForm"
+    );
+
+const clanNameInput =
+    document.getElementById(
+        "clanNameInput"
+    );
+
+const clanTagInput =
+    document.getElementById(
+        "clanTagInput"
+    );
+
+const createClanButton =
+    document.getElementById(
+        "createClanButton"
+    );
+
+const createClanMessage =
+    document.getElementById(
+        "createClanMessage"
+    );
+
+
+const clanSearchInput =
+    document.getElementById(
+        "clanSearchInput"
+    );
+
+const clanSearchButton =
+    document.getElementById(
+        "clanSearchButton"
+    );
+
+const clanSearchResults =
+    document.getElementById(
+        "clanSearchResults"
+    );
+
+
+const currentClanTag =
+    document.getElementById(
+        "currentClanTag"
+    );
+
+const currentClanName =
+    document.getElementById(
+        "currentClanName"
+    );
+
+const currentClanRole =
+    document.getElementById(
+        "currentClanRole"
+    );
+
+const currentClanLevel =
+    document.getElementById(
+        "currentClanLevel"
+    );
+
+const currentClanMembers =
+    document.getElementById(
+        "currentClanMembers"
+    );
+
+const clanMemberList =
+    document.getElementById(
+        "clanMemberList"
+    );
+
+const refreshClanButton =
+    document.getElementById(
+        "refreshClanButton"
+    );
+
+const leaveClanButton =
+    document.getElementById(
+        "leaveClanButton"
+    );
+
+const leaveClanMessage =
+    document.getElementById(
+        "leaveClanMessage"
+    );
+
+
+// ============================================================
+// CLAN HTML ESCAPE
+// Prevents Clan Names / Usernames From Becoming HTML.
+// ============================================================
+
+function escapeClanHtml(value) {
+
+    return String(value ?? "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ============================================================
+// CLOSE CLAN MENU
+// ============================================================
+
+function closeClanMenu() {
+
+    if (!clanPanel) {
+        return;
+    }
+
+
+    clanPanel.hidden =
+        true;
+
+
+    if (clanOverlay) {
+
+        clanOverlay.hidden =
+            true;
+
+    }
+
+
+    if (clanButton) {
+
+        clanButton.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// OPEN CLAN MENU
+// ============================================================
+
+async function openClanMenu() {
+
+    if (!clanPanel) {
+        return;
+    }
+
+
+    // Close Account If It Is Open
+    if (
+        typeof closeAccountMenu ===
+        "function"
+    ) {
+
+        closeAccountMenu();
+
+    }
+
+
+    clanPanel.hidden =
+        false;
+
+
+    if (clanOverlay) {
+
+        clanOverlay.hidden =
+            false;
+
+    }
+
+
+    if (clanButton) {
+
+        clanButton.setAttribute(
+            "aria-expanded",
+            "true"
+        );
+
+    }
+
+
+    await updateClanUI();
+
+}
+
+
+// ============================================================
+// CLAN BUTTON
+// ============================================================
+
+if (clanButton) {
+
+    clanButton.addEventListener(
+        "click",
+        async () => {
+
+            if (
+                clanPanel &&
+                clanPanel.hidden
+            ) {
+
+                await openClanMenu();
+
+            } else {
+
+                closeClanMenu();
+
+            }
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// CLOSE CLAN BUTTON
+// ============================================================
+
+if (closeClanButton) {
+
+    closeClanButton.addEventListener(
+        "click",
+        closeClanMenu
+    );
+
+}
+
+
+// ============================================================
+// CLAN OVERLAY
+// ============================================================
+
+if (clanOverlay) {
+
+    clanOverlay.addEventListener(
+        "click",
+        closeClanMenu
+    );
+
+}
+
+
+// ============================================================
+// ESCAPE KEY
+// ============================================================
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            clanPanel &&
+            !clanPanel.hidden
+        ) {
+
+            closeClanMenu();
+
+        }
+
+    }
+);
+
+
+// ============================================================
+// LOAD CURRENT CLAN
+// ============================================================
+
+async function loadClanData() {
+
+    try {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabase.auth.getUser();
+
+
+        if (!user) {
+
+            currentClan =
+                null;
+
+            return null;
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+            await supabase.rpc(
+                "get_my_clan"
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Clan Load Error:",
+                error
+            );
+
+            currentClan =
+                null;
+
+            return null;
+
+        }
+
+
+        currentClan =
+            data || null;
+
+
+        return currentClan;
+
+
+    } catch (error) {
+
+        console.error(
+            "Clan Load Error:",
+            error
+        );
+
+        currentClan =
+            null;
+
+        return null;
+
+    }
+
+}
+
+
+// ============================================================
+// UPDATE CLAN UI
+// ============================================================
+
+async function updateClanUI() {
+
+    try {
+
+        await loadClanUserId();
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabase.auth.getUser();
+
+
+        if (!user) {
+
+            if (clanSignInMessage) {
+                clanSignInMessage.hidden =
+                    false;
+            }
+
+            if (clanNoClanContainer) {
+                clanNoClanContainer.hidden =
+                    true;
+            }
+
+            if (clanCurrentContainer) {
+                clanCurrentContainer.hidden =
+                    true;
+            }
+
+            currentClan =
+                null;
+
+            return;
+
+        }
+
+
+        if (clanSignInMessage) {
+            clanSignInMessage.hidden =
+                true;
+        }
+
+
+        await loadClanData();
+
+
+        if (currentClan) {
+
+            if (clanNoClanContainer) {
+                clanNoClanContainer.hidden =
+                    true;
+            }
+
+            if (clanCurrentContainer) {
+                clanCurrentContainer.hidden =
+                    false;
+            }
+
+
+            renderCurrentClan();
+
+        } else {
+
+            if (clanCurrentContainer) {
+                clanCurrentContainer.hidden =
+                    true;
+            }
+
+            if (clanNoClanContainer) {
+                clanNoClanContainer.hidden =
+                    false;
+            }
+
+            renderClanSearchResults(
+                []
+            );
+
+        }
+
+
+    } catch (error) {
+
+        console.error(
+            "Clan UI Error:",
+            error
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// RENDER CURRENT CLAN
+// ============================================================
+
+function renderCurrentClan() {
+
+    if (!currentClan) return;
+
+
+    if (currentClanTag) {
+
+        currentClanTag.textContent =
+            currentClan.tag || "---";
+
+    }
+
+
+    if (currentClanName) {
+
+        currentClanName.textContent =
+            currentClan.name || "Clan";
+
+    }
+
+
+    const level =
+        Number(currentClan.level ?? 1);
+
+    const totalXP =
+        Number(currentClan.xp ?? 0);
+
+
+    const previousXP =
+        getPreviousClanXP(level);
+
+    const nextXP =
+        getNextClanXP(level);
+
+
+    /*
+        Calculate XP INSIDE The Current Level.
+
+        Example:
+
+        Level 3 Starts At 10,000 XP.
+        Level 4 Starts At 15,000 XP.
+
+        At 12,000 Total XP:
+
+        Current Level XP = 2,000
+        Required = 5,000
+
+        So The Bar Shows:
+
+        2,000 / 5,000
+    */
+
+    const currentLevelXP =
+        Math.max(
+            totalXP - previousXP,
+            0
+        );
+
+
+    const requiredForLevel =
+        Math.max(
+            nextXP - previousXP,
+            1
+        );
+
+
+    const progress =
+        Math.min(
+            (currentLevelXP / requiredForLevel) * 100,
+            100
+        );
+
+
+    if (currentClanLevel) {
+
+        currentClanLevel.textContent =
+            level;
+
+    }
+
+// =========================================
+// CLAN PASSIVE BONUSES
+// =========================================
+
+const clanMultiplier =
+    getClanPassiveMultiplier(level);
+
+const clanBonusText =
+    `×${clanMultiplier.toFixed(2)}`;
+
+const clanEpBonus =
+    document.getElementById("clanEpBonus");
+
+const clanLuckBonus =
+    document.getElementById("clanLuckBonus");
+
+
+if (clanEpBonus) {
+
+    clanEpBonus.textContent =
+        clanBonusText;
+
+}
+
+
+if (clanLuckBonus) {
+
+    clanLuckBonus.textContent =
+        clanBonusText;
+
+}
+
+    if (currentClanXP) {
+
+        if (level >= 15) {
+
+            currentClanXP.textContent =
+                `${totalXP.toLocaleString()} / ${totalXP.toLocaleString()} — MAX`;
+
+        } else {
+
+            currentClanXP.textContent =
+                `${currentLevelXP.toLocaleString()} / ${requiredForLevel.toLocaleString()}`;
+
+        }
+
+    }
+
+
+    if (clanXPBarFill) {
+
+        clanXPBarFill.style.width =
+            `${progress}%`;
+
+    }
+
+
+    const members =
+        Array.isArray(currentClan.members)
+            ? currentClan.members
+            : [];
+
+
+    if (currentClanMembers) {
+
+        currentClanMembers.textContent =
+            `${members.length} / ${currentClan.member_limit ?? 5}`;
+
+    }
+
+
+    const currentUserRole =
+        members.find(
+            member =>
+                member.user_id === currentClanUserId
+        )?.role || "member";
+
+
+    const clanRoleDisplay =
+    document.getElementById("clanCurrentRole");
+
+if (clanRoleDisplay) {
+
+    clanRoleDisplay.textContent =
+        formatClanRole(currentUserRole);
+
+}
+
+
+    renderClanMembers(members);
+
+
+    /*
+        Leader Management.
+
+        Leaders Cannot Leave Their Clan.
+
+        They Must Disband It Instead.
+    */
+
+    const leaveButton =
+        document.getElementById("leaveClanButton");
+
+    const leaveDescription =
+        leaveButton?.parentElement
+            ?.querySelector(".clan-description");
+
+
+    if (currentUserRole === "leader") {
+
+    if (leaveButton) {
+
+        leaveButton.style.display =
+            "none";
+
+    }
+
+    if (leaveDescription) {
+
+        leaveDescription.textContent =
+            "Clan Leaders Cannot Leave Their Clan. Disband The Clan Instead.";
+
+    }
+
+
+    // =========================================
+    // LEADER MANAGEMENT
+    // =========================================
+
+    const clanManagementButtons =
+        document.getElementById(
+            "clanManagementButtons"
+        );
+
+
+    if (clanManagementButtons) {
+
+        clanManagementButtons.innerHTML = `
+            <button
+                id="disbandClanButton"
+                class="clan-danger-button"
+                type="button"
+            >
+                Disband Clan
+            </button>
+
+            <p
+                id="disbandClanMessage"
+                class="clan-action-message"
+                aria-live="polite"
+            ></p>
+        `;
+
+
+        const disbandClanButton =
+            document.getElementById(
+                "disbandClanButton"
+            );
+
+
+        const disbandClanMessage =
+            document.getElementById(
+                "disbandClanMessage"
+            );
+
+
+        if (disbandClanButton) {
+
+            disbandClanButton.addEventListener(
+                "click",
+                async () => {
+
+                    const confirmed =
+                        confirm(
+                            "Are You Sure You Want To Disband This Clan? This Cannot Be Undone."
+                        );
+
+
+                    if (!confirmed) {
+                        return;
+                    }
+
+
+                    disbandClanButton.disabled =
+                        true;
+
+
+                    if (disbandClanMessage) {
+
+                        disbandClanMessage.textContent =
+                            "Disbanding Clan...";
+
+                    }
+
+
+                    try {
+
+                        const {
+                            error
+                        } =
+                            await supabase.rpc(
+                                "disband_clan"
+                            );
+
+
+                        if (error) {
+                            throw error;
+                        }
+
+
+                        currentClan =
+                            null;
+
+
+                        if (disbandClanMessage) {
+
+                            disbandClanMessage.textContent =
+                                "Clan Disbanded Successfully!";
+
+                        }
+
+
+                        await updateClanUI();
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "Disband Clan Error:",
+                            error
+                        );
+
+
+                        if (disbandClanMessage) {
+
+                            disbandClanMessage.textContent =
+                                error.message ||
+                                "Unable To Disband Clan.";
+
+                        }
+
+
+                        disbandClanButton.disabled =
+                            false;
+
+                    }
+
+                }
+            );
+
+        }
+
+    }
+
+} else {
+
+    // =========================================
+    // REGULAR MEMBER
+    // =========================================
+
+    const clanManagementButtons =
+        document.getElementById(
+            "clanManagementButtons"
+        );
+
+
+    if (clanManagementButtons) {
+
+        clanManagementButtons.innerHTML =
+            "";
+
+    }
+
+
+    if (leaveButton) {
+
+        leaveButton.style.display =
+            "";
+
+        leaveButton.textContent =
+            "Leave Clan";
+
+    }
+
+
+    if (leaveDescription) {
+
+        leaveDescription.textContent =
+            "Leaving A Clan Will Remove Your Membership.";
+
+    }
+
+}
+
+}
+
+function getNextClanXP(level) {
+
+    const requirements = {
+
+        1: 1000,
+        2: 10000,
+        3: 15000,
+        4: 30000,
+        5: 50000,
+        6: 100000,
+        7: 1000000,
+        8: 3000000,
+        9: 5000000,
+        10: 7000000,
+        11: 10000000,
+        12: 15000000,
+        13: 30000000,
+        14: 50000000,
+        15: 50000000
+
+    };
+
+    return requirements[level] ?? 50000000;
+}
+
+
+function getPreviousClanXP(level) {
+
+    const requirements = {
+
+        1: 0,
+        2: 0,
+        3: 1000,
+        4: 10000,
+        5: 15000,
+        6: 30000,
+        7: 50000,
+        8: 100000,
+        9: 1000000,
+        10: 3000000,
+        11: 5000000,
+        12: 7000000,
+        13: 10000000,
+        14: 15000000,
+        15: 30000000
+
+    };
+
+    return requirements[level] ?? 0;
+}
+
+function getClanPassiveMultiplier(level) {
+
+    const clanLevel =
+        Math.max(
+            1,
+            Math.min(
+                Number(level) || 1,
+                15
+            )
+        );
+
+    return 1 + (clanLevel * 0.01);
+}
+
+function getCurrentClanPassiveMultiplier() {
+
+    if (
+        !currentClan ||
+        !currentClan.level
+    ) {
+        return 1;
+    }
+
+    return getClanPassiveMultiplier(
+        currentClan.level
+    );
+}
+
+// ============================================================
+// CURRENT USER ID
+// ============================================================
+
+let currentClanUserId =
+    null;
+
+
+// ============================================================
+// LOAD CURRENT USER ID
+// ============================================================
+
+async function loadClanUserId() {
+
+    try {
+
+        const {
+            data: {
+                user
+            }
+        } =
+            await supabase.auth.getUser();
+
+
+        currentClanUserId =
+            user?.id || null;
+
+
+        return currentClanUserId;
+
+    } catch {
+
+        currentClanUserId =
+            null;
+
+        return null;
+
+    }
+
+}
+
+
+// ============================================================
+// FORMAT ROLE
+// ============================================================
+
+function formatClanRole(role) {
+
+    if (role === "leader") {
+        return "Leader";
+    }
+
+    if (role === "officer") {
+        return "Officer";
+    }
+
+    return "Member";
+
+}
+
+
+// ============================================================
+// RENDER MEMBERS
+// ============================================================
+
+function renderClanMembers(
+    members
+) {
+
+    if (!clanMemberList) {
+        return;
+    }
+
+
+    if (!members.length) {
+
+        clanMemberList.innerHTML = `
+            <p class="clan-empty">
+                No Clan Members Found.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    clanMemberList.innerHTML =
+        members
+            .map(
+                member => {
+
+                    const username =
+                        escapeClanHtml(
+                            member.username ||
+                            "Player"
+                        );
+
+                    const role =
+                        member.role ||
+                        "member";
+
+                    const isYou =
+                        member.user_id ===
+                        currentClanUserId;
+
+
+                    return `
+                        <div class="clan-member">
+
+                            <span
+                                class="clan-member-name"
+                            >
+                                ${username}${isYou ? " (You)" : ""}
+                            </span>
+
+                            <span
+                                class="clan-member-role ${escapeClanHtml(role)}"
+                            >
+                                ${escapeClanHtml(
+                                    formatClanRole(role)
+                                )}
+                            </span>
+
+                        </div>
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+// ============================================================
+// SEARCH CLANS
+// ============================================================
+
+async function searchClans() {
+
+    if (!clanSearchResults) {
+        return;
+    }
+
+
+    clanSearchResults.innerHTML = `
+        <p class="clan-empty">
+            Searching...
+        </p>
+    `;
+
+
+    try {
+
+        const search =
+            clanSearchInput
+                ?.value
+                ?.trim() || "";
+
+
+        const {
+            data,
+            error
+        } =
+            await supabase.rpc(
+                "search_clans",
+                {
+                    p_search:
+                        search
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        renderClanSearchResults(
+            Array.isArray(data)
+                ? data
+                : []
+        );
+
+
+    } catch (error) {
+
+        console.error(
+            "Clan Search Error:",
+            error
+        );
+
+
+        clanSearchResults.innerHTML = `
+            <p class="clan-empty">
+                Unable To Search Clans.
+            </p>
+        `;
+
+    }
+
+}
+
+
+// ============================================================
+// RENDER SEARCH RESULTS
+// ============================================================
+
+function renderClanSearchResults(
+    clans
+) {
+
+    if (!clanSearchResults) {
+        return;
+    }
+
+
+    if (!clans.length) {
+
+        clanSearchResults.innerHTML = `
+            <p class="clan-empty">
+                No Clans Found.
+            </p>
+        `;
+
+        return;
+
+    }
+
+
+    clanSearchResults.innerHTML =
+        clans
+            .map(
+                clan => {
+
+                    const full =
+                        Number(
+                            clan.member_count
+                        ) >=
+                        Number(
+                            clan.member_limit
+                        );
+
+
+                    return `
+                        <div
+                            class="clan-search-result"
+                        >
+
+                            <div
+                                class="clan-search-result-info"
+                            >
+
+                                <div
+                                    class="clan-search-result-name"
+                                >
+                                    ${escapeClanHtml(
+                                        clan.name
+                                    )}
+                                </div>
+
+                                <div
+                                    class="clan-search-result-meta"
+                                >
+
+                                    <span
+                                        class="clan-search-result-tag"
+                                    >
+                                        [${escapeClanHtml(
+                                            clan.tag
+                                        )}]
+                                    </span>
+
+                                    · Level
+                                    ${escapeClanHtml(
+                                        clan.level
+                                    )}
+
+                                    ·
+                                    ${escapeClanHtml(
+                                        clan.member_count
+                                    )}
+                                    /
+                                    ${escapeClanHtml(
+                                        clan.member_limit
+                                    )}
+
+                                </div>
+
+                            </div>
+
+
+                            <button
+                                class="clan-join-button"
+                                type="button"
+                                data-clan-id="${escapeClanHtml(
+                                    clan.id
+                                )}"
+                                ${full ? "disabled" : ""}
+                            >
+                                ${
+                                    full
+                                        ? "Full"
+                                        : "Join"
+                                }
+                            </button>
+
+                        </div>
+                    `;
+
+                }
+            )
+            .join("");
+
+
+    clanSearchResults
+        .querySelectorAll(
+            ".clan-join-button"
+        )
+        .forEach(
+            button => {
+
+                button.addEventListener(
+                    "click",
+                    async () => {
+
+                        await joinClan(
+                            button.dataset.clanId
+                        );
+
+                    }
+                );
+
+            }
+        );
+
+}
+
+
+// ============================================================
+// CREATE CLAN
+// ============================================================
+
+if (createClanForm) {
+
+    createClanForm.addEventListener(
+        "submit",
+        async event => {
+
+            event.preventDefault();
+
+
+            if (createClanButton) {
+
+                createClanButton.disabled =
+                    true;
+
+            }
+
+
+            if (createClanMessage) {
+
+                createClanMessage.textContent =
+                    "Creating Clan...";
+
+            }
+
+
+            try {
+
+                const name =
+                    clanNameInput
+                        ?.value
+                        ?.trim() || "";
+
+                const tag =
+                    clanTagInput
+                        ?.value
+                        ?.trim()
+                        .toUpperCase() || "";
+
+
+                if (
+                    name.length < 3 ||
+                    name.length > 24
+                ) {
+
+                    throw new Error(
+                        "Clan Name Must Be 3–24 Characters."
+                    );
+
+                }
+
+
+                if (
+                    tag.length < 2 ||
+                    tag.length > 6
+                ) {
+
+                    throw new Error(
+                        "Clan Tag Must Be 2–6 Characters."
+                    );
+
+                }
+
+
+                if (
+                    !/^[A-Z0-9]+$/.test(
+                        tag
+                    )
+                ) {
+
+                    throw new Error(
+                        "Clan Tag Can Only Contain Letters And Numbers."
+                    );
+
+                }
+
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabase.rpc(
+                        "create_clan",
+                        {
+                            p_name:
+                                name,
+
+                            p_tag:
+                                tag
+                        }
+                    );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                if (clanNameInput) {
+                    clanNameInput.value =
+                        "";
+                }
+
+                if (clanTagInput) {
+                    clanTagInput.value =
+                        "";
+                }
+
+
+                if (createClanMessage) {
+
+                    createClanMessage.textContent =
+                        "Clan Created Successfully!";
+
+                }
+
+
+                await updateClanUI();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Create Clan Error:",
+                    error
+                );
+
+
+                if (createClanMessage) {
+
+                    createClanMessage.textContent =
+                        error.message ||
+                        "Unable To Create Clan.";
+
+                }
+
+            }
+
+
+            if (createClanButton) {
+
+                createClanButton.disabled =
+                    false;
+
+            }
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// JOIN CLAN
+// ============================================================
+
+async function joinClan(
+    clanId
+) {
+
+    if (!clanId) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabase.rpc(
+                "join_clan",
+                {
+                    p_clan_id:
+                        clanId
+                }
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        await loadClanUserId();
+
+        await updateClanUI();
+
+
+    } catch (error) {
+
+        console.error(
+            "Join Clan Error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            "Unable To Join Clan."
+        );
+
+    }
+
+}
+
+
+// ============================================================
+// LEAVE CLAN
+// ============================================================
+
+if (leaveClanButton) {
+
+    leaveClanButton.addEventListener(
+        "click",
+        async () => {
+
+            const confirmed =
+                confirm(
+                    "Are You Sure You Want To Leave This Clan?"
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            leaveClanButton.disabled =
+                true;
+
+
+            if (leaveClanMessage) {
+
+                leaveClanMessage.textContent =
+                    "Leaving Clan...";
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } =
+                    await supabase.rpc(
+                        "leave_clan"
+                    );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                currentClan =
+                    null;
+
+
+                if (leaveClanMessage) {
+
+                    leaveClanMessage.textContent =
+                        "You Left The Clan.";
+
+                }
+
+
+                await updateClanUI();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Leave Clan Error:",
+                    error
+                );
+
+
+                if (leaveClanMessage) {
+
+                    leaveClanMessage.textContent =
+                        error.message ||
+                        "Unable To Leave Clan.";
+
+                }
+
+            }
+
+
+            leaveClanButton.disabled =
+                false;
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// SEARCH BUTTON
+// ============================================================
+
+if (clanSearchButton) {
+
+    clanSearchButton.addEventListener(
+        "click",
+        searchClans
+    );
+
+}
+
+
+if (clanSearchInput) {
+
+    clanSearchInput.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                searchClans();
+
+            }
+
+        }
+    );
+
+}
+
+// ============================================================
+// CLAIM CLAN XP
+// ============================================================
+
+const claimClanXPButton =
+    document.getElementById(
+        "claimClanXPButton"
+    );
+
+
+const clanXPMessage =
+    document.getElementById(
+        "clanXPMessage"
+    );
+
+
+if (claimClanXPButton) {
+
+    claimClanXPButton.addEventListener(
+        "click",
+        async () => {
+
+            claimClanXPButton.disabled =
+                true;
+
+
+            if (clanXPMessage) {
+
+                clanXPMessage.textContent =
+                    "Claiming Clan XP...";
+
+            }
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } =
+                    await supabase.rpc(
+                        "claim_clan_xp"
+                    );
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                const result =
+                    data || {};
+
+
+                const xpAdded =
+                    Number(
+                        result.xp_added || 0
+                    );
+
+
+                if (result.leveled_up) {
+
+                    if (clanXPMessage) {
+
+                        clanXPMessage.textContent =
+                            `Clan Level Up! 🎉 Level ${result.level}!`;
+
+                    }
+
+                } else if (xpAdded > 0) {
+
+                    if (clanXPMessage) {
+
+                        clanXPMessage.textContent =
+                            `+${xpAdded.toLocaleString()} Clan XP!`;
+
+                    }
+
+                } else {
+
+                    if (clanXPMessage) {
+
+                        clanXPMessage.textContent =
+                            "No New Clan XP To Claim.";
+
+                    }
+
+                }
+
+
+                await updateClanUI();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Clan XP Error:",
+                    error
+                );
+
+
+                if (clanXPMessage) {
+
+                    clanXPMessage.textContent =
+                        error.message ||
+                        "Unable To Claim Clan XP.";
+
+                }
+
+            }
+
+
+            claimClanXPButton.disabled =
+                false;
+
+        }
+    );
+
+}
+
+// ============================================================
+// REFRESH CLAN
+// ============================================================
+
+if (refreshClanButton) {
+
+    refreshClanButton.addEventListener(
+        "click",
+        async () => {
+
+            await loadClanUserId();
+
+            await updateClanUI();
+
+        }
+    );
+
+}
 
 // =========================================
 // ACCOUNT MENU
@@ -10575,7 +12082,13 @@ async function updateAccountUI() {
 
         if (user) {
 
-            await loadDataFromSupabase();
+    await loadDataFromSupabase();
+
+    await loadClanUserId();
+
+    await loadClanData();
+
+    await updateClanUI();
 
 
             if (signedInContainer) {
@@ -10647,7 +12160,17 @@ async function updateAccountUI() {
 
         } else {
 
-            if (signedInContainer) {
+    currentClan =
+        null;
+
+    currentClanUserId =
+        null;
+
+    closeClanMenu();
+
+    updateClanUI();
+
+    if (signedInContainer) {
 
                 signedInContainer.hidden =
                     true;
@@ -10796,8 +12319,8 @@ playTimeSeconds: 0,
                     shrihanChromaReady: false
                 };
 
-                // Remove the previous account's local save.
-                // This does NOT delete anything from Supabase.
+                // Remove The Previous Account's Local Save.
+                // This Does NOT Delete Anything From Supabase.
                 localStorage.removeItem(
                     "rngdleData"
                 );
@@ -10863,13 +12386,13 @@ supabase.auth.onAuthStateChange(
 
         if (session?.user) {
 
-            // Load the signed-in account's data.
+            // Load The Signed-In Account's Data.
             await loadDataFromSupabase();
 
         }
 
-        // Start Auto Roller using whichever
-        // data is currently active.
+        // Start Auto Roller Using Whichever
+        // Data Is Currently Active.
         startAutoRoller();
 
         await updateAccountUI();
@@ -10884,6 +12407,8 @@ supabase.auth.onAuthStateChange(
 async function initializeGame() {
 
     loadData();
+
+    await loadClanUserId();
 
 
     updateStreak();
