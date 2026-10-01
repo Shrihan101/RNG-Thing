@@ -6080,3 +6080,1152 @@ body.rebirth-cutscene {
 .title-locked {
     opacity: 0.5;
 }
+
+/* ============================================================
+   RNG THING — CLANS
+   ============================================================ */
+
+
+/* ============================================================
+   CLAN BUTTON
+   ============================================================ */
+
+.clan-button {
+
+    display: block;
+
+    width: min(900px, calc(100% - 40px));
+
+    margin: 24px auto;
+
+    padding: 12px 18px;
+
+    border: 1px solid rgba(255,255,255,0.15);
+
+    border-radius: 12px;
+
+    background:
+        rgba(20,20,25,0.9);
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(10px);
+
+    box-shadow:
+        0 8px 25px rgba(0,0,0,0.3);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+
+}
+
+
+.clan-button:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        rgba(35,35,42,0.95);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,0.4);
+
+}
+
+
+.clan-button:active {
+
+    transform:
+        translateY(0);
+
+}
+
+
+/* ============================================================
+   CLAN OVERLAY
+   ============================================================ */
+
+.clan-overlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1100;
+
+    background:
+        rgba(0,0,0,0.55);
+
+    backdrop-filter:
+        blur(4px);
+
+}
+
+
+/* ============================================================
+   CLAN PANEL
+   ============================================================ */
+
+.clan-panel {
+
+    position: fixed;
+
+    left: 50%;
+    top: 50%;
+
+    z-index: 1200;
+
+    transform:
+        translate(-50%, -50%);
+
+    width:
+        min(
+            500px,
+            calc(100vw - 40px)
+        );
+
+    max-height:
+        calc(100vh - 110px);
+
+    overflow-y: auto;
+
+    padding: 24px;
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    border-radius: 18px;
+
+    background:
+        rgba(20,20,25,0.97);
+
+    color: white;
+
+    backdrop-filter:
+        blur(18px);
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,0.55);
+
+    animation:
+        clanPanelOpen
+        0.2s
+        ease-out;
+
+}
+
+
+@keyframes clanPanelOpen {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.98);
+
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+
+    }
+
+}
+
+
+/* ============================================================
+   CLAN HEADER
+   ============================================================ */
+
+.clan-panel-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: flex-start;
+
+    gap: 15px;
+
+    margin-bottom: 20px;
+
+}
+
+
+.clan-panel-header h2 {
+
+    margin: 0;
+
+}
+
+
+.clan-panel-header .subtitle {
+
+    margin-top: 5px;
+
+}
+
+
+/* ============================================================
+   CLAN MESSAGE
+   ============================================================ */
+
+.clan-message-box {
+
+    padding: 18px;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    text-align: center;
+
+}
+
+
+.clan-message-box strong {
+
+    display: block;
+
+    margin-bottom: 8px;
+
+}
+
+
+.clan-message-box p {
+
+    color: #999;
+
+    font-size: 14px;
+
+}
+
+
+/* ============================================================
+   CLAN CARDS
+   ============================================================ */
+
+.clan-card {
+
+    padding: 18px;
+
+    margin-bottom: 16px;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    border-radius: 14px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+}
+
+
+.clan-card h3 {
+
+    margin:
+        0 0 7px;
+
+}
+
+
+.clan-description {
+
+    margin-bottom: 16px;
+
+    color: #999;
+
+    font-size: 13px;
+
+    line-height: 1.5;
+
+}
+
+
+/* ============================================================
+   CLAN FIELDS
+   ============================================================ */
+
+.clan-field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+
+    margin-bottom: 14px;
+
+}
+
+
+.clan-field label {
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+}
+
+
+.clan-field input,
+.clan-search-row input {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 11px 12px;
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    border-radius: 9px;
+
+    background:
+        rgba(0,0,0,0.25);
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+
+}
+
+
+.clan-field input:focus,
+.clan-search-row input:focus {
+
+    border-color:
+        rgba(255,255,255,0.35);
+
+    background:
+        rgba(0,0,0,0.35);
+
+}
+
+
+.clan-field input::placeholder,
+.clan-search-row input::placeholder {
+
+    color:
+        rgba(255,255,255,0.45);
+
+}
+
+
+/* ============================================================
+   CLAN BUTTONS
+   ============================================================ */
+
+.clan-primary-button,
+.clan-secondary-button,
+.clan-small-button,
+.clan-danger-button {
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    border-radius: 9px;
+
+    color: white;
+
+    font-family: inherit;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+
+}
+
+
+.clan-primary-button {
+
+    width: 100%;
+
+    padding: 12px;
+
+    background:
+        rgba(255,255,255,0.10);
+
+}
+
+
+.clan-secondary-button {
+
+    padding: 11px 16px;
+
+    background:
+        rgba(255,255,255,0.08);
+
+}
+
+
+.clan-small-button {
+
+    padding: 7px 10px;
+
+    font-size: 12px;
+
+    background:
+        rgba(255,255,255,0.07);
+
+}
+
+
+.clan-danger-button {
+
+    width: 100%;
+
+    padding: 11px;
+
+    background:
+        rgba(255,70,70,0.12);
+
+    border-color:
+        rgba(255,70,70,0.25);
+
+}
+
+
+.clan-primary-button:hover,
+.clan-secondary-button:hover,
+.clan-small-button:hover {
+
+    transform:
+        translateY(-1px);
+
+    background:
+        rgba(255,255,255,0.15);
+
+}
+
+
+.clan-danger-button:hover {
+
+    transform:
+        translateY(-1px);
+
+    background:
+        rgba(255,70,70,0.20);
+
+}
+
+
+.clan-primary-button:disabled,
+.clan-secondary-button:disabled,
+.clan-small-button:disabled,
+.clan-danger-button:disabled {
+
+    opacity: 0.45;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+}
+
+
+/* ============================================================
+   SEARCH
+   ============================================================ */
+
+.clan-search-row {
+
+    display: flex;
+
+    gap: 8px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.clan-search-row input {
+
+    flex: 1;
+
+}
+
+
+/* ============================================================
+   SEARCH RESULTS
+   ============================================================ */
+
+.clan-search-results {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+.clan-search-result {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    border-radius: 11px;
+
+    background:
+        rgba(255,255,255,0.025);
+
+}
+
+
+.clan-search-result-info {
+
+    flex: 1;
+
+    min-width: 0;
+
+}
+
+
+.clan-search-result-name {
+
+    font-weight: 800;
+
+    margin-bottom: 3px;
+
+    word-break: break-word;
+
+}
+
+
+.clan-search-result-meta {
+
+    color: #888;
+
+    font-size: 12px;
+
+}
+
+
+.clan-search-result-tag {
+
+    color: #aaa;
+
+}
+
+
+.clan-join-button {
+
+    padding: 8px 12px;
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    border-radius: 8px;
+
+    background:
+        rgba(255,255,255,0.08);
+
+    color: white;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+}
+
+
+.clan-join-button:hover {
+
+    background:
+        rgba(255,255,255,0.15);
+
+}
+
+
+.clan-empty {
+
+    padding: 12px;
+
+    color: #777;
+
+    text-align: center;
+
+    font-size: 13px;
+
+}
+
+
+/* ============================================================
+   CURRENT CLAN HERO
+   ============================================================ */
+
+.clan-hero-card {
+
+    padding: 25px 18px;
+
+    margin-bottom: 16px;
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    border-radius: 15px;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.08),
+            rgba(255,255,255,0.025)
+        );
+
+    text-align: center;
+
+}
+
+
+.clan-tag-display {
+
+    margin-bottom: 8px;
+
+    color: #aaa;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    letter-spacing: 2px;
+
+}
+
+
+.clan-hero-card h3 {
+
+    margin: 0 0 6px;
+
+    font-size: 1.6rem;
+
+}
+
+
+.clan-hero-card p {
+
+    margin: 0;
+
+    color: #8cff9a;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+}
+
+
+/* ============================================================
+   CLAN STATS
+   ============================================================ */
+
+.clan-stat-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 10px;
+
+    margin-bottom: 16px;
+
+}
+
+
+.clan-stat-card {
+
+    padding: 15px;
+
+    border:
+        1px solid rgba(255,255,255,0.08);
+
+    border-radius: 12px;
+
+    background:
+        rgba(255,255,255,0.035);
+
+    text-align: center;
+
+}
+
+
+.clan-stat-card span {
+
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #888;
+
+    font-size: 12px;
+
+}
+
+
+.clan-stat-card strong {
+
+    font-size: 1.2rem;
+
+}
+
+
+/* ============================================================
+   MEMBER LIST
+   ============================================================ */
+
+.clan-section-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 12px;
+
+}
+
+
+.clan-section-title h3 {
+
+    margin: 0;
+
+}
+
+
+.clan-member-list {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+
+}
+
+
+.clan-member {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 11px 12px;
+
+    border:
+        1px solid rgba(255,255,255,0.07);
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,0.025);
+
+}
+
+
+.clan-member-name {
+
+    flex: 1;
+
+    min-width: 0;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-weight: 700;
+
+}
+
+
+.clan-member-role {
+
+    flex-shrink: 0;
+
+    padding: 4px 7px;
+
+    border-radius: 6px;
+
+    background:
+        rgba(255,255,255,0.07);
+
+    color: #aaa;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+}
+
+
+.clan-member-role.leader {
+
+    color: #ffd76a;
+
+}
+
+
+.clan-member-role.officer {
+
+    color: #8ccfff;
+
+}
+
+
+.clan-member-role.member {
+
+    color: #aaa;
+
+}
+
+
+/* ============================================================
+   CLAN MANAGEMENT
+   ============================================================ */
+
+.clan-management-buttons {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-top: 14px;
+
+}
+
+
+.clan-management-button {
+
+    padding: 8px 12px;
+
+    border:
+        1px solid rgba(255,255,255,0.12);
+
+    border-radius: 8px;
+
+    background:
+        rgba(255,255,255,0.07);
+
+    color: white;
+
+    font-family: inherit;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease;
+
+}
+
+
+.clan-management-button:hover {
+
+    transform:
+        translateY(-1px);
+
+    background:
+        rgba(255,255,255,0.14);
+
+}
+
+
+.clan-management-button.danger {
+
+    background:
+        rgba(255,70,70,0.10);
+
+    border-color:
+        rgba(255,70,70,0.20);
+
+    color:
+        #ff7777;
+
+}
+
+
+.clan-management-button.danger:hover {
+
+    background:
+        rgba(255,70,70,0.18);
+
+}
+
+
+.clan-management-button.warning {
+
+    background:
+        rgba(255,190,70,0.10);
+
+    border-color:
+        rgba(255,190,70,0.20);
+
+    color:
+        #ffd76a;
+
+}
+
+
+.clan-member-actions {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: flex-end;
+
+    gap: 6px;
+
+}
+
+
+/* ============================================================
+   DANGER
+   ============================================================ */
+
+.clan-danger-card {
+
+    border-color:
+        rgba(255,70,70,0.14);
+
+}
+
+
+/* ============================================================
+   MESSAGES
+   ============================================================ */
+
+.clan-action-message {
+
+    min-height: 18px;
+
+    margin: 10px 0 0;
+
+    color: #aaa;
+
+    font-size: 12px;
+
+    text-align: center;
+
+}
+
+
+/* ============================================================
+   MOBILE
+   ============================================================ */
+
+@media (max-width: 600px) {
+
+    /*
+       IMPORTANT:
+       The Clan Button is now a normal-flow button.
+       DO NOT use left, bottom, or translateX here.
+    */
+
+    .clan-button {
+
+        width:
+            calc(100% - 24px);
+
+        margin:
+            20px auto;
+
+    }
+
+
+    .clan-panel {
+
+        left:
+            12px;
+
+        bottom:
+            65px;
+
+        width:
+            calc(100vw - 24px);
+
+        padding:
+            18px;
+
+    }
+
+
+    .clan-search-row {
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .clan-secondary-button {
+
+        width:
+            100%;
+
+    }
+
+
+    .clan-member-actions {
+
+        width:
+            100%;
+
+    }
+
+
+    .clan-management-buttons {
+
+        flex-direction:
+            column;
+
+    }
+
+
+    .clan-management-button {
+
+        width:
+            100%;
+
+    }
+
+}
+
+/* =========================================================
+   CLAN XP
+========================================================= */
+
+.clan-xp-bar {
+    width: 100%;
+    height: 12px;
+    margin: 10px 0 8px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+
+.clan-xp-bar-fill {
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(
+        90deg,
+        #6c5ce7,
+        #a855f7
+    );
+    transition:
+        width 0.5s ease;
+}
+
+
+#currentClanXP {
+    display: block;
+    margin-top: 4px;
+}
+
+
+#clanXPMessage {
+    min-height: 20px;
+    margin: 8px 0;
+    text-align: center;
+}
+
+/* =========================================
+   CLAN PASSIVE BONUSES
+========================================= */
+
+.clan-bonus-display {
+    margin-top: 18px;
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.clan-bonus-display h4 {
+    margin: 0 0 12px;
+    font-size: 14px;
+}
+
+.clan-bonus-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.clan-bonus-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.clan-bonus-item span {
+    font-size: 14px;
+}
+
+.clan-bonus-item strong {
+    font-size: 15px;
+}
