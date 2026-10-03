@@ -863,6 +863,9 @@ const buyRarityPurificationButton =
         "buyRarityPurification"
     );
 
+    const buyEternalUpgradeButton =
+    document.getElementById("buyEternalUpgrade");
+
     const rebirthNumberEffectLevelDisplay =
     document.getElementById(
         "rebirthNumberEffectLevel"
@@ -967,7 +970,7 @@ const MAX_NUMBER = 1000000;
 const ROLL_DURATION = 1500;
 const ANIMATION_INTERVAL = 45;
 
-// Set To null For Normal Rarity
+// Set To Null For Normal Rarity
 // Set To "Mythic", "Chroma", Or "Secret" To Force That Rarity
 const FORCE_RARITY = null;
 
@@ -1306,10 +1309,59 @@ const REBIRTH_NUMBER_EFFECT_UPGRADE = {
 };
 
 // =========================================
-// REBIRTH SYSTEM
+// REBIRTH SHOP — ETERNAL
 // =========================================
 
-const MAX_REBIRTHS = 10;
+const ETERNAL_UPGRADE = {
+
+    name: "Eternal",
+
+    levels: [
+
+        {
+            tokenCost: 0,
+            epCost: 0,
+            effect: "Eternal Locked"
+        },
+
+        {
+            tokenCost: 31,
+            epCost: 5_000_000_000,
+            effect: "Eternal Locked"
+        },
+
+        {
+            tokenCost: 33,
+            epCost: 15_000_000_000,
+            effect: "Eternal Locked"
+        },
+
+        {
+            tokenCost: 35,
+            epCost: 50_000_000_000,
+            effect: "Eternal Locked"
+        },
+
+        {
+            tokenCost: 37,
+            epCost: 150_000_000_000,
+            effect: "Eternal Locked"
+        },
+
+        {
+            tokenCost: 39,
+            epCost: 500_000_000_000,
+            effect: "1 In 10,000 Chance For Eternal"
+        }
+
+    ]
+
+};
+
+// =========================================
+// REBIRTH SYSTEM
+// =========================================
+const MAX_REBIRTHS = 15;
 
 const REBIRTH_COST_MULTIPLIERS = [
     1,
@@ -1322,7 +1374,12 @@ const REBIRTH_COST_MULTIPLIERS = [
     15,
     17,
     19,
-    21
+    30,
+    31,
+    33,
+    35,
+    37,
+    39
 ];
 
 const REBIRTH_TOKEN_REWARDS = [
@@ -1336,7 +1393,12 @@ const REBIRTH_TOKEN_REWARDS = [
     15,
     17,
     19,
-    21
+    30,
+    31,
+    33,
+    35,
+    37,
+    39
 ];
 
 // =========================================
@@ -1424,7 +1486,8 @@ const RARITY_ORDER = [
     "Legendary",
     "Mythic",
     "Chroma",
-    "Secret"
+    "Secret",
+    "Eternal"
 ];
 
 const EP_VALUES = {
@@ -1436,7 +1499,8 @@ const EP_VALUES = {
     Legendary: 3000,
     Mythic: 15000,
     Chroma: 100000,
-    Secret: 1500000
+    Secret: 1500000,
+    Eternal: 25000000
 };
 
 // =========================================
@@ -1732,6 +1796,19 @@ const TITLES = [
     },
 
     {
+    id: "eternalHunter",
+    name: "Eternal Hunter",
+    requirement: "Roll An Eternal",
+    check: () => data.eternalRolls >= 1,
+
+    buffs: {
+        luck: 7
+    },
+
+    buffText: "+7 Luck"
+},
+
+    {
         id: "theImpossible",
         name: "The Impossible",
         requirement: "Roll 999,999",
@@ -1891,6 +1968,7 @@ mythicRolls: 0,
 legendaryRolls: 0,
 chromaRolls: 0,
 secretRolls: 0,
+eternalRolls: 0,
 rarePlusRolls: 0,
 
 rolled999999: false,
@@ -1909,11 +1987,9 @@ playTimeSeconds: 0,
     rebirths: 0,
 rebirthTokens: 0,
 
-// Rarity Purification
 rebirthShopUpgrade: 0,
-
-// Special Number Effects
 rebirthNumberEffectUpgrade: 0,
+eternalUpgrade: 0,
 
 autoRollerLevel: 0,
 autoRollerEnabled: true,
@@ -2604,6 +2680,19 @@ if (Array.isArray(data.badges)) {
 
 }
 
+if (Array.isArray(data.badges)) {
+
+    data.badges =
+        data.badges.filter(
+            badgeName =>
+                badgeName !== "Six-Seven"
+        );
+
+    data.totalBadges =
+        data.badges.length;
+
+}
+
         if (
             typeof parsed.rebirths !== "number" &&
             typeof parsed.upgrades?.__rebirths === "number"
@@ -2773,17 +2862,11 @@ async function loadDataFromSupabase() {
                     profileUpgrades.secretThing ?? 0
             },
 
-            rebirths:
-                profileUpgrades.__rebirths ?? 0,
-
-            rebirthTokens:
-                profileUpgrades.__rebirthTokens ?? 0,
-
-            rebirthShopUpgrade:
-                profileUpgrades.__rebirthShopUpgrade ?? 0,
-
-            rebirthNumberEffectUpgrade:
-                profileUpgrades.__rebirthNumberEffectUpgrade ?? 0,
+            rebirths: profileUpgrades.__rebirths ?? 0,
+rebirthTokens: profileUpgrades.__rebirthTokens ?? 0,
+rebirthShopUpgrade: profileUpgrades.__rebirthShopUpgrade ?? 0,
+rebirthNumberEffectUpgrade: profileUpgrades.__rebirthNumberEffectUpgrade ?? 0,
+eternalUpgrade: profileUpgrades.__eternalUpgrade ?? 0,
 
                 autoRollerLevel:
     profileUpgrades.__autoRollerLevel ?? 0,
@@ -2814,25 +2897,12 @@ autoRollerEnabled:
                 profileUpgrades.__questProgress ??
                 0,
 
-            mythicRolls:
-                profileUpgrades.__mythicRolls ??
-                0,
-
-            legendaryRolls:
-                profileUpgrades.__legendaryRolls ??
-                0,
-
-            chromaRolls:
-                profileUpgrades.__chromaRolls ??
-                0,
-
-            secretRolls:
-                profileUpgrades.__secretRolls ??
-                0,
-
-            rarePlusRolls:
-                profileUpgrades.__rarePlusRolls ??
-                0,
+            mythicRolls: profileUpgrades.__mythicRolls ?? 0,
+legendaryRolls: profileUpgrades.__legendaryRolls ?? 0,
+chromaRolls: profileUpgrades.__chromaRolls ?? 0,
+secretRolls: profileUpgrades.__secretRolls ?? 0,
+eternalRolls: profileUpgrades.__eternalRolls ?? 0,
+rarePlusRolls: profileUpgrades.__rarePlusRolls ?? 0,
 
             rolled999999:
                 profileUpgrades.__rolled999999 ??
@@ -2872,6 +2942,19 @@ if (Array.isArray(data.badges)) {
         data.badges.filter(
             badgeName =>
                 badgeName !== "W Day"
+        );
+
+    data.totalBadges =
+        data.badges.length;
+
+}
+
+if (Array.isArray(data.badges)) {
+
+    data.badges =
+        data.badges.filter(
+            badgeName =>
+                badgeName !== "Six-Seven"
         );
 
     data.totalBadges =
@@ -2929,6 +3012,19 @@ if (typeof data.rebirthShopUpgrade !== "number") {
 if (typeof data.rebirthNumberEffectUpgrade !== "number") {
     data.rebirthNumberEffectUpgrade = 0;
 }
+
+if (typeof data.eternalUpgrade !== "number") {
+    data.eternalUpgrade = 0;
+}
+
+data.eternalUpgrade =
+    Math.max(
+        0,
+        Math.min(
+            ETERNAL_UPGRADE.levels.length - 1,
+            Number(data.eternalUpgrade) || 0
+        )
+    );
 
         localStorage.setItem(
             "rngdleData",
@@ -3387,6 +3483,9 @@ console.log(
     __rebirthNumberEffectUpgrade:
     data.rebirthNumberEffectUpgrade || 0,
 
+__eternalUpgrade:
+    data.eternalUpgrade || 0,
+
 __titles:
     Array.isArray(data.titles)
         ? data.titles
@@ -3415,6 +3514,9 @@ __chromaRolls:
 
 __secretRolls:
     data.secretRolls || 0,
+
+__eternalRolls:
+    data.eternalRolls || 0,
 
 __rarePlusRolls:
     data.rarePlusRolls || 0,
@@ -4216,6 +4318,148 @@ if (autoRollerLevel >= MAX_AUTO_ROLLER_LEVEL) {
 
 }
 
+// =========================================
+// ETERNAL UI
+// =========================================
+
+const eternalLevel =
+    data.eternalUpgrade || 0;
+
+const eternalMaxLevel =
+    ETERNAL_UPGRADE.levels.length - 1;
+
+const eternalCurrent =
+    ETERNAL_UPGRADE.levels[eternalLevel];
+
+const eternalLevelDisplay =
+    document.getElementById(
+        "eternalUpgradeLevel"
+    );
+
+const eternalDescriptionDisplay =
+    document.getElementById(
+        "eternalUpgradeDescription"
+    );
+
+const eternalCostDisplay =
+    document.getElementById(
+        "eternalUpgradeCost"
+    );
+
+const eternalBuyButton =
+    document.getElementById(
+        "buyEternalUpgrade"
+    );
+
+
+// =========================================
+// LEVEL DISPLAY
+// =========================================
+
+if (eternalLevelDisplay) {
+
+    eternalLevelDisplay.textContent =
+        `Level ${eternalLevel} / ${eternalMaxLevel}`;
+
+}
+
+
+// =========================================
+// DESCRIPTION
+// =========================================
+
+if (eternalDescriptionDisplay) {
+
+    eternalDescriptionDisplay.textContent =
+        eternalCurrent?.effect ||
+        "Eternal Locked";
+
+}
+
+
+// =========================================
+// MAX LEVEL
+// =========================================
+
+if (
+    eternalLevel >=
+    eternalMaxLevel
+) {
+
+    if (eternalCostDisplay) {
+
+        eternalCostDisplay.textContent =
+            "MAX LEVEL REACHED";
+
+    }
+
+    if (eternalBuyButton) {
+
+        eternalBuyButton.textContent =
+            "MAXED";
+
+        eternalBuyButton.disabled =
+            true;
+
+    }
+
+} else {
+
+    // =========================================
+    // NEXT ETERNAL UPGRADE
+    // =========================================
+
+    const nextEternalUpgrade =
+        ETERNAL_UPGRADE
+            .levels[eternalLevel + 1];
+
+    if (nextEternalUpgrade) {
+
+        if (eternalCostDisplay) {
+
+            eternalCostDisplay.textContent =
+                `Cost: ${nextEternalUpgrade.tokenCost.toLocaleString()} Rebirth Token${nextEternalUpgrade.tokenCost === 1 ? "" : "s"} + ${nextEternalUpgrade.epCost.toLocaleString()} EP`;
+
+        }
+
+
+        // =========================================
+        // CHECK RESOURCES
+        // =========================================
+
+        const hasEnoughEternalTokens =
+            tokens >=
+            nextEternalUpgrade.tokenCost;
+
+        const hasEnoughEternalEP =
+            data.totalEP >=
+            nextEternalUpgrade.epCost;
+
+        const canAffordEternal =
+            hasEnoughEternalTokens &&
+            hasEnoughEternalEP;
+
+
+        // =========================================
+        // BUY BUTTON
+        // =========================================
+
+        if (eternalBuyButton) {
+
+            eternalBuyButton.textContent =
+                canAffordEternal
+                    ? "Buy"
+                    : "Not Enough Resources";
+
+            eternalBuyButton.disabled =
+                !canAffordEternal;
+
+        }
+
+    }
+
+}
+
 }
 
 // =========================================
@@ -4370,6 +4614,71 @@ function buyRebirthShopUpgrade() {
     updateStats();
     updateShop();
     updateRebirthUI();
+}
+
+// =========================================
+// BUY ETERNAL UPGRADE
+// =========================================
+
+function buyEternalUpgrade() {
+
+    const currentLevel =
+        data.eternalUpgrade || 0;
+
+    const maxLevel =
+        ETERNAL_UPGRADE.levels.length - 1;
+
+    // Already Maxed
+    if (
+        currentLevel >=
+        maxLevel
+    ) {
+        return;
+    }
+
+    const nextLevel =
+        currentLevel + 1;
+
+    const upgrade =
+        ETERNAL_UPGRADE.levels[nextLevel];
+
+    if (!upgrade) {
+        return;
+    }
+
+    // Not Enough Rebirth Tokens
+    if (
+        (data.rebirthTokens || 0) <
+        upgrade.tokenCost
+    ) {
+        return;
+    }
+
+    // Not Enough EP
+    if (
+        data.totalEP <
+        upgrade.epCost
+    ) {
+        return;
+    }
+
+    // Pay Costs
+    data.rebirthTokens -=
+        upgrade.tokenCost;
+
+    data.totalEP -=
+        upgrade.epCost;
+
+    // Give Upgrade
+    data.eternalUpgrade =
+        nextLevel;
+
+    saveData();
+
+    updateStats();
+    updateShop();
+    updateRebirthUI();
+    updateRebirthShop();
 }
 
 // =========================================
@@ -4624,6 +4933,19 @@ if (buyRarityPurificationButton) {
         () => {
 
             buyRebirthShopUpgrade();
+
+        }
+    );
+
+}
+
+if (buyEternalUpgradeButton) {
+
+    buyEternalUpgradeButton.addEventListener(
+        "click",
+        () => {
+
+            buyEternalUpgrade();
 
         }
     );
@@ -5621,6 +5943,30 @@ function isRarityAllowed(rarity) {
 // =========================================
 
 function determineRarity(number) {
+
+    // =========================================
+    // ETERNAL RARITY
+    // =========================================
+
+    const eternalLevel =
+        data.eternalUpgrade || 0;
+
+    const eternalMaxed =
+        eternalLevel >=
+        ETERNAL_UPGRADE.levels.length - 1;
+
+    if (
+        eternalMaxed &&
+        Math.random() < 0.0001
+    ) {
+        return "Eternal";
+    }
+
+
+    // =========================================
+    // SECRET RARITY
+    // =========================================
+
     const secretThingLevel =
         getUpgradeLevel("secretThing");
 
@@ -5629,12 +5975,14 @@ function determineRarity(number) {
         SHOP_UPGRADES.secretThing.levels.length - 1;
 
     if (
-    secretThingMaxed &&
-    isRarityAllowed("Secret") &&
-    Math.random() < 0.001
-) {
-    return "Secret";
-}
+        secretThingMaxed &&
+        isRarityAllowed("Secret") &&
+        Math.random() < 0.001
+    ) {
+        return "Secret";
+    }
+
+    // ⬇️ KEEP EVERYTHING ELSE THAT WAS ALREADY BELOW HERE
 
     // =========================================
     // CHROMA LOTTERY
@@ -5904,13 +6252,13 @@ const BADGES = [
             rarity === "Secret"
     },
 
-    {
-        name: "Six-Seven",
-        description: "Your Roll Contains 67 Together Somewhere",
-        rarity: "Rare",
-        check: number =>
-            formatNumber(number).includes("67")
-    },
+{
+    name: "Eternal",
+    description: "Roll An Eternal",
+    rarity: "Eternal",
+    check: (number, rarity) =>
+        rarity === "Eternal"
+},
 
     {
         name: "Lucky 7",
@@ -7403,10 +7751,9 @@ function triggerMythicEffect() {
             title.innerHTML;
 
         title.innerHTML = `
-            <div class="mythic-crown">♛</div>
-            <span>MYTHIC</span>
-            <small>The Impossible Roll</small>
-        `;
+    <span>MYTHIC</span>
+    <small>The Impossible Roll</small>
+`;
     }
 
     document.body.classList.add(
@@ -7539,6 +7886,404 @@ function playPostRarityEffect(rarity) {
             `post-${rarity}`
         );
     }, duration);
+}
+
+// =========================================
+// ETERNAL 15-SECOND CUTSCENE
+// =========================================
+
+function triggerEternalEffect() {
+
+    document.body.classList.add(
+        "eternal-cutscene"
+    );
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.className =
+        "eternal-effect";
+
+    overlay.id =
+        "eternalRollEffect";
+
+    // =========================================
+    // BACKGROUND
+    // =========================================
+
+    const background =
+        document.createElement("div");
+
+    background.className =
+        "eternal-background";
+
+    overlay.appendChild(
+        background
+    );
+
+
+    // =========================================
+    // FLASH
+    // =========================================
+
+    const flash =
+        document.createElement("div");
+
+    flash.className =
+        "eternal-flash";
+
+    overlay.appendChild(
+        flash
+    );
+
+
+    // =========================================
+    // RAYS
+    // =========================================
+
+    const rays =
+        document.createElement("div");
+
+    rays.className =
+        "eternal-rays";
+
+    overlay.appendChild(
+        rays
+    );
+
+
+    // =========================================
+    // CORE
+    // =========================================
+
+    const core =
+        document.createElement("div");
+
+    core.className =
+        "eternal-core";
+
+    overlay.appendChild(
+        core
+    );
+
+
+    // =========================================
+    // RINGS
+    // =========================================
+
+    const ringOne =
+        document.createElement("div");
+
+    ringOne.className =
+        "eternal-ring ring-one";
+
+    overlay.appendChild(
+        ringOne
+    );
+
+
+    const ringTwo =
+        document.createElement("div");
+
+    ringTwo.className =
+        "eternal-ring ring-two";
+
+    overlay.appendChild(
+        ringTwo
+    );
+
+
+    const ringThree =
+        document.createElement("div");
+
+    ringThree.className =
+        "eternal-ring ring-three";
+
+    overlay.appendChild(
+        ringThree
+    );
+
+
+    // =========================================
+    // SHOCKWAVE
+    // =========================================
+
+    const shockwave =
+        document.createElement("div");
+
+    shockwave.className =
+        "eternal-shockwave";
+
+    overlay.appendChild(
+        shockwave
+    );
+
+
+    // =========================================
+    // PARTICLES
+    // =========================================
+
+    const particles =
+        document.createElement("div");
+
+    particles.className =
+        "eternal-particles";
+
+    overlay.appendChild(
+        particles
+    );
+
+
+    // =========================================
+    // TITLE
+    // =========================================
+
+    const title =
+        document.createElement("div");
+
+    title.className =
+        "eternal-title";
+
+
+    const crown =
+        document.createElement("div");
+
+    crown.className =
+        "eternal-crown";
+
+    crown.textContent =
+        "✦";
+
+    title.appendChild(
+        crown
+    );
+
+
+    const titleText =
+        document.createElement("span");
+
+    titleText.textContent =
+        "ETERNAL";
+
+    title.appendChild(
+        titleText
+    );
+
+
+    const subtitle =
+        document.createElement("small");
+
+    subtitle.textContent =
+        "The Impossible Roll";
+
+    title.appendChild(
+        subtitle
+    );
+
+
+    overlay.appendChild(
+        title
+    );
+
+
+    // =========================================
+    // ADD TO PAGE
+    // =========================================
+
+    document.body.appendChild(
+        overlay
+    );
+
+
+    requestAnimationFrame(() => {
+
+        overlay.classList.add(
+            "active"
+        );
+
+    });
+
+
+    // =========================================
+    // ETERNAL SOUND SEQUENCE
+    // =========================================
+
+    rarityTone(
+        55,
+        2,
+        "sine",
+        0.035
+    );
+
+    setTimeout(() => {
+
+        rarityTone(
+            82,
+            2,
+            "triangle",
+            0.04
+        );
+
+    }, 1200);
+
+    setTimeout(() => {
+
+        rarityTone(
+            110,
+            2,
+            "sine",
+            0.045
+        );
+
+    }, 2500);
+
+    setTimeout(() => {
+
+        rarityTone(
+            165,
+            2,
+            "triangle",
+            0.05
+        );
+
+    }, 3800);
+
+    setTimeout(() => {
+
+        rarityTone(
+            220,
+            2.2,
+            "sine",
+            0.055
+        );
+
+    }, 5000);
+
+    setTimeout(() => {
+
+        rarityTone(
+            330,
+            2.2,
+            "triangle",
+            0.06
+        );
+
+    }, 6200);
+
+    setTimeout(() => {
+
+        rarityTone(
+            440,
+            2.2,
+            "sine",
+            0.065
+        );
+
+    }, 7400);
+
+    setTimeout(() => {
+
+        rarityTone(
+            660,
+            2.4,
+            "triangle",
+            0.07
+        );
+
+    }, 8600);
+
+    setTimeout(() => {
+
+        rarityTone(
+            880,
+            2.5,
+            "sine",
+            0.075
+        );
+
+    }, 9800);
+
+    setTimeout(() => {
+
+        rarityTone(
+            1320,
+            2.5,
+            "triangle",
+            0.08
+        );
+
+    }, 11000);
+
+    setTimeout(() => {
+
+        rarityTone(
+            1760,
+            2.8,
+            "sine",
+            0.09
+        );
+
+    }, 12200);
+
+    setTimeout(() => {
+
+        rarityTone(
+            2200,
+            3,
+            "triangle",
+            0.10
+        );
+
+    }, 13300);
+
+    setTimeout(() => {
+
+        rarityTone(
+            2640,
+            3,
+            "sine",
+            0.11
+        );
+
+    }, 14100);
+
+
+    // =========================================
+// REMOVE AFTER 15 SECONDS
+// =========================================
+
+// =========================================
+// END CUTSCENE
+// KEEP NUMBER GLOWING
+// =========================================
+
+setTimeout(() => {
+
+    document.body.classList.remove(
+        "eternal-cutscene"
+    );
+
+    document.body.classList.add(
+        "eternal-number-afterglow"
+    );
+
+    overlay.remove();
+
+
+    // =========================================
+    // REMOVE AFTERGLOW
+    // =========================================
+
+    setTimeout(() => {
+
+        document.body.classList.remove(
+            "eternal-number-afterglow"
+        );
+
+    }, 4000);
+
+}, 15000);
+
 }
 
 // =========================================
@@ -8403,24 +9148,51 @@ if (FORCE_RARITY) {
         Boolean(FORCE_RARITY);
 
     const shouldUseSpecialNumber =
-        forcedRarity ||
-        rarity === "Secret" ||
-        (
-            rarity === "Chroma" &&
-            naturalRarity !== "Chroma"
-        ) ||
-        (
-            rarity === "Mythic" &&
-            naturalRarity !== "Mythic" &&
-            naturalRarity !== "Chroma"
+    forcedRarity ||
+    rarity === "Secret" ||
+    (
+        rarity === "Chroma" &&
+        naturalRarity !== "Chroma"
+    ) ||
+    (
+        rarity === "Mythic" &&
+        naturalRarity !== "Mythic" &&
+        naturalRarity !== "Chroma"
+    );
+
+let finalNumber;
+
+
+// =========================================
+// ETERNAL SPECIAL NUMBERS
+// =========================================
+
+if (rarity === "Eternal") {
+
+    const eternalDigit =
+        Math.floor(
+            Math.random() * 10
         );
 
-    let finalNumber;
+    finalNumber =
+        Number(
+            String(eternalDigit).repeat(6)
+        );
 
-if (data.ccu100ChromaReady) {
+
+// =========================================
+// CCU100 CHROMA
+// =========================================
+
+} else if (data.ccu100ChromaReady) {
 
     finalNumber =
         100100;
+
+
+// =========================================
+// NORMAL / SPECIAL NUMBERS
+// =========================================
 
 } else {
 
@@ -8569,34 +9341,25 @@ addQuestProgress(1);
     // TITLE PROGRESS
     // =========================================
 
-    if (rarity === "Mythic") {
-        data.mythicRolls++;
-    }
-
-    if (rarity === "Legendary") {
-        data.legendaryRolls++;
-    }
-
-    if (rarity === "Chroma") {
-        data.chromaRolls++;
-    }
-
-    if (rarity === "Secret") {
-        data.secretRolls++;
-    }
+    if (rarity === "Mythic") data.mythicRolls++;
+if (rarity === "Legendary") data.legendaryRolls++;
+if (rarity === "Chroma") data.chromaRolls++;
+if (rarity === "Secret") data.secretRolls++;
+if (rarity === "Eternal") data.eternalRolls++;
 
     if (
-        [
-            "Rare",
-            "Epic",
-            "Legendary",
-            "Mythic",
-            "Chroma",
-            "Secret"
-        ].includes(rarity)
-    ) {
-        data.rarePlusRolls++;
-    }
+    [
+        "Rare",
+        "Epic",
+        "Legendary",
+        "Mythic",
+        "Chroma",
+        "Secret",
+        "Eternal"
+    ].includes(rarity)
+) {
+    data.rarePlusRolls++;
+}
 
     if (
         Number(finalNumber) ===
@@ -8732,8 +9495,6 @@ if (data.shrihanChromaReady) {
 
 saveData();
 
-    saveData();
-
     await animateNumber(
         finalNumber
     );
@@ -8768,12 +9529,22 @@ updateNumberEffectDisplay(
     }
 
     if (rarity === "Secret") {
-        triggerSecretEffect();
-    } else if (rarity === "Chroma") {
-        triggerChromaEffect();
-    } else if (rarity === "Mythic") {
-        triggerMythicEffect();
-    }
+
+    triggerSecretEffect();
+
+} else if (rarity === "Chroma") {
+
+    triggerChromaEffect();
+
+} else if (rarity === "Mythic") {
+
+    triggerMythicEffect();
+
+} else if (rarity === "Eternal") {
+
+    triggerEternalEffect();
+
+}
 }
 
 // =========================================
@@ -9684,6 +10455,7 @@ mythicRolls: 0,
 legendaryRolls: 0,
 chromaRolls: 0,
 secretRolls: 0,
+eternalRolls: 0,
 rarePlusRolls: 0,
 
 rolled999999: false,
@@ -9701,9 +10473,16 @@ playTimeSeconds: 0,
 
                     rebirths: 0,
 
-                    rebirthTokens: 0,
+rebirthTokens: 0,
 
-                    backgroundColor: null,
+rebirthShopUpgrade: 0,
+rebirthNumberEffectUpgrade: 0,
+eternalUpgrade: 0,
+
+autoRollerLevel: 0,
+autoRollerEnabled: true,
+
+backgroundColor: null,
 
                     shrihanCodeUsed: false,
 
@@ -9747,22 +10526,22 @@ playTimeSeconds: 0,
                             history: [],
 
                             upgrades: {
-                                rollSpeed: 0,
+    rollSpeed: 0,
+    epMultiplier: 0,
+    luck: 0,
+    numberFortune: 0,
+    doubleRoll: 0,
+    secretThing: 0,
 
-                                epMultiplier: 0,
+    __rebirths: 0,
+    __rebirthTokens: 0,
 
-                                luck: 0,
+    __rebirthShopUpgrade: 0,
+    __rebirthNumberEffectUpgrade: 0,
+    __eternalUpgrade: 0,
 
-                                numberFortune: 0,
-
-                                doubleRoll: 0,
-
-                                secretThing: 0,
-
-                                __rebirths: 0,
-
-                                __rebirthTokens: 0
-                            },
+    __eternalRolls: 0
+},
 
                             background_color: null,
 
@@ -9861,7 +10640,7 @@ playTimeSeconds: 0,
                 }
 
 
-                // Make absolutely sure local data is gone
+                // Make Absolutely Sure Local Data Is Gone
                 localStorage.removeItem(
                     "rngdleData"
                 );
@@ -12709,6 +13488,7 @@ mythicRolls: 0,
 legendaryRolls: 0,
 chromaRolls: 0,
 secretRolls: 0,
+eternalRolls: 0,
 rarePlusRolls: 0,
 
 rolled999999: false,
@@ -12730,9 +13510,10 @@ playTimeSeconds: 0,
                     rebirthTokens: 0,
 
                     rebirthShopUpgrade: 0,
-                    rebirthNumberEffectUpgrade: 0,
+rebirthNumberEffectUpgrade: 0,
+eternalUpgrade: 0,
 
-                    backgroundColor: null,
+backgroundColor: null,
 
                     shrihanCodeUsed: false,
                     shrihanChromaReady: false
@@ -13053,40 +13834,148 @@ const REBIRTH_UPGRADES = {
 // REBIRTH SHOP UPDATE
 // =========================================
 
-function updateRebirthShop() {
+    // =========================================
+    // ETERNAL UI
+    // =========================================
 
-    if (!rebirthShopContent) {
-        return;
+    const eternalLevel =
+        data.eternalUpgrade || 0;
+
+    const eternalMaxLevel =
+        ETERNAL_UPGRADE.levels.length - 1;
+
+    const eternalCurrent =
+        ETERNAL_UPGRADE.levels[eternalLevel];
+
+    const eternalLevelDisplay =
+        document.getElementById(
+            "eternalUpgradeLevel"
+        );
+
+    const eternalDescriptionDisplay =
+        document.getElementById(
+            "eternalUpgradeDescription"
+        );
+
+    const eternalCostDisplay =
+        document.getElementById(
+            "eternalUpgradeCost"
+        );
+
+    const eternalBuyButton =
+        document.getElementById(
+            "buyEternalUpgrade"
+        );
+
+
+    // =========================================
+    // LEVEL DISPLAY
+    // =========================================
+
+    if (eternalLevelDisplay) {
+
+        eternalLevelDisplay.textContent =
+            `Level ${eternalLevel} / ${eternalMaxLevel}`;
+
     }
 
+
+    // =========================================
+    // DESCRIPTION
+    // =========================================
+
+    if (eternalDescriptionDisplay) {
+
+        eternalDescriptionDisplay.textContent =
+            eternalCurrent?.effect ||
+            "Eternal Locked";
+
+    }
+
+
+    // =========================================
+    // MAX LEVEL
+    // =========================================
 
     if (
-        (data.rebirths || 0) <= 0
+        eternalLevel >=
+        eternalMaxLevel
     ) {
 
-        rebirthShopContent.hidden =
-            true;
+        if (eternalCostDisplay) {
 
-        return;
+            eternalCostDisplay.textContent =
+                "MAX LEVEL REACHED";
+
+        }
+
+        if (eternalBuyButton) {
+
+            eternalBuyButton.textContent =
+                "MAXED";
+
+            eternalBuyButton.disabled =
+                true;
+
+        }
+
+    } else {
+
+        // =========================================
+        // NEXT ETERNAL UPGRADE
+        // =========================================
+
+        const nextEternalUpgrade =
+            ETERNAL_UPGRADE
+                .levels[eternalLevel + 1];
+
+
+        if (nextEternalUpgrade) {
+
+            if (eternalCostDisplay) {
+
+                eternalCostDisplay.textContent =
+                    `Cost: ${nextEternalUpgrade.tokenCost.toLocaleString()} Rebirth Token${nextEternalUpgrade.tokenCost === 1 ? "" : "s"} + ${nextEternalUpgrade.epCost.toLocaleString()} EP`;
+
+            }
+
+
+            // =========================================
+            // CHECK RESOURCES
+            // =========================================
+
+            const hasEnoughEternalTokens =
+                tokens >=
+                nextEternalUpgrade.tokenCost;
+
+            const hasEnoughEternalEP =
+                data.totalEP >=
+                nextEternalUpgrade.epCost;
+
+            const canAffordEternal =
+                hasEnoughEternalTokens &&
+                hasEnoughEternalEP;
+
+
+            // =========================================
+            // BUY BUTTON
+            // =========================================
+
+            if (eternalBuyButton) {
+
+                eternalBuyButton.textContent =
+                    canAffordEternal
+                        ? "Buy"
+                        : "Not Enough Resources";
+
+                eternalBuyButton.disabled =
+                    !canAffordEternal;
+
+            }
+
+        }
 
     }
-
-
-    rebirthShopContent.hidden =
-        false;
-
-
-    if (rebirthShopTokensDisplay) {
-
-        rebirthShopTokensDisplay.textContent =
-            (
-                data.rebirthTokens || 0
-            ).toLocaleString();
-
-    }
-
-}
-
 
 // =========================================
 // REBIRTH COMPLETE STATE
