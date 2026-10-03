@@ -330,6 +330,49 @@ section h2 {
 
 
 /* =========================================
+   ETERNAL RARITY
+========================================= */
+
+.rarity-eternal {
+    color: white;
+
+    text-shadow:
+        0 0 8px white,
+        0 0 20px white,
+        0 0 40px #e9d5ff,
+        0 0 70px #c084fc,
+        0 0 110px #9333ea,
+        0 0 160px #7e22ce,
+        0 0 220px #581c87;
+
+    animation:
+        eternalRarityPulse 1.4s
+        infinite alternate;
+}
+
+@keyframes eternalRarityPulse {
+
+    from {
+        filter:
+            brightness(1)
+            saturate(1);
+
+        transform:
+            scale(1);
+    }
+
+    to {
+        filter:
+            brightness(2)
+            saturate(1.7);
+
+        transform:
+            scale(1.04);
+    }
+}
+
+
+/* =========================================
    BADGES
 ========================================= */
 
@@ -629,6 +672,118 @@ section h2 {
     }
 }
 
+/* =========================================
+   ETERNAL BADGE — GOLD
+   ========================================= */
+
+.badge-eternal {
+
+    border-color: #ffd700;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.25),
+            rgba(255,248,198,0.18) 25%,
+            rgba(255,215,0,0.14) 50%,
+            rgba(255,179,0,0.10) 75%,
+            rgba(0,0,0,0.20) 100%
+        );
+
+    box-shadow:
+        0 0 12px rgba(255,255,255,0.95),
+        0 0 30px rgba(255,248,198,0.80),
+        0 0 60px rgba(255,215,0,0.70),
+        0 0 100px rgba(255,179,0,0.60),
+        0 0 150px rgba(255,140,0,0.45),
+        inset 0 0 30px rgba(255,255,255,0.12);
+
+    animation:
+        eternalBadgePulse
+        1.8s
+        ease-in-out
+        infinite alternate;
+}
+
+
+/* =========================================
+   ETERNAL BADGE NAME
+   ========================================= */
+
+.badge-eternal .badge-name {
+
+    color: #fff8c6;
+
+    text-shadow:
+        0 0 6px white,
+        0 0 15px #fff7b2,
+        0 0 30px #ffd700,
+        0 0 50px #ffb300,
+        0 0 80px #ff8c00,
+        0 0 120px #ffd700;
+}
+
+
+/* =========================================
+   ETERNAL BADGE DESCRIPTION
+   ========================================= */
+
+.badge-eternal .badge-description {
+
+    color: #fff3b0;
+
+    text-shadow:
+        0 0 8px rgba(255,255,255,0.50),
+        0 0 18px rgba(255,215,0,0.50),
+        0 0 30px rgba(255,179,0,0.35);
+}
+
+
+/* =========================================
+   ETERNAL BADGE PULSE
+   ========================================= */
+
+@keyframes eternalBadgePulse {
+
+    from {
+
+        transform:
+            scale(1);
+
+        border-color:
+            #ffb300;
+
+        box-shadow:
+            0 0 8px rgba(255,255,255,0.65),
+            0 0 22px rgba(255,248,198,0.55),
+            0 0 45px rgba(255,215,0,0.50),
+            0 0 80px rgba(255,179,0,0.40),
+            0 0 120px rgba(255,140,0,0.30),
+            inset 0 0 20px rgba(255,255,255,0.06);
+
+    }
+
+    to {
+
+        transform:
+            scale(1.045);
+
+        border-color:
+            #fff8c6;
+
+        box-shadow:
+            0 0 15px white,
+            0 0 35px #fff7b2,
+            0 0 70px #ffd700,
+            0 0 110px #ffb300,
+            0 0 170px #ff8c00,
+            0 0 220px #ffd700,
+            inset 0 0 35px rgba(255,255,255,0.16);
+
+    }
+
+}
+
 
 /* =========================================
    BADGE INDEX
@@ -771,21 +926,6 @@ section h2 {
 
     box-shadow:
         0 0 12px rgba(140,255,154,0.2);
-}
-
-.badge-index-chroma {
-    border-color:
-        rgba(77,223,255,0.45);
-
-    background:
-        linear-gradient(
-            90deg,
-            rgba(0,191,255,0.08),
-            rgba(77,223,255,0.035)
-        );
-
-    box-shadow:
-        0 0 20px rgba(0,191,255,0.15);
 }
 
 
@@ -3832,6 +3972,225 @@ body.secret-cutscene .mythic-number {
             0 0 42px #554b5c,
             0 0 60px #342d38;
     }
+}
+
+/* =========================================================
+                    ETERNAL NUMBER
+========================================================= */
+
+body.eternal-cutscene #number {
+
+    animation:
+        eternalNumberGlow
+        0.7s
+        infinite alternate;
+
+}
+
+
+/* =========================================================
+              ETERNAL NUMBER AFTERGLOW
+========================================================= */
+
+body.eternal-number-afterglow #number {
+
+    animation:
+        eternalNumberAfterglow
+        4s
+        ease-out
+        forwards;
+
+}
+
+
+/* =========================================================
+                    DURING CUTSCENE
+========================================================= */
+
+@keyframes eternalNumberGlow {
+
+    from {
+
+        color: #fff7b2 !important;
+
+        text-shadow:
+            0 0 8px #fff7b2,
+            0 0 18px #ffd700,
+            0 0 35px #ffb300,
+            0 0 55px #ff8c00,
+            0 0 80px #b8860b;
+
+    }
+
+    to {
+
+        color: #ffffff !important;
+
+        text-shadow:
+            0 0 10px #ffffff,
+            0 0 22px #fff7b2,
+            0 0 42px #ffd700,
+            0 0 65px #ffb300,
+            0 0 95px #ff8c00,
+            0 0 130px #b8860b;
+
+    }
+
+}
+
+
+/* =========================================================
+                    AFTERGLOW
+========================================================= */
+
+@keyframes eternalNumberAfterglow {
+
+    0% {
+
+        color: #ffffff !important;
+
+        text-shadow:
+            0 0 12px #ffffff,
+            0 0 25px #fff7b2,
+            0 0 50px #ffd700,
+            0 0 80px #ffb300,
+            0 0 120px #ff8c00,
+            0 0 160px #b8860b;
+
+    }
+
+    25% {
+
+        color: #fff7b2 !important;
+
+        text-shadow:
+            0 0 10px #fff7b2,
+            0 0 22px #ffd700,
+            0 0 45px #ffb300,
+            0 0 75px #ff8c00,
+            0 0 105px #b8860b;
+
+    }
+
+    60% {
+
+        color: #ffd700 !important;
+
+        text-shadow:
+            0 0 8px #ffd700,
+            0 0 18px #ffb300,
+            0 0 35px #ff8c00,
+            0 0 55px #b8860b;
+
+    }
+
+    100% {
+
+        color: inherit !important;
+
+        text-shadow:
+            none;
+
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL CAMERA
+========================================================= */
+
+body.eternal-cutscene .eternal-effect.active {
+
+    animation:
+        eternalCamera
+        15s
+        cubic-bezier(.12,.85,.15,1)
+        forwards;
+
+}
+
+@keyframes eternalCamera {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            scale(1);
+
+    }
+
+    7% {
+
+        opacity: 1;
+
+    }
+
+    25% {
+
+        transform:
+            scale(1);
+
+    }
+
+    42% {
+
+        transform:
+            scale(1.012);
+
+    }
+
+    55% {
+
+        transform:
+            scale(1.035);
+
+    }
+
+    65% {
+
+        transform:
+            scale(1.065);
+
+    }
+
+    72% {
+
+        transform:
+            scale(0.985);
+
+    }
+
+    79% {
+
+        transform:
+            scale(1.015);
+
+    }
+
+    88% {
+
+        transform:
+            scale(1);
+
+    }
+
+    94% {
+
+        opacity: 1;
+
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            scale(1.025);
+
+    }
+
 }
 
 
@@ -7078,8 +7437,8 @@ body.rebirth-cutscene {
 
     /*
        IMPORTANT:
-       The Clan Button is now a normal-flow button.
-       DO NOT use left, bottom, or translateX here.
+       The Clan Button Is Now A Normal-Flow Button.
+       DO NOT Use Left, Bottom, Or TranslateX Here.
     */
 
     .clan-button {
@@ -7228,4 +7587,1198 @@ body.rebirth-cutscene {
 
 .clan-bonus-item strong {
     font-size: 15px;
+}
+
+/* =========================================
+   ETERNAL RARITY — GOLD
+   ========================================= */
+
+.rarity-eternal {
+    color: #fff7b2;
+
+    text-shadow:
+        0 0 8px #fff7b2,
+        0 0 18px #ffd700,
+        0 0 35px #ffb300,
+        0 0 60px #ff8c00,
+        0 0 100px #ffd700,
+        0 0 150px #ffb300;
+
+    animation:
+        eternalRarityPulse 1.4s
+        infinite alternate;
+}
+
+@keyframes eternalRarityPulse {
+
+    from {
+        filter:
+            brightness(1)
+            saturate(1);
+
+        transform:
+            scale(1);
+    }
+
+    to {
+        filter:
+            brightness(1.8)
+            saturate(1.6);
+
+        transform:
+            scale(1.04);
+    }
+
+}
+
+/* =========================================================
+                    ETERNAL 15-SECOND CUTSCENE
+========================================================= */
+
+.eternal-effect {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 999999;
+
+    display: block;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            #6b4a00 0%,
+            #2d1d00 28%,
+            #0d0900 58%,
+            #000000 100%
+        );
+
+    pointer-events: none;
+
+    isolation: isolate;
+
+    opacity: 0;
+}
+
+
+/* =========================================================
+                    ETERNAL CAMERA
+========================================================= */
+
+.eternal-effect.active {
+
+    animation:
+        eternalCamera
+        15s
+        cubic-bezier(.08,.85,.12,1)
+        forwards;
+}
+
+@keyframes eternalCamera {
+
+    0% {
+        opacity: 0;
+        transform: scale(1);
+    }
+
+    6% {
+        opacity: 1;
+    }
+
+    88% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(1.04);
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL BACKGROUND
+========================================================= */
+
+.eternal-background {
+
+    position: absolute;
+
+    inset: -15%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.16),
+            rgba(255,235,120,0.24) 12%,
+            rgba(255,215,0,0.20) 25%,
+            rgba(255,179,0,0.13) 42%,
+            rgba(150,90,0,0.10) 58%,
+            transparent 75%
+        );
+
+    opacity: 0;
+
+    transform:
+        scale(0.12);
+
+    animation:
+        eternalBackground
+        15s
+        ease-out
+        forwards;
+}
+
+@keyframes eternalBackground {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.12);
+    }
+
+    10% {
+        opacity: 0.18;
+        transform: scale(0.3);
+    }
+
+    22% {
+        opacity: 0.38;
+        transform: scale(0.55);
+    }
+
+    38% {
+        opacity: 0.65;
+        transform: scale(0.85);
+    }
+
+    52% {
+        opacity: 0.9;
+        transform: scale(1.1);
+    }
+
+    64% {
+        opacity: 0.7;
+        transform: scale(1.35);
+    }
+
+    76% {
+        opacity: 0.45;
+        transform: scale(1.65);
+    }
+
+    88% {
+        opacity: 0.2;
+        transform: scale(1.95);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(2.2);
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL ENERGY PULSE
+========================================================= */
+
+.eternal-effect::after {
+
+    content: "";
+
+    position: absolute;
+
+    inset: -5%;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.22),
+            rgba(255,215,0,0.12) 25%,
+            rgba(255,179,0,0.06) 45%,
+            transparent 68%
+        );
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    animation:
+        eternalEnergyPulse
+        15s
+        ease-out
+        forwards;
+}
+
+@keyframes eternalEnergyPulse {
+
+    0%,
+    30% {
+        opacity: 0;
+        transform: scale(0.55);
+    }
+
+    37% {
+        opacity: 0.12;
+        transform: scale(0.72);
+    }
+
+    42% {
+        opacity: 0.03;
+        transform: scale(0.95);
+    }
+
+    48% {
+        opacity: 0.2;
+        transform: scale(0.68);
+    }
+
+    54% {
+        opacity: 0.04;
+        transform: scale(1.1);
+    }
+
+    60% {
+        opacity: 0.24;
+        transform: scale(0.75);
+    }
+
+    67% {
+        opacity: 0.06;
+        transform: scale(1.25);
+    }
+
+    76% {
+        opacity: 0.14;
+        transform: scale(1.4);
+    }
+
+    86% {
+        opacity: 0;
+        transform: scale(1.7);
+    }
+
+    100% {
+        opacity: 0;
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL FLASH
+========================================================= */
+
+.eternal-flash {
+
+    position: absolute;
+
+    inset: 0;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,255,255,0.45),
+            rgba(255,235,130,0.20) 30%,
+            rgba(255,179,0,0.08) 55%,
+            transparent 100%
+        );
+
+    opacity: 0;
+
+    z-index: 30;
+
+    mix-blend-mode: screen;
+
+    animation:
+        eternalFlash
+        15s
+        ease-out
+        forwards;
+}
+
+@keyframes eternalFlash {
+
+    0%,
+    18% {
+        opacity: 0;
+    }
+
+    23% {
+        opacity: 0.08;
+    }
+
+    24% {
+        opacity: 0;
+    }
+
+    34% {
+        opacity: 0.12;
+    }
+
+    35% {
+        opacity: 0;
+    }
+
+    47% {
+        opacity: 0.18;
+    }
+
+    49% {
+        opacity: 0;
+    }
+
+    57% {
+        opacity: 0.5;
+    }
+
+    60% {
+        opacity: 0;
+    }
+
+    64% {
+        opacity: 0.8;
+    }
+
+    67% {
+        opacity: 0;
+    }
+
+    72% {
+        opacity: 0.35;
+    }
+
+    75% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 0;
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL RAYS
+========================================================= */
+
+.eternal-rays {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 150vmax;
+    height: 150vmax;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.03);
+
+    background:
+        repeating-conic-gradient(
+            from 0deg,
+            rgba(255,255,255,0.16) 0deg 1.5deg,
+            transparent 1.5deg 10deg
+        );
+
+    opacity: 0;
+
+    mix-blend-mode: screen;
+
+    animation:
+        eternalRays
+        15s
+        linear
+        forwards;
+}
+
+@keyframes eternalRays {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0.03)
+            rotate(0deg);
+    }
+
+    18% {
+        opacity: 0.04;
+    }
+
+    35% {
+        opacity: 0.09;
+        transform:
+            translate(-50%, -50%)
+            scale(0.4)
+            rotate(100deg);
+    }
+
+    52% {
+        opacity: 0.2;
+        transform:
+            translate(-50%, -50%)
+            scale(0.7)
+            rotate(220deg);
+    }
+
+    65% {
+        opacity: 0.55;
+        transform:
+            translate(-50%, -50%)
+            scale(0.98)
+            rotate(360deg);
+    }
+
+    78% {
+        opacity: 0.3;
+        transform:
+            translate(-50%, -50%)
+            scale(1.2)
+            rotate(500deg);
+    }
+
+    90% {
+        opacity: 0.08;
+        transform:
+            translate(-50%, -50%)
+            scale(1.4)
+            rotate(610deg);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(1.6)
+            rotate(700deg);
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL CORE
+========================================================= */
+
+.eternal-core {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 14px;
+    height: 14px;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.05);
+
+    border-radius: 50%;
+
+    background:
+        #fffdf0;
+
+    opacity: 0;
+
+    z-index: 15;
+
+    box-shadow:
+        0 0 10px #ffffff,
+        0 0 25px #fff7b2,
+        0 0 45px #ffd700,
+        0 0 80px #ffb300,
+        0 0 130px #ff8c00,
+        0 0 200px #ffd700;
+
+    animation:
+        eternalCore
+        15s
+        cubic-bezier(.05,.9,.08,1)
+        forwards;
+}
+
+@keyframes eternalCore {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0.05);
+    }
+
+    12% {
+        opacity: 0.18;
+        transform:
+            translate(-50%, -50%)
+            scale(0.4);
+    }
+
+    25% {
+        opacity: 0.35;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    38% {
+        opacity: 0.55;
+        transform:
+            translate(-50%, -50%)
+            scale(3);
+    }
+
+    50% {
+        opacity: 0.75;
+        transform:
+            translate(-50%, -50%)
+            scale(7);
+    }
+
+    60% {
+        opacity: 0.9;
+        transform:
+            translate(-50%, -50%)
+            scale(18);
+    }
+
+    65% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(45);
+    }
+
+    70% {
+        opacity: 0.45;
+        transform:
+            translate(-50%, -50%)
+            scale(70);
+    }
+
+    78% {
+        opacity: 0.12;
+        transform:
+            translate(-50%, -50%)
+            scale(90);
+    }
+
+    88% {
+        opacity: 0.02;
+        transform:
+            translate(-50%, -50%)
+            scale(110);
+    }
+
+    100% {
+        opacity: 0;
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL RINGS
+========================================================= */
+
+.eternal-ring {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 115px;
+    height: 115px;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    border-radius: 50%;
+
+    border:
+        2px solid #ffd700;
+
+    opacity: 0;
+
+    z-index: 10;
+
+    box-shadow:
+        0 0 10px #fff7b2,
+        0 0 25px #ffd700,
+        0 0 45px #ffb300,
+        inset 0 0 15px rgba(255,255,255,0.25);
+}
+
+.eternal-effect.active .ring-one {
+
+    animation:
+        eternalRingOne
+        8s
+        0.8s
+        cubic-bezier(.05,.8,.1,1)
+        forwards;
+}
+
+.eternal-effect.active .ring-two {
+
+    animation:
+        eternalRingTwo
+        8.5s
+        1.5s
+        cubic-bezier(.05,.8,.1,1)
+        forwards;
+}
+
+.eternal-effect.active .ring-three {
+
+    animation:
+        eternalRingThree
+        9s
+        2.2s
+        cubic-bezier(.05,.8,.1,1)
+        forwards;
+}
+
+@keyframes eternalRingOne {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0)
+            rotate(0deg);
+    }
+
+    10% {
+        opacity: 0.9;
+    }
+
+    35% {
+        opacity: 0.7;
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(11)
+            rotate(540deg);
+    }
+
+}
+
+@keyframes eternalRingTwo {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0)
+            rotate(0deg);
+    }
+
+    10% {
+        opacity: 0.8;
+    }
+
+    40% {
+        opacity: 0.55;
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(15)
+            rotate(-620deg);
+    }
+
+}
+
+@keyframes eternalRingThree {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0);
+    }
+
+    12% {
+        opacity: 0.85;
+    }
+
+    45% {
+        opacity: 0.45;
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(19)
+            rotate(330deg);
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL SHOCKWAVE
+========================================================= */
+
+.eternal-shockwave {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 65px;
+    height: 65px;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    border-radius: 50%;
+
+    border:
+        5px solid #fff4a3;
+
+    opacity: 0;
+
+    z-index: 25;
+
+    box-shadow:
+        0 0 15px #ffffff,
+        0 0 35px #ffd700,
+        0 0 65px #ffb300,
+        0 0 100px #ff8c00;
+
+    animation:
+        eternalShockwave
+        15s
+        cubic-bezier(.08,.8,.08,1)
+        forwards;
+}
+
+@keyframes eternalShockwave {
+
+    0%,
+    48% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0);
+    }
+
+    56% {
+        opacity: 0.95;
+        transform:
+            translate(-50%, -50%)
+            scale(0.7);
+    }
+
+    62% {
+        opacity: 0.75;
+        transform:
+            translate(-50%, -50%)
+            scale(4);
+    }
+
+    70% {
+        opacity: 0.4;
+        transform:
+            translate(-50%, -50%)
+            scale(11);
+    }
+
+    80% {
+        opacity: 0.15;
+        transform:
+            translate(-50%, -50%)
+            scale(21);
+    }
+
+    90% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(32);
+    }
+
+    100% {
+        opacity: 0;
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL PARTICLES
+========================================================= */
+
+.eternal-particles {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 18;
+}
+
+.eternal-particles::before,
+.eternal-particles::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 6px;
+    height: 6px;
+
+    border-radius: 50%;
+
+    background:
+        #fff7b2;
+
+    box-shadow:
+        120px 40px #ffd700,
+        -150px -80px #fff4a3,
+        250px -100px #ffb300,
+        -300px 100px #ffd700,
+        80px -220px #fff8c6,
+        -80px 250px #ff8c00,
+        320px 180px #ffd700,
+        -340px -180px #fff4a3,
+        400px 0 #ffb300,
+        -400px 0 #ffd700,
+        0 350px #fff7b2,
+        0 -350px #ffb300,
+        200px 200px #ffd700,
+        -220px -200px #fff8c6,
+        280px -260px #ffb300,
+        -280px 260px #ffd700;
+
+    opacity: 0;
+}
+
+.eternal-effect.active .eternal-particles::before {
+
+    animation:
+        eternalParticleExplosion
+        9s
+        1s
+        cubic-bezier(.05,.8,.1,1)
+        forwards;
+}
+
+.eternal-effect.active .eternal-particles::after {
+
+    animation:
+        eternalParticleExplosion
+        9.5s
+        1.8s
+        cubic-bezier(.05,.8,.1,1)
+        forwards;
+}
+
+@keyframes eternalParticleExplosion {
+
+    0% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(0.02);
+    }
+
+    12% {
+        opacity: 0.2;
+    }
+
+    25% {
+        opacity: 0.65;
+    }
+
+    42% {
+        opacity: 0.9;
+        transform:
+            translate(-50%, -50%)
+            scale(0.8);
+    }
+
+    58% {
+        opacity: 0.65;
+        transform:
+            translate(-50%, -50%)
+            scale(1.4);
+    }
+
+    75% {
+        opacity: 0.3;
+        transform:
+            translate(-50%, -50%)
+            scale(2.2);
+    }
+
+    90% {
+        opacity: 0.05;
+        transform:
+            translate(-50%, -50%)
+            scale(3);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(3.8);
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL TITLE
+========================================================= */
+
+.eternal-title {
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 100%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0);
+
+    text-align: center;
+
+    opacity: 0;
+
+    z-index: 50;
+}
+
+.eternal-effect.active .eternal-title {
+
+    animation:
+        eternalTitleReveal
+        15s
+        cubic-bezier(.06,.9,.08,1)
+        forwards;
+}
+
+.eternal-crown {
+
+    font-size:
+        clamp(4rem, 10vw, 9rem);
+
+    color:
+        #fff7b2;
+
+    margin-bottom:
+        -25px;
+
+    text-shadow:
+        0 0 10px white,
+        0 0 25px #fff7b2,
+        0 0 50px #ffd700,
+        0 0 90px #ffb300,
+        0 0 130px #ff8c00;
+
+    animation:
+        eternalCrown
+        1.6s
+        ease-in-out
+        infinite alternate;
+}
+
+.eternal-title span {
+
+    display: block;
+
+    font-size:
+        clamp(5rem, 20vw, 17rem);
+
+    font-weight:
+        1000;
+
+    letter-spacing:
+        0.045em;
+
+    color:
+        #fffdf0;
+
+    -webkit-text-stroke:
+        2px #fff7b2;
+
+    text-shadow:
+        0 0 8px white,
+        0 0 20px #fff7b2,
+        0 0 40px #ffd700,
+        0 0 75px #ffb300,
+        0 0 130px #ff8c00,
+        0 0 190px #ffd700;
+}
+
+.eternal-title small {
+
+    display: block;
+
+    margin-top:
+        20px;
+
+    font-size:
+        clamp(0.9rem, 2vw, 1.6rem);
+
+    letter-spacing:
+        clamp(5px, 1.2vw, 14px);
+
+    color:
+        #ffeaa0;
+
+    text-shadow:
+        0 0 8px #ffd700,
+        0 0 18px #ffb300,
+        0 0 30px #ff8c00;
+}
+
+@keyframes eternalTitleReveal {
+
+    0%,
+    55% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.03)
+            rotate(-18deg);
+    }
+
+    60% {
+
+        opacity: 0.2;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.25)
+            rotate(12deg);
+    }
+
+    64% {
+
+        opacity: 0.7;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.65)
+            rotate(-7deg);
+    }
+
+    67% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(2.15)
+            rotate(5deg);
+    }
+
+    70% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.72)
+            rotate(-2deg);
+    }
+
+    74% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.13)
+            rotate(0deg);
+    }
+
+    79% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.98);
+    }
+
+    83% {
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    92% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    100% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
+    }
+
+}
+
+
+/* =========================================================
+                    ETERNAL CROWN ANIMATION
+========================================================= */
+
+@keyframes eternalCrown {
+
+    from {
+
+        transform:
+            scale(0.94)
+            rotate(-5deg);
+
+        opacity:
+            0.7;
+    }
+
+    to {
+
+        transform:
+            scale(1.1)
+            rotate(5deg);
+
+        opacity:
+            1;
+    }
+
 }
